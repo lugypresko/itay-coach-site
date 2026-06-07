@@ -15,6 +15,27 @@ Plans should be small enough for one focused engineering pass and must include:
 - Validation steps
 - Acceptance criteria
 
+## Autonomy Protocol
+
+Codex may proceed without asking for clarification when:
+
+- the task is already specified in `PLANS.md`
+- the change does not require edits to `DATA_CONTRACTS.md`, `AGENTS.md`, `SECURITY_RULES.md`, or publishing rules
+- the task does not depend on an unresolved runtime blocker
+
+Codex must stop and ask only when:
+
+- a task would require changing a governed contract, agent rule, security rule, or publishing rule
+- the task is blocked by missing runtime verification, unavailable external state, or contradictory instructions
+- the requested change would alter task scope or acceptance criteria
+
+When a task is blocked, Codex should:
+
+- update the task state
+- record the blocker
+- record the explicit unblock step
+- continue with any independent task that remains allowed by the current spec
+
 ## Task State Protocol
 
 Every task must carry a live state so multiple agents can work in parallel without stepping on each other.
@@ -50,9 +71,17 @@ No product features are implemented in this task.
 
 ### Task 002 - Application Scaffold
 
-State: `review`
+State: `blocked`
 Lane: `app-shell`, `payload-boot`
 Owner: coding agent
+
+Blocker: live Postgres/Docker boot verification unavailable in current environment.
+
+Explicit unblock step:
+
+- run `docker compose up`
+- run `npm run dev`
+- verify Payload admin and API locally
 
 Create the Next.js 15 + Payload CMS 3 + TypeScript project scaffold, connect local PostgreSQL, and verify local admin boot.
 

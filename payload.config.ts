@@ -9,6 +9,7 @@ import {
   CaseStudies,
   ClusterPages,
   ContentJobs,
+  competitorContractsCollection,
   EmailSubscribers,
   FAQs,
   Frameworks,
@@ -19,6 +20,7 @@ import {
   Media,
   PillarPages,
   ResearchSources,
+  queryAuthorityScorecardsCollection,
   Users,
 } from "./src/payload/collections";
 
@@ -49,6 +51,8 @@ export default buildConfig({
     InternalLinks,
     ContentJobs,
     AgentRuns,
+    queryAuthorityScorecardsCollection,
+    competitorContractsCollection,
   ],
   db: postgresAdapter({
     pool: {

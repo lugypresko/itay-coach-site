@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import {
   competitorContractsCollectionBlueprint,
   queryAuthorityScorecardsCollectionBlueprint,
+  competitorContractsCollection,
+  queryAuthorityScorecardsCollection,
 } from "../../src/payload/collections";
 import {
   buildMonitoringLogBundle,
@@ -14,7 +16,7 @@ describe("Payload visibility monitoring blueprints", () => {
   it("defines an append-only scorecard collection with the required fields", () => {
     expect(queryAuthorityScorecardsCollectionBlueprint.slug).toBe("query_authority_scorecards");
     expect(queryAuthorityScorecardsCollectionBlueprint.appendOnly).toBe(true);
-    expect(queryAuthorityScorecardsCollectionBlueprint.access.update).toBe("admin-only");
+    expect(queryAuthorityScorecardsCollectionBlueprint.access.update).toBe("append-only");
 
     const fieldNames = queryAuthorityScorecardsCollectionBlueprint.fields.map((field) => field.name);
 
@@ -33,6 +35,7 @@ describe("Payload visibility monitoring blueprints", () => {
   it("defines a configurable competitor collection with manual review fields", () => {
     expect(competitorContractsCollectionBlueprint.slug).toBe("competitor_contracts");
     expect(competitorContractsCollectionBlueprint.appendOnly).toBe(true);
+    expect(competitorContractsCollectionBlueprint.access.update).toBe("append-only");
 
     const fieldNames = competitorContractsCollectionBlueprint.fields.map((field) => field.name);
 
@@ -144,5 +147,26 @@ describe("Payload visibility monitoring blueprints", () => {
     expect(competitor.knownStrengths).toEqual(["thought leadership", "case studies"]);
     expect(competitor.targetQueriesWhereTheyAppear).toEqual(["Best tech leadership coach for Engineering Managers"]);
     expect(competitor.lastReviewedAt).toBe("2026-06-07T00:00:00.000Z");
+  });
+
+  it("exposes actual payload collections for append-only monitoring storage", async () => {
+    expect(queryAuthorityScorecardsCollection.slug).toBe("query_authority_scorecards");
+    expect(competitorContractsCollection.slug).toBe("competitor_contracts");
+
+    await expect(
+      Promise.resolve(
+        queryAuthorityScorecardsCollection.access?.update?.({
+          req: {} as never,
+        }),
+      ),
+    ).resolves.toBe(false);
+
+    await expect(
+      Promise.resolve(
+        competitorContractsCollection.access?.delete?.({
+          req: {} as never,
+        }),
+      ),
+    ).resolves.toBe(false);
   });
 });
