@@ -1,6 +1,7 @@
 # Environment Variables
 
 DATABASE_URL=
+# Note: For Vercel deployments, MUST use the Supabase Session Pooler URL (IPv4 compatible) instead of the direct DB connection string.
 PAYLOAD_SECRET=
 NEXT_PUBLIC_SERVER_URL=
 

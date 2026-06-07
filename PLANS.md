@@ -57,7 +57,56 @@ Coordination rules:
 - If a task touches shared contracts, the owner must declare the lock scope in the task metadata.
 - A task may not move to `completed` until validation passes.
 
+## Release Freeze
+
+Feature development is frozen until `RELEASE_READINESS_CHECKLIST.md` passes.
+
+Do not expand the system with new agents, collections, or workflows while the release checklist is incomplete.
+
+The release target after verification is `Authority Engine Alpha`.
+
 ## Task Sequence
+
+### Task 000A - Supabase MCP Client Setup
+
+State: `completed`
+Lane: `developer-tooling`
+Owner: Codex
+
+Goal:
+Configure the local AI coding environment to use the Supabase MCP server for project `gvsgthtayhozembisgzn` and install/update Supabase agent skills if needed.
+
+Scope:
+- Verify `.vscode/mcp.json` contains the Supabase MCP server configuration.
+- Install or update Supabase agent skills with `npx skills add supabase/agent-skills`.
+- Verify the Supabase MCP endpoint is reachable.
+
+Out of scope:
+- No database schema changes.
+- No Payload collection changes.
+- No content generation or publishing.
+
+Files expected to change:
+- `.vscode/mcp.json`
+- `.agents/skills/*`
+- `skills-lock.json`
+- `PLANS.md`
+
+Data contracts affected:
+- None.
+
+Agent permissions affected:
+- None.
+
+Validation steps:
+- Confirm `.vscode/mcp.json` matches the requested Supabase MCP server URL.
+- Run the Supabase skills installer.
+- Check the MCP endpoint returns an authentication response rather than a connection failure.
+
+Acceptance criteria:
+- VS Code MCP configuration exists for the Supabase project.
+- Supabase agent skills are installed or already present.
+- MCP endpoint reachability is verified.
 
 ### Task 001 - Agent-Ready Project Foundation
 
@@ -71,17 +120,15 @@ No product features are implemented in this task.
 
 ### Task 002 - Application Scaffold
 
-State: `blocked`
+State: `completed`
 Lane: `app-shell`, `payload-boot`
 Owner: coding agent
 
-Blocker: live Postgres/Docker boot verification unavailable in current environment.
-
-Explicit unblock step:
-
-- run `docker compose up`
-- run `npm run dev`
-- verify Payload admin and API locally
+Blocker resolved:
+- Vercel production now uses the Supabase Session Pooler URL for IPv4 compatibility.
+- Payload CMS importMap generation added to Vercel build step (`payload generate:importmap`).
+- Remote schema initialized via Payload database migrations.
+- Admin route and database collections verified on Vercel.
 
 Create the Next.js 15 + Payload CMS 3 + TypeScript project scaffold, connect local PostgreSQL, and verify local admin boot.
 
@@ -91,6 +138,54 @@ Acceptance criteria:
 - Payload CMS boots locally.
 - PostgreSQL connection is configured through environment variables.
 - No content model beyond minimal boot requirements is implemented.
+
+### Task 002A - Prisma ORM Setup
+
+State: `completed`
+Lane: `developer-tooling`, `database-config`
+Owner: Codex
+
+Goal:
+Install Prisma ORM and configure it for the Supabase Postgres pooler connection strings.
+
+Scope:
+- Install Prisma as a development dependency.
+- Initialize Prisma project files.
+- Configure Prisma to use the Supabase session pooler `DIRECT_URL` for CLI and migration operations.
+- Add local Supabase pooler placeholders to `.env.local`.
+- Install or update Supabase agent skills.
+
+Out of scope:
+- No database schema changes.
+- No Prisma models or migrations.
+- No Payload collection changes.
+- No content generation or publishing.
+
+Files expected to change:
+- `package.json`
+- `package-lock.json`
+- `prisma/schema.prisma`
+- `.env.local`
+- `.agents/skills/*`
+- `skills-lock.json`
+- `PLANS.md`
+
+Data contracts affected:
+- None.
+
+Agent permissions affected:
+- None.
+
+Validation steps:
+- Run `npx prisma validate`.
+- Run the Supabase skills installer.
+- Confirm generated Prisma files exist.
+
+Acceptance criteria:
+- Prisma CLI is installed as a dev dependency.
+- Prisma schema declares PostgreSQL and Prisma config uses `DIRECT_URL` for CLI operations.
+- Local env placeholders point to the requested Supabase pooler host and ports.
+- Supabase agent skills are installed or already present.
 
 ### Task 003 - Payload Content Model
 
