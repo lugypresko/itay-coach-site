@@ -1,0 +1,147 @@
+https://medium.com/klevox-studio-engineering/how-we-built-klevox-studio-ai-agents-headless-cms-and-a-website-that-writes-its-own-blog-6bbddb68d931
+No WordPress template. No static landing page. We wanted a website that showcases automation, AI, and modern engineering in practice.
+
+Here’s how we built it, what worked, and what we’d do differently.
+
+The Core Stack
+We chose a modern, full-stack JavaScript architecture:
+
+Next.js 15 with the App Router and React 19
+Payload CMS 3 as our headless content management system
+PostgreSQL as the database
+TypeScript across the entire codebase
+Tailwind CSS 4 for styling
+Framer Motion for animations
+Vercel for hosting
+AWS S3 for media storage
+Why Next.js 15 + Payload CMS?
+
+We needed a CMS that gave us full control without locking us into a third-party platform. Payload CMS runs inside our Next.js application, which means one deployment, one codebase, and no external CMS to manage.
+
+Payload gives us:
+
+A clean admin panel for content editors
+Flexible collections and fields defined in code
+Built-in authentication and access control
+Localization support out of the box
+We configured it with two locales (English and Dutch) using `next-intl`, so the entire site is bilingual from the ground up. Every page, every blog post, every service description exists in both languages.
+
+Database Choice
+
+PostgreSQL was the natural fit. Payload CMS supports it natively through `@payloadcms/db-postgres`, and it handles our relational data (blog posts, services, case studies, team members, partners) without any friction.
+
+The Interesting Part: AI-Powered Blog Generation
+This is where it gets fun.
+
+We built a multi-agent AI system that automatically generates blog content from academic research papers. The system runs on a schedule (Mondays and Thursdays) and handles the entire pipeline from discovery to publication.
+
+The Agent Architecture
+
+We used LangChain and LangGraph to orchestrate a pipeline of specialized agents:
+
+1. Paper Scout Agent — Searches arXiv and Semantic Scholar for recent papers relevant to our industry focus areas (AI in healthcare, insurance, manufacturing, SaaS)
+
+2. Paper Analyst Agent — Reads the papers and evaluates them for business relevance. Not every paper is worth writing about. This agent filters for practical, actionable insights.
+
+3. Content Writer Agent — Takes the analysis and writes a full blog post in our brand voice. It follows our style guidelines: action-oriented, outcome-focused, no buzzwords like “revolutionary” or “seamless.”
+
+4. SEO Optimizer Agent— Optimizes the post for search engines. Titles, meta descriptions, keyword density, internal linking.
+
+5. Quality Gate Agent — A final check before publishing. Validates accuracy, tone, formatting, and compliance with our content standards.
+
+6. Social Publisher Agent— Publishes the post and creates social media content for LinkedIn and X.
+
+Press enter or click to view image in full size
+
+The LLM Behind It
+
+We route all agent calls through OpenRouter, using DeepSeek v3.2 as our default model. It offers a good balance of quality and cost for content generation at scale.
+
+Each agent has its own system prompt, tools, and evaluation criteria. They communicate through a LangGraph workflow, passing structured data between steps.
+
+Why We Built This
+
+Two reasons.
+
+First, consistent content creation is hard. Most companies start a blog, publish five posts, and stop. An automated pipeline removes the bottleneck.
+
+Second, it’s a live demo of what we offer clients. When we tell a prospect “we can automate your document processing pipeline,” we can point to our own blog and say “we automated ours.”
+Interactive ROI Planner
+
+We built an interactive tool that helps prospects estimate their return on investment. It pulls real-time pricing data from AWS, Azure, and GCP APIs, runs calculations based on the prospect’s inputs, and generates a PDF report they can download or share with their team.
+
+This isn’t a static calculator. It uses live cloud pricing and accounts for regional differences, instance types, and scaling patterns.
+
+Press enter or click to view image in full size
+
+PDF Report Generation
+
+We use `@react-pdf/renderer` to generate professional PDF reports from React components. The ROI analysis, complete with charts (built with Recharts), tables, and recommendations, exports as a clean, branded document.
+
+Performance and Quality
+
+We take performance seriously. Our CI/CD pipeline includes Lighthouse CI with the following targets:
+
+Performance: 90%+
+Accessibility: 90%+
+Best Practices: 90%+
+SEO: 90%+
+Web Vitals targets:
+
+LCP under 2.5 seconds
+CLS under 0.1
+FID under 100 milliseconds
+The pipeline runs on every pull request through GitHub Actions. If scores drop below threshold, the PR gets flagged.
+
+Testing
+
+Jest for unit tests
+React Testing Library for component tests
+Playwright for end-to-end tests
+Husky with lint-staged for pre-commit hooks
+ESLint and Prettier for code quality
+We also run security audits as part of the CI pipeline.
+
+What We Learned
+1. Payload CMS is underrated
+
+Coming from experiences with Strapi, Contentful, and Sanity, Payload stands out. Running inside your Next.js app means fewer moving parts, simpler deployments, and no third-party dependency for your content layer. The admin UI is clean and extensible. The local API is fast.
+
+The trade-off: it’s newer, so the ecosystem and community are smaller. Documentation has improved significantly, but you’ll occasionally need to dig into source code.
+
+2. Multi-agent systems need guardrails
+
+Our first version of the blog pipeline produced content that was technically accurate but tonally off. Adding the Quality Gate agent and explicit brand voice instructions to the Content Writer made a huge difference.
+
+The lesson: don’t just chain LLM calls together. Build validation steps between agents, and define clear acceptance criteria at each stage.
+
+3. Bilingual from day one is worth the effort
+
+Adding localization after the fact is painful. We integrated `next-intl` from the start, and every component, every CMS collection, and every API response was designed for multiple locales. The upfront investment saved us from a major refactor later.
+
+4. Real-time pricing APIs are unreliable
+
+AWS, Azure, and GCP pricing APIs all have different formats, rate limits, and update frequencies. We built a caching layer (`PricingCache` collection in Payload) to handle this. The ROI Planner pulls from cache first and refreshes in the background.
+
+5. Keep the CI pipeline strict
+
+It’s tempting to lower Lighthouse thresholds when you’re rushing to ship. Don’t. Every time we kept the 90% bar, it forced us to optimize images, reduce bundle size, or fix accessibility issues we would have otherwise ignored.
+
+The Full Stack at a Glance
+
+| Layer | Technology |
+| - - - -| - - - - - -|
+| Framework | Next.js 15, React 19 |
+| Language | TypeScript 5 |
+| CMS | Payload CMS 3 |
+| Database | PostgreSQL |
+| Styling | Tailwind CSS 4, Framer Motion |
+| AI/ML | LangChain, LangGraph, DeepSeek v3.2 |
+| Email | Resend |
+| CRM | HubSpot |
+| Storage | AWS S3 |
+| Hosting | Vercel |
+| CI/CD | GitHub Actions |
+| Testing | Jest, Playwright |
+| i18n | next-intl (EN/NL) |
+| Analytics | Vercel Analytics |

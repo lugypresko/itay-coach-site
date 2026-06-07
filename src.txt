@@ -1,0 +1,65 @@
+/src
+  /app
+    /(frontend)
+      /guides
+      /articles
+      /frameworks
+      /case-studies
+      /glossary
+      /resources
+    /(payload)
+      /admin
+    /api
+      /content-generate
+      /webhooks
+      /cron
+
+  /payload
+    /collections
+      PillarPages.ts
+      ClusterPages.ts
+      Frameworks.ts
+      CaseStudies.ts
+      FAQs.ts
+      GlossaryTerms.ts
+      LeadMagnets.ts
+      EmailSubscribers.ts
+      ContentJobs.ts
+      AgentRuns.ts
+      InternalLinks.ts
+      ResearchSources.ts
+    payload.config.ts
+
+  /ai
+    /agents
+      researchAgent.ts
+      intentClusterAgent.ts
+      outlineAgent.ts
+      contentWriterAgent.ts
+      llmSeoAgent.ts
+      internalLinkingAgent.ts
+      qualityGateAgent.ts
+      payloadPublisherAgent.ts
+      socialDistributionAgent.ts
+    /workflows
+      contentGenerationGraph.ts
+    /prompts
+      brandVoice.ts
+      articlePrompt.ts
+      qualityGatePrompt.ts
+      llmSeoPrompt.ts
+
+  /lib
+    payload.ts
+    resend.ts
+    openrouter.ts
+    seo.ts
+    schema.ts
+    internalLinks.ts
+
+  /components
+    ArticleRenderer.tsx
+    FAQBlock.tsx
+    CTASection.tsx
+    TableOfContents.tsx
+    LeadMagnetForm.tsx

@@ -1,0 +1,119 @@
+# AGENTS.md - Content Cluster System
+**נישה:** אימון מנהלים טכנולוגיים (Engineering Managers, Tech Leads, VP Engineering)
+
+**מותג:** [שם המותג שלך] – אימון והכשרה למנהלים טכנולוגיים בהייטק
+
+**גרסה:** 1.0 | עדכון אחרון: יוני 2026
+
+---
+
+## 1. Brand Voice & Tone
+
+- **סגנון כתיבה:** מקצועי, פרקטי, אמפתי ומנוסה. כמו מנטור בכיר עם 15+ שנות ניסיון בהייטק.
+- **טון:** ישיר, בטוח, מעשי. משתמש ב"אתה" (שפה עברית תומכת).
+- **אסור:** שפה שיווקית זולה, הבטחות מוגזמות, ג'רגון ניהולי ריק.
+- **חובה:** דוגמאות מהשטח, frameworks ברורים, טבלאות, checklists, case studies (אנונימיים).
+- **שפה:** עברית תקנית + מונחים מקובלים בהייטק (Tech Lead, Engineering Manager, Psychological Safety וכו').
+
+---
+
+## 2. Content Cluster Structure (LLM SEO Optimized)
+
+**כל Cluster חייב לכלול:**
+
+### Pillar Page (Hub)
+- אורך: 3500–5500 מילים
+- כותרת: "מדריך מקיף [נושא] 2026 – כל מה שמנהל טכנולוגי צריך לדעת"
+- מבנה חובה:
+  - H1 ברור
+  - מבוא עם אתגרים אמיתיים
+  - טבלה השוואתית גדולה
+  - תוכן עשיר עם H2/H3
+  - סקשן "תתי נושאים מרכזיים" עם קישורים פנימיים
+  - Case Studies
+  - FAQ Schema (12–18 שאלות)
+  - סיכום + CTA
+
+### Cluster Pages (Spokes)
+- אורך: 1200–2800 מילים
+- התמקדות עמוקה בתת-נושא אחד
+- חייבים לכלול: טבלאות, frameworks, checklists, דוגמאות קוד/תהליכים
+
+**Internal Linking Rules:**
+- Pillar מקשר לכל Cluster Pages
+- כל Cluster Page מקשר חזרה ל-Pillar + 3–5 דפים קשורים
+- Anchor text טבעי ומגוון (לא keyword stuffing)
+
+---
+
+## 3. LLM SEO & Citation Guidelines
+
+- כתוב בצורה **Citation-Worthy**: נתונים, מחקרים, frameworks מקוריים, טבלאות, ציטוטים.
+- השתמש ב-Inverted Pyramid.
+- מבנה HTML נקי: H1–H3, רשימות ממוספרות, טבלאות Markdown → JSX.
+- הוסף Schema Markup (Article + FAQ + HowTo) כשמייצרים תוכן.
+- Non-branded ראשוני: 70% מהתוכן ללא אזכור ישיר של המותג.
+- עדכניות: תמיד התייחס ל-2026 ואילך (AI Agents, Engineering Productivity, Hybrid Teams וכו').
+
+---
+
+## 4. Pillar Pages – דוגמאות מרכזיות ליצירה
+
+1. מדריך מקיף לאימון מנהלים טכנולוגיים 2026
+2. איך עושים מעבר מ-Tech Lead ל-Engineering Manager
+3. בניית תרבות צוות גבוהת ביצועים בהייטק
+4. ניהול צוותי פיתוח בעידן ה-AI
+
+---
+
+## 5. Workflow Agentic (LangGraph / DeepSeek)
+
+כשאני מבקש לבנות Cluster:
+
+1. **Research Phase** – אסוף מידע עדכני, טרנדים 2026, מחקרים.
+2. **Keyword & Intent Clustering** – חלק ל-Awareness / Consideration / Decision.
+3. **Outline Creation** – Pillar + 8–12 Cluster Pages.
+4. **Content Generation** – כתוב קודם Pillar, אחר כך Cluster.
+5. **Internal Linking Map** – צור JSON של קישורים.
+6. **Payload CMS Format** – יצא כ-JSON תואם Payload CMS (fields: title, slug, content (lexical/html), excerpt, seo, faq, internalLinks).
+7. **Review & Polish** – בדוק איכות, עומק, קריאות.
+
+---
+
+## 6. Technical Output Requirements (Payload CMS + Next.js)
+
+- **פלט:** JSON מלא שמוכן לייבוא ל-Payload CMS 3.
+- שדות חובה:
+  - title
+  - slug
+  - content (HTML / Lexical JSON)
+  - excerpt
+  - seoTitle / seoDescription
+  - faq (array)
+  - featuredImage (description בלבד)
+  - category / tags
+  - internalLinks (array of {url, anchorText})
+
+- השתמש ב-Tailwind classes אם צריך inline styling.
+- ודא שכל התוכן מותאם ל-mobile.
+
+---
+
+## 7. Quality Checklist (חובה לבדוק לפני סיום)
+
+- [ ] עומק מקצועי (לא תוכן שטחי)
+- [ ] לפחות 4–6 טבלאות / frameworks
+- [ ] Internal links טבעיים
+- [ ] Non-branded ב-70%+ מהתוכן
+- [ ] Citation-Worthy (נתונים + דוגמאות)
+- [ ] קריאות גבוהה (רשימות, כותרות ברורות)
+- [ ] מותאם ל-LLM (מבנה לוגי, שפה ברורה)
+
+---
+
+**הנחיה קבועה לכל Agent:**
+תמיד תעדוף **ערך מקסימלי** למנהל טכנולוגי עסוק. המטרה היא להיות **המקור המוביל** בעברית בנושא אימון והתפתחות של מנהלים טכנולוגיים.
+
+---
+
+סיום AGENTS.md
