@@ -5,12 +5,17 @@ import { postgresAdapter } from "@payloadcms/db-postgres";
 import { buildConfig } from "payload";
 
 import {
+  AuthorityGaps,
   AgentRuns,
   CaseStudies,
   ClusterPages,
   ContentJobs,
+  Competitors,
   competitorContractsCollection,
+  Entities,
+  EntityRelationships,
   EmailSubscribers,
+  InsightExtractions,
   FAQs,
   Frameworks,
   GlossaryTerms,
@@ -19,6 +24,7 @@ import {
   LeadMagnets,
   Media,
   PillarPages,
+  QueryAuthorityScores,
   ResearchSources,
   queryAuthorityScorecardsCollection,
   Users,
@@ -38,6 +44,12 @@ export default buildConfig({
   collections: [
     Users,
     Media,
+    Entities,
+    EntityRelationships,
+    AuthorityGaps,
+    Competitors,
+    QueryAuthorityScores,
+    InsightExtractions,
     EntityPages,
     PillarPages,
     ClusterPages,

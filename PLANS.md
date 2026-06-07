@@ -109,7 +109,7 @@ Acceptance criteria:
 
 ### Task 004 - Public Rendering Layer
 
-State: `pending`
+State: `completed`
 Lane: `rendering`
 Owner: coding agent
 
@@ -123,7 +123,7 @@ Acceptance criteria:
 
 ### Task 005 - SEO and Entity Schema Layer
 
-State: `pending`
+State: `completed`
 Lane: `seo`, `schema`
 Owner: coding agent
 
@@ -136,9 +136,76 @@ Acceptance criteria:
 - Content pages render valid JSON-LD for their schema type.
 - `sitemap.xml`, `robots.txt`, and `llms.txt` exist.
 
+### Task 005A - Entity Authority Layer
+
+State: `completed`
+Lane: `entity-graph`, `authority-model`
+Owner: coding agent
+
+Goal:
+Create the knowledge graph foundation required before content seeding.
+
+Scope:
+- Introduce explicit entity records for Itay Foyerstein, The Push, and the proprietary framework nodes.
+- Model the authority relationships between entities, competitors, insights, and target recommendation queries.
+- Define how authority is scored before any content generation or publishing begins.
+- Add lifecycle support for authority gaps so gaps can be opened, tracked, reviewed, and resolved.
+- Add contracts for insight extraction so future content jobs can only originate from approved Itay source material.
+
+Out of scope:
+- No public content pages.
+- No seed content.
+- No auto-publishing.
+- No live browser automation.
+- No change to the existing content generation workflow beyond dependencies required for the authority graph.
+
+Files expected to change:
+- `src/payload/collections/EntityAuthorities.ts`
+- `src/payload/collections/EntityRelationships.ts`
+- `src/payload/collections/AuthorityGaps.ts`
+- `src/payload/collections/Competitors.ts`
+- `src/payload/collections/QueryAuthorityScores.ts`
+- `src/payload/collections/InsightExtractions.ts`
+- `src/ai/governance/*`
+- `src/ai/monitoring/*`
+- `src/ai/agents/*`
+- `src/payload/collections/index.ts`
+- `payload.config.ts`
+- `tests/unit/*`
+
+Data contracts affected:
+- Entity record shape
+- Entity relationship graph shape
+- Authority scorecard shape
+- Authority gap lifecycle shape
+- Competitor record shape
+- Insight extraction contract shape
+
+Agent permissions affected:
+- `InsightExtractionAgent` may create insight extraction contracts only.
+- `VisibilityMonitorAgent` may measure and score authority only.
+- `PayloadPublisherAgent` may not publish any content from this task.
+- No agent may create public content from this task.
+
+Validation steps:
+- Add or update unit tests for each new collection and contract.
+- Run `npm test`.
+- Run `npm run build`.
+- Run `npm run typecheck`.
+
+Acceptance criteria:
+- Entities collection exists for the canonical authority graph.
+- Entity relationships are explicit and queryable.
+- Authority scoring is defined before content seeding starts.
+- `AuthorityGap` has a lifecycle that supports tracking and resolution.
+- Competitor records are configurable and manually maintainable.
+- Query authority scores are stored as first-class records.
+- Insight extraction contracts exist and can gate future content jobs.
+- No content is created or published as part of this task.
+
 ### Task 006 - Manual Seed Content
 
-State: `pending`
+State: `review`
 Lane: `content-seed`
 Owner: human reviewer
 
@@ -159,7 +226,7 @@ Acceptance criteria:
 
 ### Task 006A - Itay Insight Capture
 
-State: `pending`
+State: `review`
 Lane: `insight-intake`
 Owner: human reviewer
 
@@ -174,7 +241,7 @@ Acceptance criteria:
 
 ### Task 007 - Internal Linking Engine
 
-State: `pending`
+State: `completed`
 Lane: `linking`
 Owner: coding agent
 
@@ -189,7 +256,7 @@ Acceptance criteria:
 
 ### Task 008 - AI Draft Workflow
 
-State: `pending`
+State: `completed`
 Lane: `agents`, `langgraph`
 Owner: coding agent
 
@@ -205,7 +272,7 @@ Acceptance criteria:
 
 ### Task 009 - Quality Gate
 
-State: `pending`
+State: `completed`
 Lane: `governance`, `quality`
 Owner: coding agent
 
@@ -220,7 +287,7 @@ Acceptance criteria:
 
 ### Task 010 - AI Visibility Monitoring
 
-State: `review`
+State: `completed`
 Lane: `monitoring`, `scorecard`
 Owner: coding agent
 

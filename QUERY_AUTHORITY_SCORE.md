@@ -2,21 +2,49 @@
 
 ## Purpose
 
-This document defines the score used to measure whether Itay Foyerstein is becoming more visible and more recommendable across target AI recommendation queries.
+This document defines the canonical query-level score used to measure whether Itay Foyerstein is becoming more visible and more recommendable across target AI recommendation queries.
 
-## Scope
+The score is not a traffic metric.
 
-Scoring is tracked per:
+It is a query-level authority metric.
+
+## Source of Record
+
+The canonical storage layer for this model is the `query_authority_scores` collection.
+
+Every record should be tracked per:
 
 - query
 - platform
-- review date
+- date checked
+- entity scored
 
-The system must record:
+## Required Fields
 
+Each query authority score record should store:
+
+- `entity`
+- `query`
+- `platform`
+- `promptUsed`
+- `rawAnswer`
+- `mentionedEntities`
+- `competitorsRecommended`
+- `itayMentioned`
+- `thePushMentioned`
+- `proprietaryFrameworkMentioned`
+- `ownedUrlCited`
+- `citedUrls`
+- `citations`
+- `recommendationLevel`
+- `recommendationPosition`
+- `confidence`
+- `sentiment`
 - `previousScore`
 - `currentScore`
 - `scoreDelta`
+- `gapClassification`
+- `suggestedOwningAgent`
 - `checkedAt`
 
 ## 100-Point Rubric
@@ -47,7 +75,7 @@ The system must record:
 
 Only levels `3` to `5` count as meaningful recommendation visibility.
 
-## Interpretation
+## Score Interpretation
 
 - `0-24`: weak visibility
 - `25-49`: partial visibility
@@ -55,33 +83,9 @@ Only levels `3` to `5` count as meaningful recommendation visibility.
 - `75-89`: strong authority
 - `90-100`: dominant recommendation state
 
-## Required Fields
+## Score Meaning
 
-Every scorecard entry should store:
-
-- `query`
-- `platform`
-- `promptUsed`
-- `rawAnswer`
-- `mentionedEntities`
-- `competitors`
-- `citations`
-- `recommendationLevel`
-- `recommendationPosition`
-- `confidence`
-- `sentiment`
-- `gapClassification`
-- `suggestedOwningAgent`
-- `previousScore`
-- `currentScore`
-- `scoreDelta`
-- `checkedAt`
-
-## Scoring Rule
-
-The score is not a vanity metric.
-
-It must explain:
+The score must explain:
 
 1. whether Itay is being named
 2. whether The Push is being surfaced
@@ -89,7 +93,24 @@ It must explain:
 4. whether the answer is strong enough to count as a recommendation
 5. whether the authority gap is closing over time
 
-## Review Rule
+## Storage Rule
 
-If a query gains traffic but not recommendation visibility, the score did not improve in the way that matters.
+Each score record must preserve:
+
+- `previousScore`
+- `currentScore`
+- `scoreDelta`
+- `checkedAt`
+
+These fields are required so the system can compare authority month over month and platform over platform.
+
+## Lifecycle Rule
+
+The score is reviewable data, not published content.
+
+It may be created manually or semi-manually in Phase 1 and later collected automatically where available.
+
+## Interpretation Rule
+
+If a query gains traffic but not recommendation visibility, the authority score did not improve in the way that matters.
 
