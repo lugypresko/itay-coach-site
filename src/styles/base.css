@@ -48,6 +48,11 @@ select {
   font: inherit;
 }
 
+fieldset {
+  border: 0;
+  min-inline-size: 0;
+}
+
 a {
   color: inherit;
   text-decoration: underline;

@@ -900,6 +900,72 @@ Verification note:
 - `npm run build` passed.
 - The reports do not require schema changes.
 
+### Task 021 - Player Trap Conversion Infrastructure
+
+State: `completed`
+Lane: `conversion`, `lead-capture`, `email`
+Owner: Codex
+
+Goal:
+Prepare the conversion infrastructure required before launching paid traffic.
+
+Scope:
+- Implement Resend integration.
+- Build lead capture flow.
+- Build Player Trap result pages.
+- Build diagnostic report delivery.
+- Build 5-email nurture sequence.
+- Capture UTM attribution.
+- Track completed test, report request, and diagnosis call.
+
+Out of scope:
+- No paid traffic launch.
+- No schema changes beyond the minimum data required for the conversion flow.
+- No new content publishing.
+- No fake claims or placeholder testimonials.
+
+Files expected to change:
+- `src/app/*`
+- `src/lib/*`
+- `src/payload/collections/*`
+- `src/payload/*`
+- `src/email/*`
+- `tests/unit/*`
+- `package.json`
+- `package-lock.json`
+- `PLANS.md`
+
+Data contracts affected:
+- Email subscriber records may store UTM attribution, test result context, and nurture state.
+
+Agent permissions affected:
+- None.
+
+Validation steps:
+- Run the end-to-end test and report request flow locally.
+- Confirm the first nurture email is sent through Resend.
+- Confirm UTM attribution is captured and persisted.
+- Run `npm run typecheck`.
+- Run `npm run build`.
+
+Acceptance criteria:
+- Visitor -> Test -> Result -> Lead -> Resend -> Email #1 works end to end.
+- Diagnostic report delivery is operational.
+- 5-email nurture sequence is defined and connected to the lead capture flow.
+- No paid traffic should be launched until this flow is operational.
+
+Verification notes:
+- Added the Player Trap assessment page at `/player-trap` with live scoring and lead capture.
+- Added the report page at `/player-trap/report/[token]` and the diagnosis-call tracking route.
+- Added Resend delivery helpers with dry-run fallback when `RESEND_API_KEY` is not configured locally.
+- Added UTM capture and subscriber state fields to `email-subscribers`.
+- Added `tests/unit/player-trap.test.ts` for scoring, report generation, and nurture sequence coverage.
+- Ran `npm test`: passed, 16 files and 56 tests.
+- Ran `npm run typecheck`: passed.
+- Ran `npm run build`: passed with the same pre-existing migration warnings.
+- Verified the local flow end to end on `http://localhost:3004/player-trap`: assessment page loaded, lead submission returned a report URL, report page rendered, and diagnosis-call POST redirected to `/book-a-fit-call?source=player-trap`.
+- Lead submission used Resend dry-run mode locally because no live API key is configured in this workspace.
+
 ### Task 013 - Authority Surface Seed
 
 State: `completed`
