@@ -966,6 +966,66 @@ Verification notes:
 - Verified the local flow end to end on `http://localhost:3004/player-trap`: assessment page loaded, lead submission returned a report URL, report page rendered, and diagnosis-call POST redirected to `/book-a-fit-call?source=player-trap`.
 - Lead submission used Resend dry-run mode locally because no live API key is configured in this workspace.
 
+### Task 022 - Production Resend Verification
+
+State: `completed`
+Lane: `production-verification`, `email`, `conversion`
+Owner: Codex
+
+Goal:
+Verify the Player Trap lead capture flow works in production with real Resend delivery before paid traffic begins.
+
+Scope:
+- Configure required Vercel env vars: `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, `RESEND_REPLY_TO`.
+- Verify the sender domain in Resend.
+- Submit a real test lead on production at `https://itayfoyerstein.com/player-trap`.
+- Confirm the lead is saved in Payload, UTM params are captured, the report token is generated, the report URL works, Email #1 is delivered through Resend, and the diagnosis-call click redirects correctly.
+
+Out of scope:
+- No Facebook campaign launch.
+- No new email copy.
+- No new automations.
+- No schema changes unless production verification exposes a defect.
+
+Files expected to change:
+- `PLANS.md`
+- `src/*` only if production verification exposes a defect.
+
+Data contracts affected:
+- None unless production verification exposes a defect.
+
+Agent permissions affected:
+- None.
+
+Validation steps:
+- Submit a production Player Trap lead.
+- Confirm a Resend delivery event exists.
+- Confirm the email arrives in inbox.
+- Confirm the Payload subscriber record exists.
+- Confirm the report page works.
+- Confirm the diagnosis-call redirect works.
+- Run `npm run typecheck`.
+- Run `npm run build`.
+
+Acceptance criteria:
+- Production Player Trap funnel works end to end.
+- Resend is no longer in dry-run mode in production.
+- No lead is lost if email delivery fails.
+- `PLANS.md` includes verification notes.
+
+Verification notes:
+- Added production-scoped Vercel env vars for `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, and `RESEND_REPLY_TO`.
+- Verified the sender domain `itayfoyerstein.com` in Resend is sending-enabled and DKIM/SPF are verified; inbound MX remains pending and does not block sending.
+- Deployed a fresh production build to `https://itayfoyerstein.com`.
+- Submitted a live production Player Trap lead to `https://itayfoyerstein.com/api/player-trap/lead`.
+- Confirmed the production subscriber record exists via the public Payload API and captures UTM fields.
+- Confirmed the production report URL renders successfully.
+- Confirmed the diagnosis-call POST redirects to `/book-a-fit-call?source=player-trap`.
+- Confirmed Resend delivered the email with `last_event: delivered`.
+- Confirmed the email arrived in the connected Gmail inbox for `itayf32@gmail.com`.
+- Ran `npm run typecheck`: passed.
+- Ran `npm run build`: passed with the same pre-existing migration warnings.
+
 ### Task 013 - Authority Surface Seed
 
 State: `completed`

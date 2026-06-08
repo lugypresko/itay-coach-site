@@ -13,3 +13,6 @@ payload-types.ts
 .vscode/
 output/
 skills-lock.json
+
+.vercel
+.env.txt
