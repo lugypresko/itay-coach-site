@@ -1,0 +1,119 @@
+/* ==========================================================================
+   LAYOUT - Mobile-first authority pages
+   ========================================================================== */
+
+.site-frame {
+  min-height: 100vh;
+  padding: var(--space-4);
+}
+
+.home-shell,
+.content-shell {
+  width: 100%;
+  max-width: var(--width-page);
+  margin-left: auto;
+  margin-right: auto;
+  padding-top: var(--space-2);
+  padding-bottom: var(--space-12);
+}
+
+.home-grid,
+.content-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-6);
+  margin-top: var(--space-8);
+}
+
+.home-panel,
+.content-panel,
+.content-panel-wide {
+  grid-column: 1 / -1;
+}
+
+.home-hero,
+.content-hero {
+  max-width: var(--width-content);
+  padding-top: var(--space-8);
+  padding-bottom: var(--space-8);
+}
+
+.home-panel,
+.content-panel,
+.content-panel-wide {
+  padding-top: var(--space-6);
+  border-top: var(--border-width) solid var(--color-border-light);
+}
+
+.content-panel-wide p,
+.content-panel-wide .content-list,
+.content-panel-wide blockquote {
+  max-width: var(--width-prose);
+}
+
+.content-hero-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+
+.content-status {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+.content-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.faq-stack,
+.cta-stack,
+.link-list,
+.directory-grid {
+  display: grid;
+  gap: var(--space-3);
+}
+
+@media (min-width: 640px) {
+  .site-frame {
+    padding: var(--space-6);
+  }
+
+  .home-grid,
+  .content-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--space-8);
+  }
+
+  .content-panel-wide {
+    grid-column: 1 / -1;
+  }
+
+  .directory-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 960px) {
+  .home-grid,
+  .content-grid {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+  }
+
+  .home-panel,
+  .content-panel {
+    grid-column: span 6;
+  }
+
+  .content-panel-wide {
+    grid-column: span 8;
+  }
+
+  .directory-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
