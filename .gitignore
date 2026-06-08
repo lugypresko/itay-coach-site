@@ -7,3 +7,9 @@ coverage
 .env.*.local
 payload-types.ts
 *.tsbuildinfo
+
+/generated/prisma
+.agents/
+.vscode/
+output/
+skills-lock.json
