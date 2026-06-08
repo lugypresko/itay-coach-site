@@ -842,6 +842,56 @@ Verification notes:
 - Generated `TASK_018_VERIFICATION_REPORT.md`.
 
 
+### Task 019 - Authority Measurement Baseline
+
+State: `in_progress`
+Lane: `monitoring`, `reporting`
+Owner: Codex
+
+Goal:
+Establish the first measurable authority baseline before expanding content volume.
+
+Scope:
+- Define the top 20 recommendation queries.
+- Create a baseline scorecard format for manual measurement across ChatGPT, Perplexity, Claude, and Google AI Overviews.
+- Generate `AUTHORITY_BASELINE_REPORT.md`.
+- Generate `AUTHORITY_GAPS_REPORT.md`.
+- Document the manual measurement workflow.
+
+Out of scope:
+- No schema changes.
+- No new collections.
+- No auto-publishing.
+- No content generation.
+- No new agents.
+
+Files expected to change:
+- `src/ai/monitoring/*`
+- `src/seed/*`
+- `docs/*`
+- `tests/unit/*`
+- `package.json`
+- `PLANS.md`
+
+Data contracts affected:
+- None.
+
+Agent permissions affected:
+- None.
+
+Validation steps:
+- Generate the baseline report.
+- Generate the gap report.
+- Confirm the top 20 queries are tracked.
+- Run `npm run typecheck`.
+- Run `npm run build`.
+
+Acceptance criteria:
+- First authority baseline established.
+- Authority gaps identified.
+- Future growth measurable.
+- No schema changes required.
+
 ### Task 013 - Authority Surface Seed
 
 State: `completed`
