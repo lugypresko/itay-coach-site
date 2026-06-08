@@ -1017,6 +1017,51 @@ Verification notes:
 - Verified `http://localhost:3001/` with Playwright snapshot and screenshots at desktop and mobile widths.
 - Mobile check confirmed no horizontal overflow, 17px body text, and no loaded transition declarations.
 
+### Task RC-01 - Authority Engine Alpha Snapshot
+
+State: `in_progress`
+Lane: `release`, `documentation`, `verification`
+Owner: Codex
+
+Goal:
+Capture and preserve the current working Authority Engine state before any growth, SEO, or integration work begins.
+
+Scope:
+- Audit the working tree and write `WORKSPACE_DIFF_REPORT.md`.
+- Group the current changes by completed task: Task 012, Task 013, Task 014, Task 017, and Task 018.
+- Verify `npm run typecheck`, `npm run build`, and `npm test`.
+- Write `AUTHORITY_ENGINE_ALPHA_RELEASE.md`.
+- Commit the release snapshot in logical groups and push all commits.
+- Tag the release `authority-engine-alpha`.
+
+Out of scope:
+- No new product features.
+- No schema changes.
+- No new collections.
+- No auto-publishing.
+
+Files expected to change:
+- `PLANS.md`
+- `WORKSPACE_DIFF_REPORT.md`
+- `AUTHORITY_ENGINE_ALPHA_RELEASE.md`
+- `docs/*`
+- `src/*`
+- `tests/*`
+
+Validation steps:
+- Run `npm run typecheck`.
+- Run `npm run build`.
+- Run `npm test`.
+- Confirm the working tree is clean after the release commits.
+- Confirm the remote branch is updated.
+- Confirm the `authority-engine-alpha` tag exists.
+
+Acceptance criteria:
+- No critical work exists only on the local machine.
+- Alpha snapshot is reproducible.
+- GitHub is the source of truth.
+- Working tree is clean.
+
 ## Commit Discipline
 
 Prefer small commits per task. Do not mix documentation, scaffolding, product features, and generated content in the same commit unless the task explicitly requires it.
