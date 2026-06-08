@@ -8,6 +8,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const staticPaths = [
     "/",
     "/book-a-fit-call",
+    "/ai-first-leadership",
     "/invisible-executor-assessment",
     "/tech-leadership-visibility-scorecard",
   ];
@@ -22,4 +23,3 @@ export default function sitemap(): MetadataRoute.Sitemap {
     lastModified: new Date(),
   }));
 }
-

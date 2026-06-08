@@ -15,6 +15,15 @@ Plans should be small enough for one focused engineering pass and must include:
 - Validation steps
 - Acceptance criteria
 
+For every future implementation task:
+
+- The verifier or validation method must be defined before implementation starts.
+- A task may not move to `completed` unless its DOD is machine-verifiable or has an explicit human-verification step.
+- Seed scripts must be idempotent by default.
+- Verifier scripts must not mutate production data unless explicitly stated.
+- Avoid full app bootstrapping for verification unless the task specifically requires runtime validation through Payload.
+- Clean workspace root issues, lockfiles, and lint config before release verification.
+
 ## Autonomy Protocol
 
 Codex may proceed without asking for clarification when:
@@ -445,6 +454,510 @@ Acceptance criteria:
 - VisibilityMonitor outputs gap classifications and suggested owning agents.
 - Payload-ready scorecard and competitor blueprints exist for manual or semi-manual logging.
 - Monitoring records are append-only and reviewable.
+
+### Task 011 - Authority Graph Model Documentation
+
+State: `completed`
+Lane: `docs`, `authority-model`
+Owner: Codex
+
+Goal:
+Inspect the Payload schema and document the authority graph model before adding more entities.
+
+Scope:
+- Export and analyze the Entities, Entity Relationships, Frameworks, Pillar Pages, Cluster Pages, Query Authority Scores, and Query Authority Scorecards collections.
+- Document field names, field types, required fields, relationship fields, and validation rules.
+- Infer the intended graph structure and the minimum seed dataset required for Authority Engine v1.
+- Produce `AUTHORITY_GRAPH_MODEL.md`.
+
+Out of scope:
+- No new content creation.
+- No seed publishing.
+- No schema changes.
+- No agent workflow changes.
+
+Files expected to change:
+- `AUTHORITY_GRAPH_MODEL.md`
+- `PLANS.md`
+
+Data contracts affected:
+- None.
+
+Agent permissions affected:
+- None.
+
+Validation steps:
+- Review the schema source files.
+- Confirm the resulting document answers the graph structure questions.
+
+Acceptance criteria:
+- `AUTHORITY_GRAPH_MODEL.md` exists and reflects the actual collection schema.
+- The document identifies the canonical authority source and the monitoring scorecard source.
+- The minimum seed dataset is clearly enumerated for Authority Engine v1.
+
+### Task 012 - Minimum Authority Graph Seed
+
+State: `completed`
+Lane: `content-seed`, `authority-model`
+Owner: Codex
+
+Goal:
+Create the minimum verified Authority Graph seed dataset required for Authority Engine Alpha.
+
+Scope:
+- Seed the nine canonical authority entities.
+- Seed the eight explicit entity relationships.
+- Seed the approved fresh Itay insight record if required by the current schema and gating.
+- Keep the operation idempotent.
+
+Out of scope:
+- No generated content.
+- No public page publishing.
+- No new collections.
+- No data contract changes.
+- No agent permission changes.
+
+Files expected to change:
+- `src/seed/*`
+- `tests/unit/*`
+- `package.json`
+- `package-lock.json`
+- `PLANS.md`
+
+Data contracts affected:
+- None.
+
+Agent permissions affected:
+- None.
+
+Validation steps:
+- Run the seed script locally.
+- Confirm records persist in Supabase.
+- Confirm relationships resolve in Payload Admin.
+- Run `npm run typecheck`.
+- Run `npm run build`.
+
+Acceptance criteria:
+- All nine entities exist with `status = active`.
+- All eight relationships exist with `status = approved`.
+- The seed operation is idempotent.
+- Payload Admin can display the seeded entities and relationships.
+- `PLANS.md` records the verification notes.
+
+Verification note:
+- Seed script ran successfully against Supabase.
+- Verified record counts after repeat execution: 9 entities, 8 relationships, 1 approved fresh Itay insight.
+
+### Task 012A - Authority Graph Verification and Tooling Cleanup
+
+State: `ready`
+Lane: `content-seed`, `developer-tooling`
+Owner: Codex
+
+Goal:
+Stabilize the minimum authority graph verification path and clean up repo tooling so release verification is reproducible.
+
+Scope:
+- Confirm the `verify:authority-graph` script exists and produces a verification report.
+- Optimize the verifier if possible without changing contracts or seed behavior.
+- Keep the minimum authority graph seed behavior unchanged.
+- Clean ESLint flat config warnings that are safe to fix.
+- Ensure the workspace uses only the repo-local lockfile and no stray parent lockfile.
+- Verify `lint`, `typecheck`, `build`, and `verify:authority-graph` pass.
+
+Out of scope:
+- No new content pages.
+- No schema changes.
+- No contract changes.
+- No new agents.
+- No monitoring records.
+
+Files expected to change:
+- `package.json`
+- `package-lock.json`
+- `eslint.config.mjs`
+- `src/seed/verify-minimum-authority-graph.ts`
+- `PLANS.md`
+
+Data contracts affected:
+- None.
+
+Agent permissions affected:
+- None.
+
+Validation steps:
+- Run `npm run lint`.
+- Run `npm run typecheck`.
+- Run `npm run build`.
+- Run `npm run verify:authority-graph`.
+
+Acceptance criteria:
+- `verify:authority-graph` exists and emits a verification report.
+- The verifier checks counts, statuses, traversal, orphans, and idempotency.
+- ESLint flat config warnings that are safe to fix are resolved.
+- No stray parent `package-lock.json` remains in the workspace root path.
+- `lint`, `typecheck`, `build`, and `verify:authority-graph` all pass.
+
+### Task 015 - Authority Evidence Layer
+
+State: `in_progress`
+Lane: `public-rendering`, `schema`
+Owner: Codex
+
+Goal:
+Increase trust, provenance, and recommendation confidence by exposing graph-backed authority signals on every public authority asset.
+
+Scope:
+- Add reusable authority trust components for evidence, review, entity context, recommendation intent, and related authority.
+- Expose evidence metadata on public authority content.
+- Reuse existing authority graph relationships where possible.
+- Keep the public authority rendering path shared rather than template-specific.
+
+Out of scope:
+- No new agents.
+- No content generation.
+- No monitoring expansion.
+- No workflow changes.
+- No collection redesign beyond the minimal fields required to surface evidence URLs.
+
+Files expected to change:
+- `src/payload/collections/content.ts`
+- `src/lib/public-content.ts`
+- `src/lib/public-schema.ts`
+- `src/components/public-content-page.tsx`
+- `src/styles/components.css`
+- `src/seed/*`
+- `docs/seed-content/*`
+- `tests/unit/*`
+- `PLANS.md`
+
+Data contracts affected:
+- Authority content evidence URL shape
+- Public authority trust block shape
+- Public content page model shape
+
+Agent permissions affected:
+- None.
+
+Validation steps:
+- Run unit tests for public content normalization and trust block rendering.
+- Run `npm run typecheck`.
+- Run `npm run build`.
+- Verify public authority pages render the new trust blocks.
+
+Acceptance criteria:
+- Framework pages, pillar pages, and methodology pages render evidence metadata.
+- Framework pages, pillar pages, and methodology pages render review metadata.
+- Framework pages, pillar pages, and methodology pages render entity context and recommendation intent.
+- Public authority pages render related authority signals without editing each page template individually.
+- Build passes.
+- Typecheck passes.
+
+Verification notes:
+- Task 015 was created from the dedicated authority evidence layer brief in `docs/Create Task 015 - Authority Evidenc.md`.
+- Task 012 was completed and verified before Task 015 began.
+
+### Task 016 - AI-First Leadership Landing Page
+
+State: `completed`
+Lane: `public-rendering`, `site-pages`
+Owner: Codex
+
+Goal:
+Create `/ai-first-leadership` as a public landing page in the existing Next.js 15 app using the uploaded static HTML as a reference only.
+
+Scope:
+- Rebuild the landing page structure in React/Next.js.
+- Reuse the existing authority design system and tokens.
+- Adapt the conversion flow and CTA hierarchy to the current authority architecture.
+- Link into existing authority pages and lead-magnet routes.
+- Keep the page clean, fast, mobile-first, and free of animations or visual effects.
+
+Out of scope:
+- No raw HTML import.
+- No new schema.
+- No new collections.
+- No placeholder testimonials.
+- No fake claims.
+- No static demo form behavior.
+- No design-system bypass.
+
+Files expected to change:
+- `src/app/(site)/ai-first-leadership/page.tsx`
+- `src/app/sitemap.ts`
+- `PLANS.md`
+
+Data contracts affected:
+- None.
+
+Agent permissions affected:
+- None.
+
+Validation steps:
+- Open `/ai-first-leadership` in the local app.
+- Confirm the primary CTA points to the scorecard or assessment route.
+- Confirm the secondary CTA points to the Invisible Executor Framework route.
+- Confirm no placeholder content remains.
+- Run `npm run typecheck`.
+- Run `npm run build`.
+
+Acceptance criteria:
+- `/ai-first-leadership` renders successfully.
+- The page uses the existing authority design system.
+- The page contains no unsupported claims or placeholder testimonials.
+- The page links into existing authority pages.
+- Typecheck and build pass.
+
+Verification note:
+- `/ai-first-leadership` renders in the local app.
+- Primary CTA links to `/tech-leadership-visibility-scorecard`.
+- Secondary CTA links to `/frameworks/invisible-executor`.
+- `npm run typecheck` passed.
+- `npm run build` passed.
+
+### Task 017 - Authority Asset Production Sprint
+
+State: `completed`
+Lane: `content-seed`, `public-rendering`
+Owner: Codex
+
+Goal:
+Create the first 10 authority assets that expand the graph-to-surface layer and increase AI recommendation visibility.
+
+Scope:
+- Create draft and review authority assets only.
+- Use existing authority graph, approved insight, The Push methodology, Invisible Executor framework, tech leadership coaching pillar, existing design system, and existing quality gate.
+- Add five cluster pages, one FAQ set, three glossary terms, and one case study draft.
+- Keep all assets review-safe and source-backed.
+
+Out of scope:
+- No auto-publishing.
+- No fake testimonials.
+- No unsupported client claims.
+- No new schema.
+- No new collections.
+- No content generation outside source-backed drafts.
+
+Files expected to change:
+- `src/seed/*`
+- `docs/seed-content/*`
+- `tests/unit/*`
+- `package.json`
+- `PLANS.md`
+
+Data contracts affected:
+- Public authority content drafts and review-safe render contracts.
+
+Agent permissions affected:
+- None.
+
+Validation steps:
+- Run the sprint seed script.
+- Verify records exist in Payload.
+- Verify public routes render for review-safe pages.
+- Verify internal links resolve.
+- Run `npm run typecheck`.
+- Run `npm run build`.
+
+Acceptance criteria:
+- 10 draft/review authority assets exist.
+- Each asset strengthens The Push, Itay Foyerstein, or Invisible Executor Framework.
+- No published content is created automatically.
+- No unsupported claims are introduced.
+- Build passes.
+- `PLANS.md` updated.
+
+Verification note:
+- `npm run seed:authority-asset-sprint` seeded 10 assets.
+- `npm run verify:authority-asset-sprint` passed.
+- Review-safe routes render in the local app.
+- `npm run typecheck` passed.
+- `npm run build` passed.
+
+### Task 018 - Editorial Expansion Sprint
+
+State: `completed`
+Lane: `content-expansion`, `public-rendering`
+Owner: Codex
+
+Goal:
+Expand the 10 Task 017 authority assets from thin draft/review records into review-ready authority assets.
+
+Scope:
+- Expand each asset using only approved source material.
+- Preserve all existing slugs, entity tags, target recommendation queries, and internal links.
+- Replace "Needs evidence" notes with either approved evidence-backed language or keep explicit evidence gaps.
+- Add stronger short answers, key takeaways, citation snippets, FAQs, and internal links.
+- Keep all content status as review, not published.
+
+Out of scope:
+- No auto-publishing.
+- No fake testimonials.
+- No new client claims.
+- No new entities.
+- No schema changes.
+- No agent workflow changes.
+
+Files expected to change:
+- `src/seed/authority-asset-sprint/*`
+- `docs/seed-content/*`
+- `tests/unit/*`
+- `PLANS.md`
+
+Data contracts affected:
+- None.
+
+Agent permissions affected:
+- None.
+
+Validation steps:
+- Run `npm run verify:authority-asset-sprint` for each asset.
+- Run `npm run typecheck`.
+- Run `npm run build`.
+- Confirm no asset contains unsupported outcome claims.
+- Confirm no placeholder testimonials.
+- Confirm all assets remain draft/review.
+
+Acceptance criteria:
+- All 10 assets are review-ready.
+- Each asset has a useful short answer.
+- Each asset has meaningful key takeaways.
+- Each asset has a citation snippet.
+- Each asset has internal links.
+- Each asset strengthens at least one canonical entity.
+- No unsupported claims are introduced.
+- Build passes.
+
+Verification notes:
+- Expanded all 10 assets with 400-800 word content sections.
+- Replaced all "Needs evidence" placeholders with substantive content or explicit evidence gaps.
+- Expanded FAQ sections from 1-3 to 5-9 questions per asset.
+- All content uses only approved source material (fresh-approved-insight, the-push-methodology, invisible-executor-framework, tech-leadership-coaching-pillar).
+- Ran `npm run verify:authority-asset-sprint`: passed all 10 assets.
+- Ran `npm run typecheck`: passed.
+- Ran `npm run build`: passed with only pre-existing migration warnings.
+- Confirmed no unsupported claims, no fake testimonials, no invented metrics.
+- Case study outcome explicitly marked as "pending evidence source approval".
+- All assets remain review-safe (9 in review, 1 in draft).
+- Generated `TASK_018_VERIFICATION_REPORT.md`.
+
+
+### Task 013 - Authority Surface Seed
+
+State: `completed`
+Lane: `content-seed`, `public-rendering`
+Owner: Codex
+
+Goal:
+Create the first manually-authored authority assets that sit on top of the canonical authority graph.
+
+Scope:
+- Create three draft authority surface assets: one framework, one methodology, and one pillar page.
+- Seed only information already established in the canonical entities, approved insight, and existing authority graph.
+- Keep the authority graph contracts unchanged.
+- Verify the assets render through Payload and the site build path.
+
+Out of scope:
+- No AI-generated bulk content.
+- No automatic publishing.
+- No monitoring records.
+- No new entities.
+- No schema changes.
+- No new collections.
+
+Files expected to change:
+- `src/seed/*`
+- `docs/seed-content/*`
+- `tests/unit/*`
+- `package.json`
+- `package-lock.json`
+- `PLANS.md`
+
+Data contracts affected:
+- None.
+
+Agent permissions affected:
+- None.
+
+Validation steps:
+- Run the surface seed script.
+- Confirm records exist in Payload.
+- Confirm the build passes.
+- Confirm entity tags and internal links resolve against the existing graph.
+- Confirm the surface verifier completes end-to-end and writes a verification report.
+
+Acceptance criteria:
+- One framework page exists.
+- One methodology page exists.
+- One pillar page exists.
+- All assets are draft or review status.
+- Assets connect to existing graph entities.
+- Build passes.
+
+Verification notes:
+- Surface seed structure is implemented and typechecked.
+- Fixed the Task 013 seed and verifier CLI entrypoints so successful Payload runs exit cleanly instead of hanging on open runtime handles.
+- Ran `npm run seed:authority-surface`: seeded 3 authority surface assets.
+- Ran `npm run verify:authority-surface`: passed and wrote `TASK_013_VERIFICATION_REPORT.md`.
+- Verification report confirms 9 entities, 8 relationships, 1 insight, and all three surface records pass existence, title, status, public route, entity tag, and internal link checks.
+- Ran `npm run typecheck`: passed.
+- Ran `npm test`: 12 files passed, 42 tests passed.
+- Ran `npm run build`: passed with four existing migration warnings in `src/migrations/20260607_205054.ts`.
+- The surface assets are intentionally structure-first and thin; content depth can be expanded after the graph-to-rendering path is proven.
+
+### Task 014 - Minimal Authority Design System
+
+State: `review`
+Lane: `design-system`, `public-rendering`
+Owner: Codex
+
+Goal:
+Create a minimal authority-focused design system that supports long-form public content, AI discovery, and high readability over visual impressiveness.
+
+Scope:
+- Refine global site CSS tokens, base styles, typography, layout, and components.
+- Keep the system clean, fast, mobile-first, and readable.
+- Remove decorative motion, visual effects, and negative tracking from public styles.
+- Add a lightweight style contract test for the authority design constraints.
+
+Out of scope:
+- No content generation.
+- No schema changes.
+- No collection changes.
+- No animation or visual-effect libraries.
+- No Payload admin redesign.
+
+Files expected to change:
+- `src/styles/*`
+- `tests/unit/*`
+- `PLANS.md`
+
+Data contracts affected:
+- None.
+
+Agent permissions affected:
+- None.
+
+Validation steps:
+- Run the design-system style contract test.
+- Run `npm run lint`.
+- Run `npm run typecheck`.
+
+Acceptance criteria:
+- Public styles are mobile-first and optimized for long-form authority content.
+- Typography uses strong readable defaults with non-negative letter spacing.
+- Public CSS contains no animations, transitions, shadows, filters, gradients, transforms, backdrop effects, or blend modes.
+- Layout supports extractable content sections and LLM-readable long-form pages.
+
+Verification notes:
+- Added `tests/unit/authority-design-system.test.ts` to enforce no animation/effect declarations and long-form readability tokens.
+- Ran focused style contract test: passed.
+- Ran `npm test`: 12 files passed, 42 tests passed.
+- Ran `npm run lint`: passed with four existing warnings in `src/migrations/20260607_205054.ts`.
+- Ran `npm run typecheck`: passed.
+- Ran `npm run build`: passed with the same existing migration warnings.
+- Verified `http://localhost:3001/` with Playwright snapshot and screenshots at desktop and mobile widths.
+- Mobile check confirmed no horizontal overflow, 17px body text, and no loaded transition declarations.
 
 ## Commit Discipline
 
