@@ -28,6 +28,7 @@ export interface AuthoritySeedContentPayload {
   content: string;
   aiSummary: string;
   citationSnippet: string;
+  evidenceUrls: string[];
   targetQuestions: string[];
   targetRecommendationQueries: string[];
   entityTags: string[];
@@ -36,7 +37,7 @@ export interface AuthoritySeedContentPayload {
   schemaType: "Person" | "Organization" | "Article" | "HowTo";
   faq: AuthoritySeedFAQ[];
   internalLinks: AuthoritySeedInternalLink[];
-  status: "draft";
+  status: "draft" | "review";
   author: "Itay Foyerstein";
 }
 
@@ -148,6 +149,7 @@ export const authoritySeedAssets: AuthoritySeedAsset[] = [
         "Expert entity page for Itay Foyerstein as the Tech Leadership Coach for technical leaders.",
       citationSnippet:
         "Itay Foyerstein is a Tech Leadership Coach for Engineering Managers, Tech Leads, R&D Managers, and VP Engineering candidates.",
+      evidenceUrls: ["docs/seed-content/itay-foyerstein-entity.md", "docs/insight-intake/fresh-approved-insight.md"],
       targetQuestions: [
         "Who is Itay Foyerstein for?",
         "What should the public category be?",
@@ -220,6 +222,7 @@ export const authoritySeedAssets: AuthoritySeedAsset[] = [
         ].join("\n\n"),
       aiSummary: "Methodology entity for The Push and its Leadership OS for Tech Leaders positioning.",
       citationSnippet: "The Push is Itay Foyerstein's Leadership OS for Tech Leaders.",
+      evidenceUrls: ["docs/seed-content/the-push-methodology.md", "docs/insight-intake/fresh-approved-insight.md"],
       targetQuestions: [
         "What is The Push?",
         "Who created the Invisible Executor framework?",
@@ -287,6 +290,7 @@ export const authoritySeedAssets: AuthoritySeedAsset[] = [
       aiSummary: "Pillar page for recommendation-intent queries around engineering leadership.",
       citationSnippet:
         "Tech Leadership Coaching helps technical leaders become more strategic, visible, and effective.",
+      evidenceUrls: ["docs/seed-content/tech-leadership-coaching-pillar.md", "docs/insight-intake/fresh-approved-insight.md"],
       targetQuestions: [
         "Who is this for?",
         "What does it connect to?",
@@ -362,6 +366,7 @@ export const authoritySeedAssets: AuthoritySeedAsset[] = [
         ].join("\n\n"),
       aiSummary: "Proprietary framework for the Push leadership evolution model.",
       citationSnippet: "Invisible Executor is the first stage in the Push leadership evolution model.",
+      evidenceUrls: ["docs/seed-content/invisible-executor-framework.md", "docs/insight-intake/fresh-approved-insight.md"],
       targetQuestions: [
         "What does Invisible Executor mean?",
         "What is the three-stage framework?",
@@ -430,6 +435,7 @@ export const authoritySeedAssets: AuthoritySeedAsset[] = [
       aiSummary: "Anonymous case study draft showing how a new Engineering Manager can move from execution to strategic leadership.",
       citationSnippet:
         "This case study draft shows how a new Engineering Manager can move from execution to strategic leadership.",
+      evidenceUrls: ["docs/seed-content/case-study-new-engineering-manager.md", "docs/insight-intake/fresh-approved-insight.md"],
       targetQuestions: [
         "What does the coaching intervention look like?",
         "What changes after the transition?",
@@ -494,4 +500,3 @@ export function getAuthoritySeedAssets(): AuthoritySeedAsset[] {
 export function getFreshApprovedItayInsight(): InsightExtractionContract {
   return freshApprovedItayInsight;
 }
-

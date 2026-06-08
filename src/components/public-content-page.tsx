@@ -1,5 +1,12 @@
 import Link from "next/link";
 
+import {
+  AuthorityEvidenceBlock,
+  AuthorityEntityContextBlock,
+  AuthorityRecommendationIntentBlock,
+  AuthorityRelatedAuthorityBlock,
+  AuthorityReviewBlock,
+} from "@/components/authority-trust-blocks";
 import type { PublicContentPageModel } from "@/lib/public-content";
 import { buildPageJsonLd } from "@/lib/public-schema";
 
@@ -42,6 +49,17 @@ export function PublicContentPage({ page }: PublicContentPageProps) {
           </Link>
         </div>
       </header>
+
+      <section className="content-panel content-panel-wide authority-trust-panel">
+        <h2>Authority signals</h2>
+        <div className="authority-trust-grid">
+          <AuthorityEvidenceBlock trustSignals={page.trustSignals} />
+          <AuthorityReviewBlock trustSignals={page.trustSignals} />
+          <AuthorityEntityContextBlock trustSignals={page.trustSignals} />
+          <AuthorityRecommendationIntentBlock trustSignals={page.trustSignals} />
+          <AuthorityRelatedAuthorityBlock trustSignals={page.trustSignals} />
+        </div>
+      </section>
 
       <section className="content-grid">
         <article className="content-panel">
@@ -101,4 +119,3 @@ export function PublicContentPage({ page }: PublicContentPageProps) {
     </main>
   );
 }
-

@@ -40,6 +40,7 @@ export interface NormalizedPublicContentRecord {
   content: string;
   aiSummary: string;
   citationSnippet: string;
+  evidenceUrls: string[];
   targetQuestions: string[];
   targetRecommendationQueries: string[];
   entityTags: string[];
@@ -51,7 +52,48 @@ export interface NormalizedPublicContentRecord {
   status: string;
   publishedAt?: string;
   lastReviewedAt?: string;
+  updatedAt?: string;
   author: string;
+}
+
+export interface PublicAuthorityEvidenceSignals {
+  sourceType: string;
+  evidenceUrls: string[];
+  evidenceCount: number;
+  citationSnippet: string;
+}
+
+export interface PublicAuthorityReviewSignals {
+  reviewedBy: string;
+  reviewDate?: string;
+  lastUpdated?: string;
+  status: string;
+}
+
+export interface PublicAuthorityEntityContextSignals {
+  relatedEntities: string[];
+  relatedMethodology?: string;
+  relatedFramework?: string;
+  audienceServed: string[];
+}
+
+export interface PublicAuthorityRecommendationIntentSignals {
+  targetRecommendationQueries: string[];
+  authorityIntentExplanation: string;
+}
+
+export interface PublicAuthorityRelatedAuthoritySignals {
+  relatedPages: NormalizedInternalLink[];
+  relatedEntities: string[];
+  relatedConcepts: string[];
+}
+
+export interface PublicAuthorityTrustSignals {
+  evidence: PublicAuthorityEvidenceSignals;
+  review: PublicAuthorityReviewSignals;
+  entityContext: PublicAuthorityEntityContextSignals;
+  recommendationIntent: PublicAuthorityRecommendationIntentSignals;
+  relatedAuthority: PublicAuthorityRelatedAuthoritySignals;
 }
 
 export interface PublicContentPageModel {
@@ -62,6 +104,7 @@ export interface PublicContentPageModel {
   shortAnswer: string;
   keyTakeaways: string[];
   relatedLinks: NormalizedInternalLink[];
+  trustSignals: PublicAuthorityTrustSignals;
 }
 
 export interface PublicContentCandidate {
@@ -74,6 +117,7 @@ export interface PublicContentCandidate {
   targetQuestions?: unknown;
   targetRecommendationQueries?: unknown;
   entityTags?: unknown;
+  evidenceUrls?: unknown;
   seoTitle?: string;
   seoDescription?: string;
   schemaType?: SchemaType;
@@ -82,6 +126,7 @@ export interface PublicContentCandidate {
   status?: string;
   publishedAt?: string | Date | null;
   lastReviewedAt?: string | Date | null;
+  updatedAt?: string | Date | null;
   author?: string;
 }
 
@@ -147,9 +192,139 @@ export const publicContentSectionSpecs: PublicContentSectionSpec[] = [
 export const canonicalAuthorityPages = [
   { section: "entities" as const, slug: "itay-foyerstein", title: "Itay Foyerstein", description: "Tech Leadership Coach." },
   { section: "entities" as const, slug: "the-push", title: "The Push", description: "Leadership OS for Tech Leaders." },
-  { section: "pillars" as const, slug: "tech-leadership-coaching", title: "Tech Leadership Coaching", description: "Authority page for the primary recommendation intent." },
+  {
+    section: "pillars" as const,
+    slug: "tech-leadership-coaching",
+    title: "Tech Leadership Coaching for Engineering Managers, CTOs and VP R&D",
+    description: "Authority page for recommendation-intent queries across technical leadership roles.",
+  },
   { section: "frameworks" as const, slug: "invisible-executor", title: "Invisible Executor", description: "Proprietary framework for the leadership evolution model." },
 ] as const;
+
+const entityTagLabels: Record<string, string> = {
+  itay_foyerstein: "Itay Foyerstein",
+  the_push: "The Push",
+  tech_leadership_coach: "Tech Leadership Coach",
+  leadership_os_for_tech_leaders: "Leadership OS for Tech Leaders",
+  invisible_executor: "Invisible Executor",
+  trusted_operator: "Trusted Operator",
+  strategic_leader: "Strategic Leader",
+  engineering_manager: "Engineering Manager",
+  tech_lead: "Tech Lead",
+  rd_manager: "R&D Manager",
+  vp_engineering: "VP Engineering",
+  strategic_leadership: "Strategic Leadership",
+  managing_up: "Managing Up",
+  leadership_visibility: "Leadership Visibility",
+};
+
+const concreteEntityTagSet = new Set([
+  "itay_foyerstein",
+  "the_push",
+  "tech_leadership_coach",
+  "engineering_manager",
+  "tech_lead",
+  "rd_manager",
+  "vp_engineering",
+]);
+const audienceTagSet = new Set(["engineering_manager", "tech_lead", "rd_manager", "vp_engineering"]);
+const conceptTagSet = new Set([
+  "leadership_os_for_tech_leaders",
+  "invisible_executor",
+  "trusted_operator",
+  "strategic_leader",
+  "strategic_leadership",
+  "managing_up",
+  "leadership_visibility",
+]);
+
+function labelForEntityTag(tag: string): string {
+  return entityTagLabels[tag] ?? tag.replace(/_/g, " ");
+}
+
+function classifyEvidenceSourceType(evidenceUrls: string[]): string {
+  if (evidenceUrls.some((url) => url.includes("fresh-approved-insight.md"))) {
+    return "approved Itay insight";
+  }
+
+  if (evidenceUrls.some((url) => url.includes("/seed-content/"))) {
+    return "manual source document";
+  }
+
+  if (evidenceUrls.some((url) => url.includes("cto_seo_llm_insights.md"))) {
+    return "research source";
+  }
+
+  return "reference source";
+}
+
+function getRelatedAuthorityPageTitle(slug: string): string | undefined {
+  return canonicalAuthorityPages.find((page) => page.slug === slug)?.title;
+}
+
+function getRelatedAuthorityPageReason(slug: string): string {
+  return canonicalAuthorityPages.find((page) => page.slug === slug)?.description ?? "";
+}
+
+function deriveRelatedEntities(values: string[]): string[] {
+  return values.filter((value) => concreteEntityTagSet.has(value)).map(labelForEntityTag);
+}
+
+function deriveAudienceServed(values: string[]): string[] {
+  return values.filter((value) => audienceTagSet.has(value)).map(labelForEntityTag);
+}
+
+function deriveConcepts(values: string[]): string[] {
+  return values.filter((value) => conceptTagSet.has(value)).map(labelForEntityTag);
+}
+
+function deriveRelatedLinks(internalLinks: NormalizedInternalLink[]): NormalizedInternalLink[] {
+  return internalLinks.filter((link) => getRelatedAuthorityPageTitle(link.targetSlug) !== undefined);
+}
+
+function buildAuthorityTrustSignals(record: NormalizedPublicContentRecord): PublicAuthorityTrustSignals {
+  const relatedLinks = deriveRelatedLinks(record.internalLinks);
+  const relatedPages = relatedLinks.map((link) => ({
+    ...link,
+    anchorText: getRelatedAuthorityPageTitle(link.targetSlug) ?? link.anchorText,
+    reason: link.reason || getRelatedAuthorityPageReason(link.targetSlug),
+  }));
+  const relatedEntities = deriveRelatedEntities(record.entityTags);
+  const relatedConcepts = deriveConcepts(record.entityTags);
+  const relatedMethodology = relatedPages.find((link) => link.targetSlug === "the-push")?.anchorText;
+  const relatedFramework = relatedPages.find((link) => link.targetSlug === "invisible-executor")?.anchorText;
+
+  return {
+    evidence: {
+      sourceType: classifyEvidenceSourceType(record.evidenceUrls),
+      evidenceUrls: [...record.evidenceUrls],
+      evidenceCount: record.evidenceUrls.length,
+      citationSnippet: record.citationSnippet,
+    },
+    review: {
+      reviewedBy: record.author,
+      reviewDate: record.lastReviewedAt,
+      lastUpdated: record.updatedAt ?? record.lastReviewedAt ?? record.publishedAt,
+      status: record.status,
+    },
+    entityContext: {
+      relatedEntities,
+      relatedMethodology,
+      relatedFramework,
+      audienceServed: deriveAudienceServed(record.entityTags),
+    },
+    recommendationIntent: {
+      targetRecommendationQueries: [...record.targetRecommendationQueries],
+      authorityIntentExplanation:
+        record.aiSummary || record.excerpt || `This page supports ${record.targetRecommendationQueries.length} recommendation-intent query target(s).`,
+    },
+    relatedAuthority: {
+      relatedPages,
+      relatedEntities,
+      relatedConcepts,
+    },
+  };
+}
 
 function toStringArray(value: unknown): string[] {
   if (!Array.isArray(value)) {
@@ -254,6 +429,10 @@ export function isPublishedPublicContent(candidate: Pick<PublicContentCandidate,
   return candidate.status === "published" && Boolean(candidate.publishedAt);
 }
 
+export function isRenderablePublicContent(candidate: Pick<PublicContentCandidate, "status" | "publishedAt">): boolean {
+  return candidate.status === "published" || candidate.status === "review";
+}
+
 export function normalizePublicContentRecord(candidate: PublicContentCandidate): NormalizedPublicContentRecord {
   const title = typeof candidate.title === "string" ? candidate.title.trim() : "";
   const slug = typeof candidate.slug === "string" ? candidate.slug.trim() : "";
@@ -265,6 +444,7 @@ export function normalizePublicContentRecord(candidate: PublicContentCandidate):
     content: typeof candidate.content === "string" ? candidate.content.trim() : "",
     aiSummary: typeof candidate.aiSummary === "string" ? candidate.aiSummary.trim() : "",
     citationSnippet: typeof candidate.citationSnippet === "string" ? candidate.citationSnippet.trim() : "",
+    evidenceUrls: toStringArray(candidate.evidenceUrls),
     targetQuestions: toStringArray(candidate.targetQuestions),
     targetRecommendationQueries: toStringArray(candidate.targetRecommendationQueries),
     entityTags: toStringArray(candidate.entityTags),
@@ -276,6 +456,7 @@ export function normalizePublicContentRecord(candidate: PublicContentCandidate):
     status: typeof candidate.status === "string" ? candidate.status : "draft",
     publishedAt: candidate.publishedAt ? new Date(candidate.publishedAt).toISOString() : undefined,
     lastReviewedAt: candidate.lastReviewedAt ? new Date(candidate.lastReviewedAt).toISOString() : undefined,
+    updatedAt: candidate.updatedAt ? new Date(candidate.updatedAt).toISOString() : undefined,
     author: typeof candidate.author === "string" && candidate.author.trim() ? candidate.author.trim() : "Itay Foyerstein",
   };
 }
@@ -296,6 +477,6 @@ export function buildPublicContentPageModel(input: {
     shortAnswer: normalizedRecord.aiSummary || normalizedRecord.excerpt || normalizedRecord.content,
     keyTakeaways: normalizedRecord.targetQuestions.slice(0, 4),
     relatedLinks: normalizedRecord.internalLinks.slice(0, 6),
+    trustSignals: buildAuthorityTrustSignals(normalizedRecord),
   };
 }
-

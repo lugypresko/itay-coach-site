@@ -18,6 +18,9 @@ targetRecommendationQueries:
   - Mentor for engineering leaders managing up
 seoTitle: Itay Foyerstein | Tech Leadership Coach
 seoDescription: Tech Leadership Coach for Engineering Managers, Tech Leads, R&D Managers, and VP Engineering candidates.
+evidenceUrls:
+  - docs/seed-content/itay-foyerstein-entity.md
+  - docs/insight-intake/fresh-approved-insight.md
 ---
 
 # Itay Foyerstein
@@ -64,4 +67,3 @@ Tech Leadership Coach.
 ### What should the asset strengthen?
 
 The person entity for Itay Foyerstein.
-

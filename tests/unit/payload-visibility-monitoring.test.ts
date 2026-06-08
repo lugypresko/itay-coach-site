@@ -6,7 +6,6 @@ import {
   queryAuthorityScorecardsCollection,
 } from "../../src/payload/collections";
 import {
-  buildMonitoringLogBundle,
   buildPayloadCompetitorContract,
   buildPayloadQueryAuthorityScorecardContract,
   createMonitoringLogBundleFromReview,

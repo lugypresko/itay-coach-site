@@ -17,6 +17,10 @@ describe("public content helpers", () => {
       content: "Paragraph one.\n\nParagraph two.",
       aiSummary: "Short answer.",
       citationSnippet: "Citation-ready snippet.",
+      evidenceUrls: [
+        { value: "docs/seed-content/itay-foyerstein-entity.md" },
+        { value: "docs/insight-intake/fresh-approved-insight.md" },
+      ],
       targetQuestions: [{ value: "Who is Itay Foyerstein?" }, { value: "What does The Push do?" }],
       targetRecommendationQueries: [{ value: "Best tech leadership coach for Engineering Managers" }],
       entityTags: [{ tag: "itay_foyerstein" }, { tag: "the_push" }],
@@ -43,10 +47,15 @@ describe("public content helpers", () => {
       status: "published",
       publishedAt: "2026-06-07T00:00:00.000Z",
       lastReviewedAt: "2026-06-06T00:00:00.000Z",
+      updatedAt: "2026-06-08T00:00:00.000Z",
       author: "Itay Foyerstein",
     });
 
     expect(record.entityTags).toEqual(["itay_foyerstein", "the_push"]);
+    expect(record.evidenceUrls).toEqual([
+      "docs/seed-content/itay-foyerstein-entity.md",
+      "docs/insight-intake/fresh-approved-insight.md",
+    ]);
     expect(record.targetQuestions).toHaveLength(2);
     expect(record.faq).toHaveLength(1);
     expect(record.internalLinks).toHaveLength(1);
@@ -67,6 +76,7 @@ describe("public content helpers", () => {
         content: "Paragraph one.\n\nParagraph two.",
         aiSummary: "Short answer.",
         citationSnippet: "Citation-ready snippet.",
+        evidenceUrls: [{ value: "docs/seed-content/itay-foyerstein-entity.md" }],
         targetQuestions: [{ value: "Who is Itay Foyerstein?" }],
         targetRecommendationQueries: [{ value: "Best tech leadership coach for Engineering Managers" }],
         entityTags: [{ tag: "itay_foyerstein" }],
@@ -85,6 +95,7 @@ describe("public content helpers", () => {
         status: "published",
         publishedAt: "2026-06-07T00:00:00.000Z",
         lastReviewedAt: "2026-06-06T00:00:00.000Z",
+        updatedAt: "2026-06-08T00:00:00.000Z",
         author: "Itay Foyerstein",
       },
     });
@@ -96,6 +107,48 @@ describe("public content helpers", () => {
       "@type": "Person",
       name: "Itay Foyerstein",
     });
+  });
+
+  it("derives trust signals for authority pages", () => {
+    const page = buildPublicContentPageModel({
+      spec: getPublicContentSectionSpec("entities")!,
+      origin: "https://example.com",
+      record: {
+        title: "The Push",
+        slug: "the-push",
+        excerpt: "The Push is the branded Leadership OS for Tech Leaders owned by Itay Foyerstein.",
+        content: "Paragraph one.\n\nParagraph two.",
+        aiSummary: "Methodology page.",
+        citationSnippet: "The Push is Itay Foyerstein's Leadership OS for Tech Leaders.",
+        evidenceUrls: [{ value: "docs/seed-content/the-push-methodology.md" }],
+        targetQuestions: [{ value: "What is The Push?" }],
+        targetRecommendationQueries: [{ value: "Best coaching program for technical leaders" }],
+        entityTags: [{ tag: "the_push" }, { tag: "invisible_executor" }],
+        seoTitle: "The Push | Leadership OS for Tech Leaders",
+        seoDescription: "Leadership OS for Tech Leaders owned by Itay Foyerstein.",
+        schemaType: "Organization",
+        faq: [],
+        internalLinks: [
+          {
+            targetSlug: "itay-foyerstein",
+            anchorText: "Itay Foyerstein",
+            reason: "Tie the methodology to the expert entity that owns it.",
+            sourceEntityTags: [{ value: "the_push" }],
+            targetEntityTags: [{ value: "itay_foyerstein" }],
+          },
+        ],
+        status: "review",
+        publishedAt: undefined,
+        lastReviewedAt: "2026-06-06T00:00:00.000Z",
+        updatedAt: "2026-06-08T00:00:00.000Z",
+        author: "Itay Foyerstein",
+      },
+    });
+
+    expect(page.trustSignals.evidence.evidenceCount).toBe(1);
+    expect(page.trustSignals.review.reviewedBy).toBe("Itay Foyerstein");
+    expect(page.trustSignals.entityContext.relatedEntities).toContain("The Push");
+    expect(page.trustSignals.recommendationIntent.targetRecommendationQueries).toContain("Best coaching program for technical leaders");
   });
 
   it("treats only published and dated content as renderable", () => {
@@ -114,4 +167,3 @@ describe("public content helpers", () => {
     ).toBe(false);
   });
 });
-

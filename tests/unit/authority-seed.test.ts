@@ -24,6 +24,7 @@ describe("authority seed manifest", () => {
       expect(asset.payloadData.targetQuestions.length).toBeGreaterThan(0);
       expect(asset.payloadData.faq.length).toBeGreaterThan(0);
       expect(asset.payloadData.internalLinks.length).toBeGreaterThan(0);
+      expect(asset.payloadData.evidenceUrls.length).toBeGreaterThan(0);
     }
   });
 
@@ -39,4 +40,3 @@ describe("authority seed manifest", () => {
     expect(insight.claims.length).toBeGreaterThan(0);
   });
 });
-

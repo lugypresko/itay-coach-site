@@ -178,6 +178,7 @@ export function buildAuthorityContentCollection({
       { name: "content", type: "textarea", required: true },
       { name: "aiSummary", type: "textarea", required: true },
       { name: "citationSnippet", type: "textarea", required: true },
+      arrayTextField("evidenceUrls", true),
       arrayTextField("targetQuestions", true),
       arrayTextField("targetRecommendationQueries", true),
       entityTagArrayField("entityTags"),
