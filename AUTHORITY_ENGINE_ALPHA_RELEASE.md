@@ -30,6 +30,12 @@ Release date: 2026-06-08
 
 The build currently emits 14 routes total, including the public authority pages above.
 
+## Canonical host
+
+- Primary domain: `https://itayfoyerstein.com`
+- `www.itayfoyerstein.com` redirects to the apex domain with a permanent redirect
+- `robots.txt`, `sitemap.xml`, `llms.txt`, page canonicals, and JSON-LD URLs are aligned to the apex domain
+
 ## Design system
 
 - Minimal, authority-focused, mobile-first styling
