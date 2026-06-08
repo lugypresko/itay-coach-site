@@ -1019,7 +1019,7 @@ Verification notes:
 
 ### Task RC-01 - Authority Engine Alpha Snapshot
 
-State: `in_progress`
+State: `completed`
 Lane: `release`, `documentation`, `verification`
 Owner: Codex
 
@@ -1061,6 +1061,12 @@ Acceptance criteria:
 - Alpha snapshot is reproducible.
 - GitHub is the source of truth.
 - Working tree is clean.
+
+Verification notes:
+- Ran `npm run typecheck`: passed.
+- Ran `npm test`: passed.
+- Ran `npm run build`: passed.
+- Captured the workspace diff and release summary in `WORKSPACE_DIFF_REPORT.md` and `AUTHORITY_ENGINE_ALPHA_RELEASE.md`.
 
 ## Commit Discipline
 
