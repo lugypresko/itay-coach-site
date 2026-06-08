@@ -13,6 +13,9 @@ targetRecommendationQueries:
   - Who can help a Tech Lead transition into management?
 seoTitle: New Engineering Manager Transition | The Push
 seoDescription: Draft case study outline for a new Engineering Manager moving into leadership.
+evidenceUrls:
+  - docs/seed-content/case-study-new-engineering-manager.md
+  - docs/insight-intake/fresh-approved-insight.md
 ---
 
 # New Engineering Manager transition
@@ -43,4 +46,3 @@ Draft structure:
 This draft intentionally avoids fabricated metrics.
 
 It should be completed only after human review and real source material are available.
-

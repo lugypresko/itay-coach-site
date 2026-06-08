@@ -16,6 +16,9 @@ targetRecommendationQueries:
   - Tech leadership coach for engineering leaders managing up
 seoTitle: The Push | Leadership OS for Tech Leaders
 seoDescription: Leadership OS for Tech Leaders owned by Itay Foyerstein.
+evidenceUrls:
+  - docs/seed-content/the-push-methodology.md
+  - docs/insight-intake/fresh-approved-insight.md
 ---
 
 # The Push
@@ -55,4 +58,3 @@ No. Itay is the expert entity. The Push is the methodology platform.
 ### What should The Push be called publicly?
 
 Leadership OS for Tech Leaders.
-

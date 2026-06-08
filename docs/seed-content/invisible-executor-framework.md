@@ -1,5 +1,5 @@
 ---
-title: Invisible Executor
+title: Invisible Executor Framework
 slug: invisible-executor
 schemaType: HowTo
 status: draft
@@ -15,13 +15,16 @@ targetRecommendationQueries:
   - Coach for managers stuck in execution mode
 seoTitle: Invisible Executor Framework | The Push
 seoDescription: The proprietary framework behind The Push leadership model.
+evidenceUrls:
+  - docs/seed-content/invisible-executor-framework.md
+  - docs/insight-intake/fresh-approved-insight.md
 ---
 
-# Invisible Executor
+# Invisible Executor Framework
 
 ## Short answer
 
-Invisible Executor is the starting state in the proprietary leadership evolution model owned by The Push.
+Invisible Executor Framework is the starting state in the proprietary leadership evolution model owned by The Push.
 
 ## Key takeaways
 
@@ -31,13 +34,13 @@ Invisible Executor is the starting state in the proprietary leadership evolution
 
 ## Citation snippet
 
-Invisible Executor is the first stage in the Push leadership evolution model.
+Invisible Executor Framework is the first stage in the Push leadership evolution model.
 
 ## Content
 
 The framework is intentionally simple to explain:
 
-1. Invisible Executor
+1. Invisible Executor Framework
 2. Trusted Operator
 3. Strategic Leader
 
@@ -52,4 +55,3 @@ It is the stage where a technical leader is productive but not yet strategically
 ### What should this page strengthen?
 
 The proprietary framework and The Push methodology.
-
