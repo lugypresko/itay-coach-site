@@ -1,0 +1,180 @@
+html[data-theme="light"] {
+  --theme-bg: #f7f8f5;
+  --theme-input-bg: #ffffff;
+  --theme-text: #172033;
+  --theme-elevation-0: #ffffff;
+  --theme-elevation-50: #f8f9f6;
+  --theme-elevation-100: #eef1eb;
+  --theme-elevation-150: #e5e9df;
+  --theme-elevation-200: #d9ded2;
+  --theme-elevation-250: #cbd2c2;
+  --theme-elevation-300: #b9c1b0;
+  --theme-elevation-400: #7a8472;
+  --theme-elevation-500: #5f6b5a;
+  --theme-elevation-600: #455044;
+  --theme-elevation-700: #303a34;
+  --theme-elevation-800: #202923;
+  --theme-elevation-900: #111a16;
+  --theme-elevation-950: #0a100d;
+  --theme-elevation-1000: #050807;
+  --theme-success-600: #2f6f54;
+  --theme-warning-600: #8a641c;
+  --theme-error-600: #b0443e;
+  --style-radius-s: 6px;
+  --style-radius-m: 8px;
+  --style-radius-l: 10px;
+  --accessibility-outline: 2px solid #426a91;
+}
+
+html[data-theme="light"],
+html[data-theme="light"] body {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.84), rgba(247, 248, 245, 0.92)),
+    #f7f8f5;
+}
+
+html[data-theme="light"] body {
+  color: #172033;
+  letter-spacing: 0;
+}
+
+html[data-theme="light"] .nav {
+  background: #ffffff;
+  border-right: 1px solid #dfe4d8;
+  box-shadow: 12px 0 34px rgba(23, 32, 51, 0.04);
+}
+
+html[data-theme="light"] .nav a,
+html[data-theme="light"] .nav button {
+  border-radius: 6px;
+}
+
+html[data-theme="light"] .nav a:hover,
+html[data-theme="light"] .nav button:hover {
+  background: #eef4ed;
+  color: #172033;
+}
+
+html[data-theme="light"] .app-header,
+html[data-theme="light"] .doc-header,
+html[data-theme="light"] .collection-list__header {
+  background: rgba(255, 255, 255, 0.86);
+  border-bottom: 1px solid #e2e6dc;
+}
+
+html[data-theme="light"] .template-default,
+html[data-theme="light"] .dashboard,
+html[data-theme="light"] .collection-list,
+html[data-theme="light"] .collection-edit {
+  background: transparent;
+}
+
+html[data-theme="light"] .dashboard__wrap,
+html[data-theme="light"] .collection-list__wrap,
+html[data-theme="light"] .collection-edit__main {
+  max-width: 1280px;
+}
+
+html[data-theme="light"] .dashboard__card,
+html[data-theme="light"] .collection-card,
+html[data-theme="light"] .group-field,
+html[data-theme="light"] .array-field,
+html[data-theme="light"] .blocks-field,
+html[data-theme="light"] .tabs-field {
+  background: #ffffff;
+  border: 1px solid #e0e5d9;
+  border-radius: 8px;
+  box-shadow: 0 16px 40px rgba(23, 32, 51, 0.05);
+}
+
+html[data-theme="light"] .table {
+  background: #ffffff;
+  border: 1px solid #e0e5d9;
+  border-radius: 8px;
+  box-shadow: 0 16px 40px rgba(23, 32, 51, 0.04);
+  overflow: hidden;
+}
+
+html[data-theme="light"] .table table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+html[data-theme="light"] .table thead {
+  background: #f2f4ef;
+}
+
+html[data-theme="light"] .table th,
+html[data-theme="light"] .table td {
+  border-bottom-color: #e6eadf;
+}
+
+html[data-theme="light"] .table tbody tr {
+  transition: background-color 120ms ease;
+}
+
+html[data-theme="light"] .table tbody tr:hover {
+  background: #f7faf4;
+}
+
+html[data-theme="light"] .field-type input,
+html[data-theme="light"] .field-type textarea,
+html[data-theme="light"] .react-select__control,
+html[data-theme="light"] .date-time-field input {
+  background: #ffffff;
+  border-color: #d8ded1;
+  border-radius: 6px;
+  box-shadow: none;
+}
+
+html[data-theme="light"] .field-type input:focus,
+html[data-theme="light"] .field-type textarea:focus,
+html[data-theme="light"] .react-select__control--is-focused,
+html[data-theme="light"] .date-time-field input:focus {
+  border-color: #426a91;
+  box-shadow: 0 0 0 3px rgba(66, 106, 145, 0.14);
+}
+
+html[data-theme="light"] .btn--style-primary {
+  --bg-color: #1f3d4f;
+  --hover-bg: #2a536b;
+  --color: #ffffff;
+  --hover-color: #ffffff;
+}
+
+html[data-theme="light"] .btn--style-secondary,
+html[data-theme="light"] .btn--style-subtle {
+  --btn-border: 1px solid #ccd5c6;
+  --hover-btn-border: 1px solid #aebdaa;
+  --hover-bg: #eef4ed;
+}
+
+html[data-theme="light"] .pill,
+html[data-theme="light"] .popup__content,
+html[data-theme="light"] .drawer__content,
+html[data-theme="light"] .modal {
+  border: 1px solid #e0e5d9;
+  box-shadow: 0 18px 52px rgba(23, 32, 51, 0.1);
+}
+
+html[data-theme="light"] .login {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(247, 248, 245, 0.96)),
+    #f7f8f5;
+}
+
+html[data-theme="light"] .login__form {
+  background: #ffffff;
+  border: 1px solid #e0e5d9;
+  border-radius: 10px;
+  box-shadow: 0 22px 60px rgba(23, 32, 51, 0.08);
+}
+
+@media (max-width: 768px) {
+  html[data-theme="light"] .table,
+  html[data-theme="light"] .dashboard__card,
+  html[data-theme="light"] .collection-card,
+  html[data-theme="light"] .login__form {
+    border-radius: 6px;
+  }
+}

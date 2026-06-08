@@ -130,6 +130,9 @@ Blocker resolved:
 - Remote schema initialized via Payload database migrations.
 - Admin route and database collections verified on Vercel.
 
+Verification note:
+- Production Payload Admin runtime verified after switching Vercel DATABASE_URL to Supabase pooler connection string.
+
 Create the Next.js 15 + Payload CMS 3 + TypeScript project scaffold, connect local PostgreSQL, and verify local admin boot.
 
 Acceptance criteria:
@@ -186,6 +189,48 @@ Acceptance criteria:
 - Prisma schema declares PostgreSQL and Prisma config uses `DIRECT_URL` for CLI operations.
 - Local env placeholders point to the requested Supabase pooler host and ports.
 - Supabase agent skills are installed or already present.
+
+### Task 002B - Payload Admin Light Design
+
+State: `completed`
+Lane: `admin-ui`
+Owner: Codex
+
+Goal:
+Add a simple light visual treatment to the Payload admin UI.
+
+Scope:
+- Add scoped Payload admin CSS.
+- Register the stylesheet in Payload admin configuration.
+- Keep Payload admin behavior and collection contracts unchanged.
+
+Out of scope:
+- No Payload collection changes.
+- No database schema changes.
+- No content generation or publishing.
+- No authentication or role changes.
+
+Files expected to change:
+- `payload.config.ts`
+- `src/app/(payload)/layout.tsx`
+- `src/app/(payload)/admin/custom.css`
+- `PLANS.md`
+
+Data contracts affected:
+- None.
+
+Agent permissions affected:
+- None.
+
+Validation steps:
+- Run Payload import map generation.
+- Run `npm run typecheck`.
+- Run `npm run build`.
+
+Acceptance criteria:
+- Admin UI uses a light, readable visual system.
+- Admin customization is scoped to Payload admin.
+- Build and typecheck pass.
 
 ### Task 003 - Payload Content Model
 

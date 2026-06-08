@@ -21,7 +21,7 @@ export async function loadPublishedPublicContent(section: PublicContentSection, 
       },
     } as never);
 
-    const record = result.docs[0] as Record<string, unknown> | undefined;
+    const record = result.docs[0] as unknown as Record<string, unknown> | undefined;
 
     if (!record || !isPublishedPublicContent(record)) {
       return null;
@@ -36,4 +36,3 @@ export async function loadPublishedPublicContent(section: PublicContentSection, 
     return null;
   }
 }
-

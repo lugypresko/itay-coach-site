@@ -5,6 +5,8 @@ import type { ReactNode } from "react";
 import config from "@payload-config";
 
 import { importMap } from "./admin/importMap.js";
+import "@payloadcms/next/css";
+import "./admin/custom.css";
 
 const serverFunction: ServerFunctionClient = async (args) => {
   "use server";
