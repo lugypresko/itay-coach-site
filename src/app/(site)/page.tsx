@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 
 import { canonicalAuthorityPages, publicContentSectionSpecs } from "@/lib/public-content";
 
@@ -19,6 +20,15 @@ const primaryCallsToAction = [
     description: "Lead magnet for authority evaluation and gap discovery.",
   },
 ];
+
+export const metadata: Metadata = {
+  title: "Tech Leadership Coach visibility system",
+  description:
+    "English-first public knowledge graph for Itay Foyerstein, The Push, and the leadership framework that AI answer engines can cite.",
+  alternates: {
+    canonical: "/",
+  },
+};
 
 export default function HomePage() {
   return (

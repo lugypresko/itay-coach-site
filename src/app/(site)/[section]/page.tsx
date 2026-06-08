@@ -33,6 +33,9 @@ export async function generateMetadata({ params }: SectionPageProps) {
   return {
     title: `${spec.pluralLabel} | The Push`,
     description: spec.description,
+    alternates: {
+      canonical: `/${section}`,
+    },
   };
 }
 

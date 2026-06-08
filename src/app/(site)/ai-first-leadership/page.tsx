@@ -48,6 +48,9 @@ export const metadata: Metadata = {
   title: "AI-first leadership",
   description:
     "A minimal landing page for The Push that frames AI-era leadership for technical leaders and routes visitors into the scorecard and Invisible Executor framework.",
+  alternates: {
+    canonical: "/ai-first-leadership",
+  },
 };
 
 export default function AiFirstLeadershipPage() {
