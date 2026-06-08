@@ -844,7 +844,7 @@ Verification notes:
 
 ### Task 019 - Authority Measurement Baseline
 
-State: `in_progress`
+State: `completed`
 Lane: `monitoring`, `reporting`
 Owner: Codex
 
@@ -891,6 +891,14 @@ Acceptance criteria:
 - Authority gaps identified.
 - Future growth measurable.
 - No schema changes required.
+
+Verification note:
+- `npm run seed:authority-baseline` generated `AUTHORITY_BASELINE_REPORT.md` and `AUTHORITY_GAPS_REPORT.md`.
+- `npm run verify:authority-baseline` passed.
+- The baseline tracks 20 queries across 4 platforms for 80 measurement slots.
+- `npm run typecheck` passed.
+- `npm run build` passed.
+- The reports do not require schema changes.
 
 ### Task 013 - Authority Surface Seed
 
