@@ -1,5 +1,7 @@
+import { getSiteUrl } from "@/lib/site-url";
+
 export async function GET() {
-  const origin = process.env.NEXT_PUBLIC_SERVER_URL ?? "http://localhost:3000";
+  const origin = getSiteUrl();
   const body = [
     "# The Push LLM SEO Authority Engine",
     "",

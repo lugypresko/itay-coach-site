@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { PublicContentPage } from "@/components/public-content-page";
 import { loadPublishedPublicContent } from "@/lib/public-content-loader";
 import { getPublicContentSectionSpec } from "@/lib/public-content";
+import { getSiteUrl } from "@/lib/site-url";
 
 type ContentPageProps = {
   params: Promise<{
@@ -13,7 +14,7 @@ type ContentPageProps = {
 };
 
 function getOrigin(): string {
-  return process.env.NEXT_PUBLIC_SERVER_URL ?? "http://localhost:3000";
+  return getSiteUrl();
 }
 
 export async function generateMetadata({ params }: ContentPageProps): Promise<Metadata> {
@@ -60,4 +61,3 @@ export default async function ContentPage({ params }: ContentPageProps) {
 
   return <PublicContentPage page={page} />;
 }
-

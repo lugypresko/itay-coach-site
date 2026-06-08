@@ -84,4 +84,3 @@ export default async function SectionLandingPage({ params }: SectionPageProps) {
     </main>
   );
 }
-
