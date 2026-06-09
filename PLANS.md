@@ -548,20 +548,20 @@ Verification note:
 - Seed script ran successfully against Supabase.
 - Verified record counts after repeat execution: 9 entities, 8 relationships, 1 approved fresh Itay insight.
 
-### Task 012A - Authority Graph Verification and Tooling Cleanup
+### Task 012A - Authority Graph Verification Cleanup
 
 State: `ready`
 Lane: `content-seed`, `developer-tooling`
 Owner: Codex
 
 Goal:
-Stabilize the minimum authority graph verification path and clean up repo tooling so release verification is reproducible.
+Close the existing authority graph verifier and repository tooling cleanup so release verification is reproducible and the workspace is clean.
 
 Scope:
-- Confirm the `verify:authority-graph` script exists and produces a verification report.
-- Optimize the verifier if possible without changing contracts or seed behavior.
+- Confirm the `verify:authority-graph` script exists and emits a verification report.
+- Tighten the verifier only if needed without changing seed behavior or contracts.
 - Keep the minimum authority graph seed behavior unchanged.
-- Clean ESLint flat config warnings that are safe to fix.
+- Resolve safe ESLint flat config warnings.
 - Ensure the workspace uses only the repo-local lockfile and no stray parent lockfile.
 - Verify `lint`, `typecheck`, `build`, and `verify:authority-graph` pass.
 
@@ -598,9 +598,306 @@ Acceptance criteria:
 - No stray parent `package-lock.json` remains in the workspace root path.
 - `lint`, `typecheck`, `build`, and `verify:authority-graph` all pass.
 
-### Task 015 - Authority Evidence Layer
+### Task 026A - Workspace Hygiene & Commit Separation
 
 State: `in_progress`
+Lane: `release`, `developer-tooling`
+Owner: Codex
+
+Goal:
+Separate Task 025, Task 023C, unrelated changes, and generated/cache files into clean commit boundaries.
+
+Scope:
+- Audit the current workspace diff.
+- Separate Task 025 changes from Task 023C changes.
+- Keep unrelated changes isolated.
+- Remove generated/cache files from the tracked release surface.
+- Preserve user-authored work that is not part of the current task.
+
+Out of scope:
+- No product changes.
+- No contract changes.
+- No schema changes.
+- No workflow changes.
+
+Files expected to change:
+- `PLANS.md`
+- Git commit history only, if needed for separation.
+
+Data contracts affected:
+- None.
+
+Agent permissions affected:
+- None.
+
+Validation steps:
+- Review `git status --short`.
+- Review `git diff --stat`.
+- Confirm Task 025 files are separated from Task 023C files.
+- Confirm generated/cache files are excluded from release commits.
+
+Acceptance criteria:
+- Task 025 is isolated from Task 023C.
+- Unrelated files are not mixed into task commits.
+- Generated/cache files are separated from durable source changes.
+- The workspace is ready for the next focused task.
+
+### Task 026 - Codex-Run First Knowledge Asset
+
+State: `pending`
+Lane: `contracts`, `content-seed`, `authority-model`
+Owner: Codex
+
+Goal:
+Use the Task 025 contracts to create one review-ready KnowledgeAsset from one approved insight.
+
+Scope:
+- Use only the Task 025 contract layer.
+- Produce one review-ready KnowledgeAsset from one approved insight.
+- Keep Codex execution manual.
+- Keep Payload as the source of truth.
+- Preserve human review as mandatory.
+
+Out of scope:
+- No LangGraph.
+- No provider calls.
+- No runtime generation.
+- No publishing.
+
+Files expected to change:
+- `src/seed/*`
+- `src/ai/agents/*`
+- `tests/unit/*`
+- `PLANS.md`
+
+Data contracts affected:
+- KnowledgeAsset contract usage.
+
+Agent permissions affected:
+- None.
+
+Validation steps:
+- Confirm the approved insight used as source is current and approved.
+- Confirm the KnowledgeAsset is review-ready only.
+- Confirm no runtime orchestration was added.
+
+Acceptance criteria:
+- One KnowledgeAsset is produced from one approved insight.
+- The asset is review-ready only.
+- No LangGraph orchestration exists.
+- No provider calls exist.
+- No runtime generation exists.
+
+### Task 027 - Claim Ledger Storage
+
+State: `pending`
+Lane: `contracts`, `content-model`
+Owner: Codex
+
+Goal:
+Implement Claim Ledger as Payload storage, based on the Task 025 contract.
+
+Scope:
+- Add Claim Ledger as a first-class Payload collection.
+- Keep the Task 025 claim taxonomy intact.
+- Keep storage queryable.
+- Keep human review in the loop.
+
+Out of scope:
+- No autonomous generation.
+- No publishing automation.
+- No new runtime orchestration.
+
+Files expected to change:
+- `src/payload/collections/*`
+- `tests/unit/*`
+- `PLANS.md`
+
+Data contracts affected:
+- Claim Ledger contract.
+
+Agent permissions affected:
+- None.
+
+Validation steps:
+- Confirm Claim Ledger collection schema matches the contract.
+- Confirm records are queryable in Payload.
+- Confirm review status lifecycle works.
+
+Acceptance criteria:
+- Claim Ledger is stored in Payload.
+- Claims remain queryable.
+- The contract and storage are aligned.
+
+### Task 028 - Approved Insight Repository Sprint
+
+State: `pending`
+Lane: `content-seed`, `insight-intake`
+Owner: Codex
+
+Goal:
+Create or organize 30-50 approved/review-ready Itay insights as the source material for future KnowledgeAssets.
+
+Scope:
+- Build the approved insight repository from existing Itay source material.
+- Keep each insight review-ready or approved only.
+- Preserve source attribution and freshness tracking.
+- Keep the repository usable as upstream material.
+
+Out of scope:
+- No KnowledgeAsset publishing.
+- No autonomous generation.
+- No provider calls.
+
+Files expected to change:
+- `src/seed/*`
+- `docs/insight-intake/*`
+- `tests/unit/*`
+- `PLANS.md`
+
+Data contracts affected:
+- Approved Insight contract.
+
+Agent permissions affected:
+- None.
+
+Validation steps:
+- Confirm the repository reaches the target count.
+- Confirm each insight is approved or review-ready.
+- Confirm freshness metadata is present.
+
+Acceptance criteria:
+- 30-50 approved/review-ready insights are available.
+- The repository is organized and queryable.
+- Future KnowledgeAssets have enough source material.
+
+### Task 029 - Recommendation Draft Sprint
+
+State: `pending`
+Lane: `public-rendering`, `content-seed`
+Owner: Codex
+
+Goal:
+Create 5 review-ready recommendation-intent page drafts.
+
+Scope:
+- Produce 5 recommendation-intent page drafts only.
+- Keep drafts review-ready, not published.
+- Align each draft to a recommendation query and entity.
+- Keep human review mandatory.
+
+Out of scope:
+- No publishing.
+- No autonomous generation.
+- No runtime orchestration.
+
+Files expected to change:
+- `src/seed/*`
+- `docs/seed-content/*`
+- `tests/unit/*`
+- `PLANS.md`
+
+Data contracts affected:
+- Recommendation draft usage.
+
+Agent permissions affected:
+- None.
+
+Validation steps:
+- Confirm 5 drafts exist.
+- Confirm each draft targets a recommendation-intent query.
+- Confirm drafts are not published.
+
+Acceptance criteria:
+- 5 recommendation-intent drafts are created.
+- Each draft is review-ready only.
+- No automatic publishing exists.
+
+### Task 030 - Distribution Asset Storage
+
+State: `pending`
+Lane: `content-model`, `distribution`
+Owner: Codex
+
+Goal:
+Store LinkedIn, email, WhatsApp, video, and CTA drafts in Payload.
+
+Scope:
+- Add storage for distribution drafts.
+- Keep channel-specific drafts queryable.
+- Keep drafts review-ready only.
+- Do not auto-publish.
+
+Out of scope:
+- No auto-publishing.
+- No runtime generation.
+- No provider calls.
+
+Files expected to change:
+- `src/payload/collections/*`
+- `tests/unit/*`
+- `PLANS.md`
+
+Data contracts affected:
+- DistributionAsset contract.
+
+Agent permissions affected:
+- None.
+
+Validation steps:
+- Confirm channel drafts persist in Payload.
+- Confirm review status remains draft/review-ready.
+- Confirm no publish automation exists.
+
+Acceptance criteria:
+- LinkedIn, email, WhatsApp, video, and CTA drafts are stored in Payload.
+- Drafts remain review-ready.
+- No auto-publishing exists.
+
+### Task 031 - Performance Signal Mapping
+
+State: `pending`
+Lane: `monitoring`, `authority-model`
+Owner: Codex
+
+Goal:
+Map current available performance signals versus future placeholders without introducing PerformanceLearningAgent runtime.
+
+Scope:
+- Define which signals exist now.
+- Separate observed signals from placeholders.
+- Keep PerformanceLearningAgent deferred.
+- Keep the mapping explicit for future learning work.
+
+Out of scope:
+- No PerformanceLearningAgent runtime.
+- No runtime orchestration.
+- No autonomous generation.
+
+Files expected to change:
+- `src/ai/monitoring/*`
+- `tests/unit/*`
+- `PLANS.md`
+
+Data contracts affected:
+- PerformanceSignal contract.
+
+Agent permissions affected:
+- None.
+
+Validation steps:
+- Confirm observed and placeholder signals are separated.
+- Confirm the mapping is explicit.
+- Confirm no runtime learning agent was introduced.
+
+Acceptance criteria:
+- Current and future performance signals are clearly mapped.
+- PerformanceLearningAgent remains deferred.
+- No runtime learning exists.
+
+### Task 015 - Authority Evidence Layer
+
+State: `completed`
 Lane: `public-rendering`, `schema`
 Owner: Codex
 
@@ -1025,6 +1322,299 @@ Verification notes:
 - Confirmed the email arrived in the connected Gmail inbox for `itayf32@gmail.com`.
 - Ran `npm run typecheck`: passed.
 - Ran `npm run build`: passed with the same pre-existing migration warnings.
+
+### Task 023 - Player Trap Conversion Redesign
+
+State: `completed`
+Lane: `conversion`, `public-rendering`, `diagnostic-funnel`
+Owner: Codex
+
+Goal:
+Transform the `/player-trap` page into a diagnostic-first conversion funnel without changing the homepage, global navigation, or top-level CTAs.
+
+Scope:
+- Redesign only the `/player-trap` page UX/UI.
+- Reframe the hero around the Player Trap diagnosis.
+- Add the 4-sign diagnostic section.
+- Add the leadership evolution framework.
+- Add the self-assessment section.
+- Improve the CTA and form language for result-driven conversion.
+- Apply a dark authority visual system to the funnel page only.
+
+Out of scope:
+- No homepage redesign.
+- No global CTA changes.
+- No navigation changes.
+- No authority page changes.
+- No top-level site restructuring.
+
+Files expected to change:
+- `src/app/(site)/player-trap/page.tsx`
+- `src/app/(site)/player-trap/player-trap-assessment-client.tsx`
+- `src/styles/components.css`
+- `src/styles/layout.css`
+- `tests/unit/*` if the funnel copy or behavior needs coverage
+- `PLANS.md`
+- `docs/plans/*`
+
+Data contracts affected:
+- None.
+
+Agent permissions affected:
+- None.
+
+Validation steps:
+- Run `npm run typecheck`.
+- Run `npm run build`.
+- Verify `/player-trap` renders in desktop and mobile widths.
+- Verify the CTA still routes into the existing lead capture flow.
+- Verify the result state remains functional.
+
+Acceptance criteria:
+- A visitor understands Player Trap within 5 seconds.
+- The page looks and reads like a diagnostic, not a coaching landing page.
+- The redesign stays isolated to `/player-trap`.
+- Build passes.
+
+Verification notes:
+- Ran `npm test -- tests/unit/player-trap.test.ts`: passed.
+- Ran `npm test`: passed, 16 files and 58 tests.
+- Ran `npm run typecheck`: passed.
+- Ran `npm run build`: passed with the pre-existing unused migration argument warnings in `src/migrations/20260607_205054.ts`.
+- Verified `/player-trap` locally at `http://127.0.0.1:3011/player-trap` with Playwright fallback at desktop `1440x1100` and mobile `390x844`.
+- Verified the primary CTA scrolls to `#player-trap-self-check`.
+- Verified the quick diagnostic alert appears after three yes answers.
+- Verified completed scoring shows the `Execution Bottleneck` result state.
+- Verified the lead form posts to `/api/player-trap/lead` and redirects to `/player-trap/report/test-token` with a mocked successful response.
+
+### Task 024 - Player Trap Bilingual Campaign Pages
+
+State: `completed`
+Lane: `conversion`, `public-rendering`, `lead-capture`, `campaign-localization`
+Owner: Codex
+
+Goal:
+Create separate English and Hebrew Player Trap campaign landing pages with native page copy, shared diagnostic logic, language-aware lead tracking, and language-matched result pages.
+
+Scope:
+- Keep `/player-trap` as the English campaign page.
+- Add `/player-trap-he` as the Hebrew RTL campaign page.
+- Reorder both funnels around outcome, daily dependency pain, wrong fixes, reframe, Player Trap naming, diagnostic, result, and diagnosis-call CTA.
+- Keep the 3-minute/no-fluff positioning, 120+ managers authority block, leadership evolution framework, and diagnostic scoring flow.
+- Track campaign page language through lead submission and subscriber records.
+- Render result pages and CTA copy in the selected language.
+
+Out of scope:
+- No homepage or global navigation changes.
+- No new publishing workflow.
+- No new unsupported proof points, testimonials, or client names.
+- No direct translation between English and Hebrew.
+
+Files expected to change:
+- `src/app/(site)/player-trap/page.tsx`
+- `src/app/(site)/player-trap-he/page.tsx`
+- `src/app/(site)/player-trap/player-trap-assessment-client.tsx`
+- `src/app/(site)/player-trap/report/[token]/page.tsx`
+- `src/app/api/player-trap/lead/route.ts`
+- `src/app/api/player-trap/diagnosis-call/route.ts`
+- `src/lib/player-trap.ts`
+- `src/payload/collections/content.ts`
+- `src/styles/components.css`
+- `tests/unit/player-trap.test.ts`
+- `PLANS.md`
+- `docs/plans/*`
+
+Data contracts affected:
+- Email subscriber records add `pageLanguage`, `testCompletedAt`, `resultProfile`, `resultScore`, `reportRequestedAt`, `diagnosisCallRequestedAt`, `contentConsentAccepted`, `cookiesConsentAccepted`, and `consentAcceptedAt` usage for Player Trap campaign tracking.
+
+Agent permissions affected:
+- None.
+
+Validation steps:
+- Run `npm test -- tests/unit/player-trap.test.ts`.
+- Run `npm test`.
+- Run `npm run typecheck`.
+- Run `npm run build`.
+- Verify `/player-trap` renders English LTR copy.
+- Verify `/player-trap-he` renders Hebrew RTL copy.
+- Verify both pages submit to the existing lead/result flow.
+- Verify mocked lead records include `pageLanguage`.
+- Verify report pages match the selected language and diagnosis-call CTA language.
+
+Acceptance criteria:
+- `/player-trap` renders the English StoryBrand-style page correctly.
+- `/player-trap-he` renders the Hebrew direct-response page correctly.
+- Hebrew page uses `dir="rtl"`.
+- Both pages submit to the existing lead/result flow.
+- Lead records include `pageLanguage`.
+- Result pages match the selected language.
+- CTA copy matches the page language.
+- No mixed Hebrew/English except brand/model names.
+
+Verification notes:
+- Added `/player-trap-he` as a dedicated Hebrew RTL campaign page and kept `/player-trap` as the English campaign page.
+- Reordered both campaign pages around the approved funnel logic: outcome, dependency scenes, wrong fixes, reframe, Player Trap naming, leadership evolution framework, authority block, diagnostic, result capture, and diagnosis-call CTA.
+- Added native Hebrew funnel copy, Hebrew diagnostic questions, Hebrew answer choices, Hebrew report labels, and language-aware diagnosis-call redirects.
+- Removed the duplicate quick-check step from the assessment flow so visitors answer one scoring diagnostic before lead capture.
+- Added a result gate: visitors must complete all scoring questions, leave first name and email, and approve content/cookie consent before receiving the result report.
+- Added server-side validation for first name, email, content consent, and cookie consent in `/api/player-trap/lead`.
+- Persisted `pageLanguage`, result profile, result score, UTM attribution, test/report/diagnosis timestamps, and consent fields on email subscriber records.
+- Verified production-mode local pages at `http://127.0.0.1:3023/player-trap` and `http://127.0.0.1:3023/player-trap-he`.
+- Confirmed the Hebrew page contains Hebrew diagnostic questions and the lead form, and does not render the old English diagnostic question or duplicate quick-check prompt.
+- Ran `npm test -- tests/unit/player-trap.test.ts`: passed.
+- Ran `npm test`: passed, 16 files and 60 tests.
+- Ran `npm run typecheck`: passed.
+- Ran `npm run build`: passed with only the pre-existing unused migration argument warnings in `src/migrations/20260607_205054.ts`.
+
+### Task 023C - Align Player Trap UX Copy With Current Verified Flow
+
+State: `review`
+Lane: `conversion`, `public-rendering`, `diagnostic-funnel`
+Owner: Codex
+
+Goal:
+Improve conversion psychology inside the current verified Player Trap flow without changing the core mechanics.
+
+Scope:
+- Improve `/player-trap` and `/player-trap-he` copy hierarchy.
+- Improve CTA wording.
+- Improve assessment intro copy.
+- Improve the locked-form explanation.
+- Improve report page copy inside the existing hero/cards/CTA structure.
+- Improve bilingual Hebrew/English wording.
+- Fix mojibake or broken encoding in task docs or copied text.
+- Update documentation so it reflects the current verified flow.
+
+Out of scope:
+- No pre-assessment self-identification step.
+- No post-submit loading or analysis transition.
+- No API contract changes.
+- No Payload schema changes unless absolutely necessary.
+- No report token logic changes.
+- No email sending logic changes.
+- No homepage or global navigation changes.
+- No payment, book, or checkout changes.
+- No report page architecture replacement.
+
+Files expected to change:
+- `src/app/(site)/player-trap/page.tsx`
+- `src/app/(site)/player-trap-he/page.tsx`
+- `src/app/(site)/player-trap/report/[token]/page.tsx`
+- `src/app/(site)/player-trap/player-trap-assessment-client.tsx`
+- `src/lib/player-trap.ts`
+- `src/styles/components.css`
+- `tests/unit/player-trap.test.ts`
+- `PLANS.md`
+- `docs/plans/*`
+- `docs/Task 023B — Player Trap Funnel Flow.txt`
+
+Data contracts affected:
+- None expected.
+
+Agent permissions affected:
+- None.
+
+Validation steps:
+- Run `npm test -- tests/unit/player-trap.test.ts`.
+- Run `npm test`.
+- Run `npm run typecheck`.
+- Run `npm run build`.
+- Verify English and Hebrew flows still complete end to end.
+- Verify submit still posts directly to `/api/player-trap/lead`.
+- Verify report redirect still works.
+- Verify diagnosis call CTA still tracks and redirects.
+
+Acceptance criteria:
+- English flow still works end to end.
+- Hebrew flow still works end to end.
+- Submit still posts directly to `/api/player-trap/lead`.
+- Report redirect still works.
+- Payload subscriber record is still created.
+- Resend still works.
+- Diagnosis call CTA still tracks and redirects.
+- No regressions to verified production behavior.
+
+Verification notes:
+- Task 023B is superseded and should not be treated as canonical.
+- Current verified production flow remains the source of truth.
+- Completed copy alignment across the English and Hebrew Player Trap campaign pages and the report page while keeping the verified funnel mechanics unchanged.
+- Updated locked-form, CTA, and report copy to match the current verified flow and bilingual handling.
+- Validation passed: `npm test -- tests/unit/player-trap.test.ts`, `npm test`, `npm run typecheck`, and `npm run build`.
+- Production-mode local verification was completed for both `/player-trap` and `/player-trap-he`.
+
+### Task 025 - Codex-Run Agent Contract System
+
+State: `completed`
+Lane: `contracts`, `documentation`, `tests`
+Owner: Codex
+
+Goal:
+Define the codex-run agent contract system for the Authority Engine before any runtime orchestration exists.
+
+Scope:
+- Define typed contracts for the 16 content-production agents.
+- Define Zod schemas for Approved Insight, KnowledgeAsset, Claim Ledger, DistributionAsset, and PerformanceSignal contracts.
+- Define prompt shells and versioned prompt metadata.
+- Document the architecture decision block for the codex-run factory.
+- Add contract validation tests.
+- Update supporting documentation only where needed.
+
+Out of scope:
+- No runtime content generation.
+- No provider calls.
+- No LangGraph orchestration execution.
+- No publishing.
+- No Payload schema migration unless explicitly required by the contract design.
+- No homepage changes.
+- No Player Trap changes.
+
+Files expected to change:
+- `docs/plans/2026-06-09-agent-factory-contracts.md`
+- `AGENT_FACTORY.md` if needed
+- `DATA_CONTRACTS.md` if needed
+- `src/ai/agents/*` or other safe Type/Zod contract files
+- `tests/unit/*`
+- `PLANS.md`
+
+Data contracts affected:
+- Approved Insight contract
+- KnowledgeAsset contract
+- Claim Ledger contract
+- DistributionAsset contract
+- PerformanceSignal contract
+
+Agent permissions affected:
+- None.
+
+Validation steps:
+- Run `npm test -- tests/unit/agent-factory-contracts.test.ts`.
+- Run `npm test`.
+- Run `npm run typecheck`.
+- Confirm no runtime generation paths were added.
+
+Acceptance criteria:
+- Codex-run factory contracts exist without runtime execution.
+- 16 content-production agent contracts are defined.
+- PerformanceLearningAgent is deferred to Task 031.
+- Approved Insights live in Payload or the existing `InsightExtractions` storage if present.
+- KnowledgeAsset is the canonical output contract.
+- Claim Ledger contract exists in Task 025.
+- Recommendation pages are review-ready drafts only.
+- Distribution assets are drafts only and are not auto-published.
+- No runtime generation exists in Task 025.
+
+Verification notes:
+- Task 025 has been reserved as the contracts-only phase for the agent factory.
+- The plan will define contract-first boundaries before any orchestration or provider work begins.
+- Added contract-only Zod schemas for `ApprovedInsight`, `KnowledgeAsset`, `ClaimLedger`, `DistributionAsset`, and `PerformanceSignal`.
+- Enforced `DistributionAsset.reviewStatus = "draft"` in the Zod contract and regression test.
+- Added the 16-agent factory registry, prompt shell metadata, phase metadata, and exports from `src/ai/agents/index.ts`.
+- Documented the codex-run factory architecture decisions in `AGENT_FACTORY.md` and added the contract section to `DATA_CONTRACTS.md`.
+- Confirmed `PerformanceLearningAgent` remains deferred to Task 031.
+- Confirmed no provider calls, LangGraph execution, Payload writes, publishing logic, or runtime generation paths were added for Task 025.
+- Ran `npm test -- tests/unit/agent-factory-contracts.test.ts`: passed, 1 file and 5 tests.
+- Ran `npm test`: passed, 17 files and 63 tests.
+- Ran `npm run typecheck`: passed.
 
 ### Task 013 - Authority Surface Seed
 

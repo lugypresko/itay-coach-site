@@ -194,6 +194,63 @@ export interface ContentJob {
 }
 ```
 
+## Player Trap Lead Contract
+
+```ts
+export type PlayerTrapLanguage = "en" | "he";
+
+export type PlayerTrapTier =
+  | "trusted-operator"
+  | "invisible-executor"
+  | "execution-bottleneck";
+
+export interface PlayerTrapLead {
+  email: string;
+  name: string;
+  status: "subscribed" | "unsubscribed" | "pending";
+  source: "player-trap" | "player-trap-he";
+  leadSource: "player-trap" | "player-trap-he";
+  pageLanguage: PlayerTrapLanguage;
+  reportToken: string;
+  reportUrl: string;
+  diagnosisCallUrl: string;
+  assessmentScore: number;
+  assessmentTier: PlayerTrapTier;
+  assessmentResult: string;
+  assessmentAnswers: string;
+  resultProfile: PlayerTrapTier;
+  resultScore: number;
+  contentConsentAccepted: boolean;
+  cookiesConsentAccepted: boolean;
+  consentAcceptedAt: string;
+  lifecycleStage:
+    | "test_completed"
+    | "lead_captured"
+    | "email_1_sent"
+    | "diagnosis_call_requested"
+    | "nurture_active";
+  testCompletedAt: string;
+  reportRequestedAt: string;
+  reportViewedAt?: string;
+  diagnosisCallRequestedAt?: string;
+  nurtureSequenceKey: string;
+  nurtureStep: number;
+  nurtureLastEmailSlug: string;
+  nurtureLastEmailId?: string;
+  nurtureLastEmailMode?: "live" | "dry-run";
+  nurtureLastEmailStatus?: "live" | "dry-run";
+  nurtureLastEmailSentAt: string;
+  utmSource?: string;
+  utmMedium?: string;
+  utmCampaign?: string;
+  utmContent?: string;
+  utmTerm?: string;
+  tags: string[];
+}
+```
+
+Player Trap leads must not receive a result report until the visitor has completed the scoring diagnostic, provided first name and email, and explicitly accepted both content and cookie consent. Hebrew campaign leads must store `pageLanguage = "he"` and use Hebrew diagnostic questions, answer labels, report labels, and CTA copy.
+
 ## Agent Run Contract
 
 ```ts
@@ -223,6 +280,155 @@ export interface AgentRun {
 `PayloadPublisherAgent` is a draft persistence agent. It may save content to Payload as `draft` or `in_review` only. It must not set content to `published`; publishing requires a human CMS action.
 
 `VisibilityMonitorAgent` is a measurement agent. It may read published or draft content, run scorecard checks, and emit recommendations. It must not create, modify, or publish content directly.
+
+## Agent Factory Contracts
+
+Task 025 defines the contract-only codex-run agent factory. The runtime orchestrator is deferred.
+
+### Approved Insight Contract
+
+```ts
+export interface ApprovedInsightClaim {
+  text: string;
+  evidenceUrls: string[];
+  targetQueries: string[];
+  targetEntities: string[];
+}
+
+export interface ApprovedInsight {
+  id: string;
+  sourceTitle: string;
+  sourceType: ItayInsightSourceType;
+  status: "approved";
+  capturedAt: string;
+  approvedAt: string;
+  approvedBy: string;
+  freshnessExpiresAt: string;
+  summary: string;
+  rawText?: string;
+  claims: ApprovedInsightClaim[];
+  evidenceUrls: string[];
+  entityTags: string[];
+  targetQueries: string[];
+  targetRecommendationQueries?: string[];
+  sourceUrls: string[];
+  authorityPurpose?: string;
+  linkedContentJobId?: string;
+  reviewerNotes?: string;
+}
+```
+
+Approved Insight records must always be approved, must always include an approver and approval timestamp, and must include at least one `targetQuery`. `freshnessExpiresAt` is required so downstream generation can reject stale approval windows.
+
+### KnowledgeAsset Contract
+
+```ts
+export interface KnowledgeAsset {
+  id: string;
+  sourceInsightId: string;
+  claimIds: string[];
+  targetQueries: string[];
+  targetEntities: string[];
+  shortAnswer: string;
+  reviewStatus: "draft" | "in_review" | "approved" | "rejected";
+  title?: string;
+  summary?: string;
+  evidenceUrls: string[];
+  sourceUrls: string[];
+  reviewerNotes?: string;
+}
+```
+
+`KnowledgeAsset` is the canonical output contract for the factory. Agent-authored assets must never enter `published` state. The maximum contract state is `approved`. Human publishing remains a Payload action outside this contract.
+
+### Claim Ledger Contract
+
+```ts
+export type ClaimType = "factual" | "research" | "client_outcome" | "framework" | "opinion";
+
+export interface ClaimLedgerEntry {
+  id: string;
+  claimType: ClaimType;
+  claimText: string;
+  sourceInsightId: string;
+  evidenceUrls: string[];
+  targetQueries: string[];
+  targetEntities: string[];
+  reviewStatus: "draft" | "in_review" | "approved" | "rejected";
+  notes?: string;
+}
+
+export interface ClaimLedger {
+  id: string;
+  sourceInsightId: string;
+  reviewStatus: "draft" | "in_review" | "approved" | "rejected";
+  entries: ClaimLedgerEntry[];
+}
+```
+
+Claim taxonomy must distinguish factual, research, client outcome, framework, and opinion claims.
+
+### DistributionAsset Contract
+
+```ts
+export type DistributionChannel =
+  | "linkedin_post"
+  | "linkedin_carousel_outline"
+  | "email_teaser"
+  | "whatsapp_post"
+  | "short_video_script"
+  | "cta_variant"
+  | "retargeting_angle";
+
+export interface DistributionAsset {
+  id: string;
+  knowledgeAssetId: string;
+  channel: DistributionChannel;
+  reviewStatus: "draft";
+  title: string;
+  body: string;
+  targetQueries: string[];
+  targetEntities: string[];
+  promptVersion: string;
+  phase: "discovery" | "analysis" | "authoring" | "governance" | "release" | "distribution";
+  reviewerNotes?: string;
+}
+```
+
+Distribution assets are drafts only. They are not auto-published.
+
+### PerformanceSignal Contract
+
+```ts
+export type PerformanceSignalType =
+  | "ai_mention"
+  | "ai_citation"
+  | "query_visibility"
+  | "page_view"
+  | "cta_click"
+  | "lead_source"
+  | "content_source"
+  | "assessment_completion"
+  | "diagnosis_call_request"
+  | "booked_call"
+  | "close_rate";
+
+export interface PerformanceSignal {
+  id: string;
+  assetId: string;
+  signalType: PerformanceSignalType;
+  signalState: "observed" | "placeholder";
+  observedAt: string;
+  source: string;
+  value: number;
+  unit?: string;
+  platform?: string;
+  query?: string;
+  notes?: string;
+}
+```
+
+Performance signals must distinguish observed signals from placeholders so future learning work can stay explicit about what is real versus planned.
 
 ## Required Payload Collections
 
