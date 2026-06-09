@@ -1,23 +1,22 @@
 import type { Metadata } from "next";
 
 import {
-  playerTrapAuthorityCopy,
-  playerTrapEvolutionStages,
-  playerTrapImpactChartPoints,
-  getPlayerTrapQuestions,
   getPlayerTrapFunnelCopy,
+  getPlayerTrapQuestions,
+  playerTrapAuthorityCopyHebrew,
+  playerTrapEvolutionStagesHebrew,
+  playerTrapImpactChartPointsHebrew,
 } from "@/lib/player-trap";
 
-import { PlayerTrapAssessmentClient } from "./player-trap-assessment-client";
+import { PlayerTrapAssessmentClient } from "../player-trap/player-trap-assessment-client";
 
-type PlayerTrapPageProps = {
+type PlayerTrapHebrewPageProps = {
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
 };
 
 export const metadata: Metadata = {
-  title: "Player Trap Test",
-  description:
-    "A 3-minute Player Trap test for tech managers who want to build a team that moves without waiting for them.",
+  title: "מבחן מלכודת השחקן המצטיין",
+  description: "אבחון של 3 דקות למנהלים טכנולוגיים שרוצים לראות אם הכל עדיין עובר דרכם.",
   robots: {
     index: false,
     follow: false,
@@ -29,7 +28,7 @@ function readSearchParam(searchParams: Record<string, string | string[] | undefi
   return typeof value === "string" ? value : "";
 }
 
-export default async function PlayerTrapPage({ searchParams }: PlayerTrapPageProps) {
+export default async function PlayerTrapHebrewPage({ searchParams }: PlayerTrapHebrewPageProps) {
   const resolvedSearchParams = searchParams ? await searchParams : undefined;
   const initialUtm = {
     utmSource: readSearchParam(resolvedSearchParams, "utm_source"),
@@ -38,11 +37,11 @@ export default async function PlayerTrapPage({ searchParams }: PlayerTrapPagePro
     utmContent: readSearchParam(resolvedSearchParams, "utm_content"),
     utmTerm: readSearchParam(resolvedSearchParams, "utm_term"),
   };
-  const funnel = getPlayerTrapFunnelCopy("en");
-  const questions = getPlayerTrapQuestions("en");
+  const funnel = getPlayerTrapFunnelCopy("he");
+  const questions = getPlayerTrapQuestions("he");
 
   return (
-    <main className="content-shell player-trap-shell" lang={funnel.language} dir={funnel.direction}>
+    <main className="content-shell player-trap-shell" lang={funnel.language} dir="rtl">
       <section className="player-trap-hero">
         <div className="player-trap-hero-copy">
           <p className="eyebrow">{funnel.hero.eyebrow}</p>
@@ -60,7 +59,7 @@ export default async function PlayerTrapPage({ searchParams }: PlayerTrapPagePro
           <p className="player-trap-microcopy">{funnel.hero.microcopy}</p>
         </div>
 
-        <aside className="player-trap-hero-panel" aria-label="Campaign summary">
+        <aside className="player-trap-hero-panel" aria-label="תקציר קמפיין">
           <p className="authority-label">{funnel.dailyScenes.label}</p>
           <ul className="player-trap-bullet-list">
             {funnel.dailyScenes.scenes.slice(0, 3).map((scene) => (
@@ -68,9 +67,9 @@ export default async function PlayerTrapPage({ searchParams }: PlayerTrapPagePro
             ))}
           </ul>
           <div className="player-trap-hero-panel-foot">
-            <span>3 minutes</span>
-            <span>No fluff</span>
-            <span>Tech managers</span>
+            <span>3 דקות</span>
+            <span>בלי בולשיט</span>
+            <span>למנהלים טכנולוגיים</span>
           </div>
         </aside>
       </section>
@@ -128,18 +127,18 @@ export default async function PlayerTrapPage({ searchParams }: PlayerTrapPagePro
           <p className="authority-summary">{funnel.framework.body}</p>
         </div>
         <div className="player-trap-framework-grid">
-          {playerTrapEvolutionStages.map((stage, index) => (
+          {playerTrapEvolutionStagesHebrew.map((stage, index) => (
             <article className="player-trap-framework-card" key={stage.title}>
               <p className="player-trap-stage-index">0{index + 1}</p>
               <h3>{stage.title}</h3>
               <p>{stage.description}</p>
               <dl>
                 <div>
-                  <dt>Bottleneck</dt>
+                  <dt>צוואר בקבוק</dt>
                   <dd>{stage.bottleneck}</dd>
                 </div>
                 <div>
-                  <dt>Next challenge</dt>
+                  <dt>האתגר הבא</dt>
                   <dd>{stage.nextChallenge}</dd>
                 </div>
               </dl>
@@ -150,9 +149,9 @@ export default async function PlayerTrapPage({ searchParams }: PlayerTrapPagePro
 
       <section className="player-trap-section">
         <div className="player-trap-section-heading">
-          <p className="authority-label">Authority</p>
-          <h2>{playerTrapAuthorityCopy.headline}</h2>
-          <p className="authority-summary">{playerTrapAuthorityCopy.body}</p>
+          <p className="authority-label">סמכות</p>
+          <h2>{playerTrapAuthorityCopyHebrew.headline}</h2>
+          <p className="authority-summary">{playerTrapAuthorityCopyHebrew.body}</p>
         </div>
       </section>
 
@@ -162,10 +161,10 @@ export default async function PlayerTrapPage({ searchParams }: PlayerTrapPagePro
           <h2>{funnel.chart.headline}</h2>
         </div>
         <div className="player-trap-chart">
-          <div className="player-trap-chart-axis player-trap-chart-axis-y">Influence</div>
-          <div className="player-trap-chart-axis player-trap-chart-axis-x">Personal involvement</div>
+          <div className="player-trap-chart-axis player-trap-chart-axis-y">השפעה</div>
+          <div className="player-trap-chart-axis player-trap-chart-axis-x">מעורבות אישית</div>
           <div className="player-trap-chart-grid">
-            {playerTrapImpactChartPoints.map((point) => (
+            {playerTrapImpactChartPointsHebrew.map((point) => (
               <article className="player-trap-chart-point" key={point.stage}>
                 <strong>{point.stage}</strong>
                 <span>{point.x}</span>
@@ -177,12 +176,7 @@ export default async function PlayerTrapPage({ searchParams }: PlayerTrapPagePro
       </section>
 
       <section className="player-trap-section" id="player-trap-assessment">
-        <PlayerTrapAssessmentClient
-          questions={questions}
-          initialUtm={initialUtm}
-          pageLanguage="en"
-          copy={funnel.assessment}
-        />
+        <PlayerTrapAssessmentClient questions={questions} initialUtm={initialUtm} pageLanguage="he" copy={funnel.assessment} />
       </section>
     </main>
   );

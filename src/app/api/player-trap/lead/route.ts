@@ -7,10 +7,12 @@ import {
   buildPlayerTrapFollowUpEmail,
   buildPlayerTrapReport,
   buildPlayerTrapReportUrl,
+  buildPlayerTrapSubmissionData,
+  getPlayerTrapQuestions,
   normalizeUtmAttribution,
+  normalizePlayerTrapLanguage,
   playerTrapNurtureSequence,
   scorePlayerTrap,
-  serializeAnswers,
 } from "@/lib/player-trap";
 import { sendResendEmail } from "@/lib/resend";
 
@@ -20,6 +22,9 @@ type LeadRequestBody = {
   answers?: Partial<Record<PlayerTrapQuestionId, string>>;
   reportToken?: string;
   diagnosisCallRequested?: boolean;
+  pageLanguage?: string;
+  contentConsentAccepted?: boolean;
+  cookiesConsentAccepted?: boolean;
   utm?: Partial<Record<"utmSource" | "utmMedium" | "utmCampaign" | "utmContent" | "utmTerm", string>>;
 };
 
@@ -28,6 +33,15 @@ function normalizeEmail(value: string) {
 }
 
 export async function POST(request: Request) {
+  try {
+    return await handleLeadPost(request);
+  } catch (error) {
+    console.error("Player Trap lead submission failed", error);
+    return NextResponse.json({ error: "Unable to create the diagnostic report." }, { status: 500 });
+  }
+}
+
+async function handleLeadPost(request: Request) {
   const body = (await request.json()) as LeadRequestBody;
   const email = body.email?.trim();
 
@@ -35,12 +49,24 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Email is required." }, { status: 400 });
   }
 
+  if (!body.name?.trim()) {
+    return NextResponse.json({ error: "First name is required." }, { status: 400 });
+  }
+
+  if (body.contentConsentAccepted !== true || body.cookiesConsentAccepted !== true) {
+    return NextResponse.json({ error: "Content and cookies consent is required." }, { status: 400 });
+  }
+
   const normalizedEmail = normalizeEmail(email);
-  const result = scorePlayerTrap(body.answers ?? {});
   const reportToken = body.reportToken?.trim() || crypto.randomUUID();
-  const reportUrl = buildPlayerTrapReportUrl(reportToken);
-  const diagnosisCallUrl = buildPlayerTrapDiagnosisCallUrl(reportToken);
+  const requestUrl = new URL(request.url);
+  const requestBaseUrl = requestUrl.origin;
+  const reportUrl = buildPlayerTrapReportUrl(reportToken, requestBaseUrl);
+  const diagnosisCallUrl = buildPlayerTrapDiagnosisCallUrl(reportToken, requestBaseUrl);
   const utm = normalizeUtmAttribution(body.utm);
+  const pageLanguage = normalizePlayerTrapLanguage(body.pageLanguage);
+  const result = scorePlayerTrap(body.answers ?? {}, getPlayerTrapQuestions(pageLanguage));
+  const now = new Date().toISOString();
   const payload = await getServerPayload();
   const reportSummary = buildPlayerTrapReport(result, {
     name: body.name?.trim() || undefined,
@@ -59,32 +85,20 @@ export async function POST(request: Request) {
     },
   } as never);
 
-  const submission = {
-    name: body.name?.trim() || undefined,
+  const submission = buildPlayerTrapSubmissionData({
+    name: body.name,
     email: normalizedEmail,
+    answers: body.answers ?? {},
+    result,
     reportToken,
     reportUrl,
     diagnosisCallUrl,
-    assessmentScore: result.totalScore,
-    assessmentTier: result.tier,
-    assessmentResult: JSON.stringify(result),
-    assessmentAnswers: serializeAnswers(body.answers ?? {}),
-    lifecycleStage: "lead_captured",
-    leadSource: "player-trap",
-    source: "player-trap",
-    tags: [{ value: "player-trap" }, { value: "diagnostic" }, { value: result.tier }],
-    status: "subscribed" as const,
-    reportRequestedAt: new Date().toISOString(),
-    nurtureSequenceKey: "player-trap-2026",
-    nurtureStep: 1,
-    nurtureLastEmailSlug: playerTrapNurtureSequence[0].slug,
-    nurtureLastEmailSentAt: new Date().toISOString(),
-    utmSource: utm.utmSource || undefined,
-    utmMedium: utm.utmMedium || undefined,
-    utmCampaign: utm.utmCampaign || undefined,
-    utmContent: utm.utmContent || undefined,
-    utmTerm: utm.utmTerm || undefined,
-  };
+    pageLanguage,
+    contentConsentAccepted: body.contentConsentAccepted,
+    cookiesConsentAccepted: body.cookiesConsentAccepted,
+    utm,
+    now,
+  });
 
   const existingRecord = existing.docs[0] as unknown as { id: string } | undefined;
 
@@ -127,7 +141,7 @@ export async function POST(request: Request) {
       nurtureLastEmailId: resendResult.id,
       nurtureLastEmailMode: resendResult.mode,
       nurtureLastEmailStatus: resendResult.mode,
-      reportViewedAt: new Date().toISOString(),
+      reportViewedAt: now,
     } as never,
     overrideAccess: true,
   });

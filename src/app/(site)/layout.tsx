@@ -3,7 +3,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { getSiteUrl } from "@/lib/site-url";
-import "../globals.css";
+import "../../styles/tokens.css";
+import "../../styles/base.css";
+import "../../styles/typography.css";
+import "../../styles/layout.css";
+import "../../styles/components.css";
 
 type SiteLayoutProps = {
   children: ReactNode;

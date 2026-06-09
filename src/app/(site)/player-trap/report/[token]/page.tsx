@@ -3,7 +3,12 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { getServerPayload } from "@/lib/payload";
-import type { PlayerTrapResult } from "@/lib/player-trap";
+import {
+  buildPlayerTrapReportLabels,
+  localizePlayerTrapResult,
+  normalizePlayerTrapLanguage,
+  type PlayerTrapResult,
+} from "@/lib/player-trap";
 
 type PlayerTrapReportPageProps = {
   params: Promise<{ token: string }>;
@@ -62,6 +67,7 @@ export default async function PlayerTrapReportPage({ params }: PlayerTrapReportP
         reportUrl?: string;
         diagnosisCallUrl?: string;
         assessmentResult?: string;
+        pageLanguage?: string;
         reportViewedAt?: string;
         reportRequestedAt?: string;
       }
@@ -83,20 +89,23 @@ export default async function PlayerTrapReportPage({ params }: PlayerTrapReportP
     });
   }
 
-  const report = parseResult(record.assessmentResult) ?? {
+  const pageLanguage = normalizePlayerTrapLanguage(record.pageLanguage);
+  const labels = buildPlayerTrapReportLabels(pageLanguage);
+  const report = localizePlayerTrapResult(parseResult(record.assessmentResult) ?? {
     totalScore: 0,
     maxScore: 15,
+    tier: "trusted-operator",
     title: "Unknown",
     summary: "No diagnostic result was stored for this report.",
-    diagnosis: "The report payload is incomplete.",
-    primaryCTA: "Return to the diagnostic",
-    secondaryCTA: "Use the scorecard",
-    nextStep: "Re-run the diagnostic to capture a complete report.",
-  };
+    diagnosis: "The report payload is incomplete, so the hidden cost could not be reconstructed.",
+    primaryCTA: "Return to the diagnostic and capture a complete result.",
+    secondaryCTA: "Use the scorecard to re-check the pattern.",
+    nextStep: "Re-run the diagnostic to capture the missing leadership signals.",
+  }, pageLanguage);
   return (
-    <main className="content-shell">
+    <main className="content-shell" lang={pageLanguage} dir={pageLanguage === "he" ? "rtl" : "ltr"}>
       <section className="content-hero">
-        <p className="eyebrow">Diagnostic report</p>
+        <p className="eyebrow">{labels.eyebrow}</p>
         <h1>{report.title}</h1>
         <p className="lede">{report.summary}</p>
       </section>
@@ -105,47 +114,47 @@ export default async function PlayerTrapReportPage({ params }: PlayerTrapReportP
         <article className="content-panel-wide">
           <div className="result-stack">
             <div className="result-card">
-              <p className="authority-label">Score</p>
+              <p className="authority-label">{labels.score}</p>
               <p className="result-score">
                 <strong>
                   {report.totalScore}
                 </strong>{" "}
-                of {report.maxScore}
+                {labels.scoreConnector} {report.maxScore}
               </p>
             </div>
             <div className="result-card">
-              <p className="authority-label">Diagnosis</p>
+              <p className="authority-label">{labels.diagnosis}</p>
               <p className="authority-summary">{report.diagnosis}</p>
             </div>
             <div className="result-card">
-              <p className="authority-label">Next step</p>
+              <p className="authority-label">{labels.nextStep}</p>
               <p className="authority-summary">{report.nextStep}</p>
             </div>
             <div className="result-card">
-              <p className="authority-label">Primary CTA</p>
+              <p className="authority-label">{labels.primaryCta}</p>
               <p className="authority-summary">{report.primaryCTA}</p>
               <p className="authority-summary">{report.secondaryCTA}</p>
             </div>
           </div>
 
+          <p className="authority-summary">{labels.diagnosisCallSupport}</p>
+
           <div className="content-actions">
             <form className="inline-form" action="/api/player-trap/diagnosis-call" method="post">
               <input type="hidden" name="reportToken" value={record.reportToken ?? token} />
               <button className="primary-link" type="submit">
-                Request diagnosis call
+                {labels.diagnosisCallCta}
               </button>
             </form>
             <Link className="secondary-link" href="/tech-leadership-visibility-scorecard">
-              Open the scorecard
+              {labels.scorecardCta}
             </Link>
           </div>
 
           <div className="report-meta">
-            <p className="authority-summary">Report requested: {formatDate(record.reportRequestedAt)}</p>
-            <p className="authority-summary">Lead email: {record.email}</p>
-            <p className="authority-summary">
-              Diagnosis call request is tracked on the button below.
-            </p>
+            <p className="authority-summary">{labels.reportRequested}: {formatDate(record.reportRequestedAt)}</p>
+            <p className="authority-summary">{labels.leadEmail}: {record.email}</p>
+            <p className="authority-summary">{labels.diagnosisCallTracked}</p>
           </div>
         </article>
       </section>

@@ -222,9 +222,303 @@
   font-size: var(--text-sm);
 }
 
+.player-trap-shell {
+  --color-bg: #0b0b0b;
+  --color-text: #ffffff;
+  --color-text-secondary: #e1e1e1;
+  --color-text-muted: #b7b7b7;
+  --color-border: rgba(255, 255, 255, 0.24);
+  --color-border-light: rgba(255, 255, 255, 0.12);
+  --color-accent: #d4af37;
+  background: #0b0b0b;
+  color: #ffffff;
+  max-width: none;
+  padding-bottom: var(--space-12);
+}
+
+.player-trap-hero,
+.player-trap-section,
+.player-trap-sign-card,
+.player-trap-framework-card,
+.player-trap-hero-panel {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.player-trap-hero-copy {
+  display: grid;
+  gap: var(--space-4);
+  max-width: 720px;
+}
+
+.player-trap-hero {
+  max-width: var(--width-page);
+  margin: 0 auto;
+  padding: var(--space-8) 0;
+  border-bottom: var(--border-width) solid var(--color-border-light);
+}
+
+.player-trap-hero-copy h1 {
+  max-width: 15ch;
+}
+
+.player-trap-hero-copy .lede {
+  margin: 0;
+  color: var(--color-text);
+}
+
+.player-trap-description {
+  max-width: var(--width-prose);
+  margin: 0;
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  color: var(--color-text-secondary);
+}
+
+.player-trap-microcopy {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+.player-trap-hero-panel {
+  padding: var(--space-5);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: #141414;
+}
+
+.player-trap-bullet-list {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.player-trap-bullet-list li {
+  padding-top: var(--space-3);
+  border-top: var(--border-width) solid var(--color-border-light);
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+  color: var(--color-text-secondary);
+}
+
+.player-trap-hero-panel-foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+  padding-top: var(--space-3);
+  border-top: var(--border-width) solid var(--color-border-light);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.player-trap-section {
+  max-width: var(--width-page);
+  margin: 0 auto;
+  padding-top: var(--space-8);
+  border-top: var(--border-width) solid var(--color-border-light);
+}
+
+.player-trap-section-heading {
+  display: grid;
+  gap: var(--space-2);
+  max-width: var(--width-content);
+}
+
+.player-trap-section-heading h2,
+.result-block h2 {
+  margin: 0;
+}
+
+.player-trap-copy-block {
+  grid-template-columns: 1fr;
+}
+
+.player-trap-line-stack {
+  display: grid;
+  gap: var(--space-2);
+  max-width: var(--width-prose);
+  padding-top: var(--space-2);
+}
+
+.player-trap-line-stack p {
+  margin: 0;
+  color: var(--color-text-secondary);
+}
+
+.player-trap-line-stack p:last-child {
+  color: var(--color-text);
+  font-weight: var(--weight-semibold);
+}
+
+.player-trap-line-stack-strong p {
+  font-size: var(--text-lg);
+  line-height: var(--leading-snug);
+}
+
+[dir="rtl"].player-trap-shell {
+  text-align: right;
+}
+
+[dir="rtl"].player-trap-shell .content-actions,
+[dir="rtl"].player-trap-shell .quick-check-options,
+[dir="rtl"].player-trap-shell .player-trap-hero-panel-foot {
+  justify-content: flex-start;
+}
+
+[dir="rtl"].player-trap-shell .assessment-option,
+[dir="rtl"].player-trap-shell .quick-check-option {
+  text-align: right;
+}
+
+.player-trap-sign-grid,
+.player-trap-framework-grid,
+.player-trap-chart-points {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.player-trap-sign-card,
+.player-trap-framework-card,
+.player-trap-chart-point {
+  padding: var(--space-4);
+  border: var(--border-width) solid var(--color-border-light);
+  border-radius: var(--radius-sm);
+  background: #141414;
+}
+
+.player-trap-sign-card h3,
+.player-trap-framework-card h3,
+.player-trap-chart-point strong {
+  margin: 0;
+  font-size: var(--text-base);
+  font-weight: var(--weight-bold);
+}
+
+.player-trap-sign-card p,
+.player-trap-framework-card p,
+.player-trap-chart-point span,
+.player-trap-framework-card dd {
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+  color: var(--color-text-secondary);
+}
+
+.player-trap-framework-card dl {
+  display: grid;
+  gap: var(--space-3);
+  margin-top: var(--space-2);
+}
+
+.player-trap-framework-card dt {
+  margin-bottom: var(--space-1);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.player-trap-stage-index {
+  margin: 0;
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--color-accent);
+}
+
+.player-trap-chart {
+  position: relative;
+  display: grid;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  border: var(--border-width) solid var(--color-border-light);
+  border-radius: var(--radius-sm);
+  background: #141414;
+}
+
+.player-trap-chart-grid {
+  display: grid;
+  gap: var(--space-3);
+  min-height: 220px;
+  border: var(--border-width) solid var(--color-border-light);
+  padding: var(--space-3);
+}
+
+.player-trap-chart-axis {
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.player-trap-chart-points {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.player-trap-chart-grid .player-trap-chart-point {
+  min-height: 100px;
+}
+
+.player-trap-chart-point {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.quick-check-stack {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.quick-check-item legend {
+  max-width: var(--width-prose);
+}
+
+.quick-check-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.quick-check-option {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 44px;
+  padding: var(--space-2) var(--space-3);
+  border: var(--border-width) solid var(--color-border-light);
+  border-radius: var(--radius-sm);
+  background: #141414;
+  color: var(--color-text-secondary);
+}
+
+.quick-check-option:has(input:checked),
+.assessment-option:has(input:checked) {
+  border-color: var(--color-accent);
+  color: var(--color-text);
+}
+
+.quick-check-option input {
+  margin: 0;
+}
+
+.player-trap-alert {
+  padding: var(--space-4);
+  border: var(--border-width) solid var(--color-accent);
+  border-radius: var(--radius-sm);
+  background: #1b1608;
+  color: #ffffff;
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+}
+
 .assessment-shell {
   display: grid;
   gap: var(--space-6);
+  max-width: var(--width-page);
+  margin: 0 auto;
 }
 
 .assessment-intro,
@@ -239,6 +533,11 @@
 .result-block {
   display: grid;
   gap: var(--space-5);
+}
+
+.assessment-result {
+  position: sticky;
+  top: var(--space-6);
 }
 
 .assessment-question,
@@ -279,6 +578,12 @@
   color: var(--color-text-secondary);
 }
 
+.assessment-option:hover,
+.quick-check-option:hover {
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+
 .assessment-option input {
   margin-top: 0.2rem;
 }
@@ -306,9 +611,34 @@
   color: var(--color-text);
 }
 
+.form-field input:disabled,
+.form-field textarea:disabled,
+.form-field select:disabled,
+.form-consent input:disabled,
+.form-submit:disabled {
+  opacity: 0.65;
+}
+
 .form-meta {
   display: grid;
   gap: var(--space-1);
+}
+
+.form-consent {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  padding: var(--space-3);
+  border: var(--border-width) solid var(--color-border-light);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+  color: var(--color-text-secondary);
+}
+
+.form-consent input {
+  flex: 0 0 auto;
+  margin-top: 0.2rem;
 }
 
 .form-error {
@@ -330,7 +660,6 @@
 }
 
 .form-submit:disabled {
-  opacity: 0.65;
   cursor: progress;
 }
 
@@ -674,6 +1003,19 @@
   }
 
   .authority-trust-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .player-trap-hero {
+    grid-template-columns: minmax(0, 1.1fr) minmax(280px, 0.9fr);
+    align-items: start;
+    gap: var(--space-8);
+  }
+
+  .player-trap-sign-grid,
+  .player-trap-framework-grid,
+  .player-trap-chart-points,
+  .player-trap-chart-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 

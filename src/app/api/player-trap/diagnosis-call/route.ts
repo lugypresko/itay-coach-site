@@ -32,7 +32,7 @@ export async function GET(request: Request) {
     },
   } as never);
 
-  const record = result.docs[0] as unknown as { id?: string } | undefined;
+  const record = result.docs[0] as unknown as { id?: string; pageLanguage?: string } | undefined;
 
   if (!record?.id) {
     return NextResponse.json({ error: "Report token not found." }, { status: 404 });
@@ -48,7 +48,8 @@ export async function GET(request: Request) {
     overrideAccess: true,
   });
 
-  return NextResponse.redirect(new URL("/book-a-fit-call?source=player-trap", request.url), 303);
+  const lang = record.pageLanguage === "he" ? "he" : "en";
+  return NextResponse.redirect(new URL(`/book-a-fit-call?source=player-trap&lang=${lang}`, request.url), 303);
 }
 
 export async function POST(request: Request) {
@@ -70,7 +71,7 @@ export async function POST(request: Request) {
     },
   } as never);
 
-  const record = result.docs[0] as unknown as { id?: string } | undefined;
+  const record = result.docs[0] as unknown as { id?: string; pageLanguage?: string } | undefined;
 
   if (!record?.id) {
     return NextResponse.json({ error: "Report token not found." }, { status: 404 });
@@ -86,5 +87,6 @@ export async function POST(request: Request) {
     overrideAccess: true,
   });
 
-  return NextResponse.redirect(new URL("/book-a-fit-call?source=player-trap", request.url), 303);
+  const lang = record.pageLanguage === "he" ? "he" : "en";
+  return NextResponse.redirect(new URL(`/book-a-fit-call?source=player-trap&lang=${lang}`, request.url), 303);
 }

@@ -3,20 +3,28 @@
 import { useMemo, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 
-import type { PlayerTrapQuestion, PlayerTrapQuestionId, PlayerTrapUtmAttribution } from "@/lib/player-trap";
-import { normalizeUtmAttribution, playerTrapQuestions, scorePlayerTrap } from "@/lib/player-trap";
+import {
+  normalizeUtmAttribution,
+  type PlayerTrapAssessmentCopy,
+  type PlayerTrapLanguage,
+  type PlayerTrapQuestion,
+  type PlayerTrapQuestionId,
+  type PlayerTrapUtmAttribution,
+} from "@/lib/player-trap";
 
 type PlayerTrapAssessmentClientProps = {
   questions: PlayerTrapQuestion[];
   initialUtm: PlayerTrapUtmAttribution;
+  pageLanguage: PlayerTrapLanguage;
+  copy: PlayerTrapAssessmentCopy;
 };
 
-function isComplete(answers: Partial<Record<PlayerTrapQuestionId, string>>) {
-  return playerTrapQuestions.every((question) => Boolean(answers[question.id]));
+function isComplete(answers: Partial<Record<PlayerTrapQuestionId, string>>, questions: PlayerTrapQuestion[]) {
+  return questions.every((question) => Boolean(answers[question.id]));
 }
 
-function buildAnswerRecord(answers: Partial<Record<PlayerTrapQuestionId, string>>) {
-  return playerTrapQuestions.reduce(
+function buildAnswerRecord(answers: Partial<Record<PlayerTrapQuestionId, string>>, questions: PlayerTrapQuestion[]) {
+  return questions.reduce(
     (acc, question) => {
       acc[question.id] = answers[question.id] ?? "";
       return acc;
@@ -25,21 +33,50 @@ function buildAnswerRecord(answers: Partial<Record<PlayerTrapQuestionId, string>
   );
 }
 
-export function PlayerTrapAssessmentClient({ questions, initialUtm }: PlayerTrapAssessmentClientProps) {
+function parseLeadResponse(responseText: string) {
+  if (!responseText) {
+    return {};
+  }
+
+  try {
+    return JSON.parse(responseText) as { error?: string; reportUrl?: string };
+  } catch {
+    return {};
+  }
+}
+
+export function PlayerTrapAssessmentClient({
+  questions,
+  initialUtm,
+  pageLanguage,
+  copy,
+}: PlayerTrapAssessmentClientProps) {
   const router = useRouter();
   const [answers, setAnswers] = useState<Partial<Record<PlayerTrapQuestionId, string>>>({});
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [consentAccepted, setConsentAccepted] = useState(false);
   const [status, setStatus] = useState<"idle" | "submitting" | "error">("idle");
   const [error, setError] = useState<string | null>(null);
-  const complete = isComplete(answers);
-  const computedResult = complete ? scorePlayerTrap(buildAnswerRecord(answers)) : null;
+  const complete = isComplete(answers, questions);
   const utm = useMemo(() => normalizeUtmAttribution(initialUtm), [initialUtm]);
 
   async function handleLeadSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setStatus("submitting");
     setError(null);
+
+    if (!complete) {
+      setStatus("error");
+      setError(copy.resultPromptBody);
+      return;
+    }
+
+    if (!consentAccepted) {
+      setStatus("error");
+      setError(copy.consentError);
+      return;
+    }
 
     try {
       const response = await fetch("/api/player-trap/lead", {
@@ -50,12 +87,16 @@ export function PlayerTrapAssessmentClient({ questions, initialUtm }: PlayerTrap
         body: JSON.stringify({
           email,
           name,
-          answers: buildAnswerRecord(answers),
+          answers: buildAnswerRecord(answers, questions),
+          pageLanguage,
+          contentConsentAccepted: consentAccepted,
+          cookiesConsentAccepted: consentAccepted,
           utm,
         }),
       });
 
-      const payload = (await response.json()) as { error?: string; reportUrl?: string };
+      const responseText = await response.text();
+      const payload = parseLeadResponse(responseText);
 
       if (!response.ok) {
         throw new Error(payload.error ?? "Unable to create the diagnostic report.");
@@ -76,19 +117,19 @@ export function PlayerTrapAssessmentClient({ questions, initialUtm }: PlayerTrap
     <div className="assessment-shell">
       <div className="assessment-form">
         <div className="assessment-intro">
-          <p className="authority-label">5-question diagnostic</p>
-          <p className="authority-summary">
-            Answer the questions below. When the result is visible, you can request the diagnostic report and the first
-            email.
-          </p>
+          <p className="authority-label">{copy.quickLabel}</p>
+          <p className="authority-summary">{copy.quickIntro}</p>
         </div>
 
-        <div className="assessment-stack">
+        <div className="assessment-stack" id="player-trap-self-check">
+          <div className="assessment-intro">
+            <p className="authority-label">{copy.fullAssessmentLabel}</p>
+            <p className="authority-summary">{copy.fullAssessmentIntro}</p>
+          </div>
+
           {questions.map((question) => (
             <fieldset className="assessment-question" key={question.id}>
-              <legend>
-                {question.prompt}
-              </legend>
+              <legend>{question.prompt}</legend>
               <p className="assessment-help">{question.help}</p>
               <div className="assessment-options">
                 {question.choices.map((choice) => (
@@ -116,68 +157,121 @@ export function PlayerTrapAssessmentClient({ questions, initialUtm }: PlayerTrap
 
       <aside className="assessment-result">
         <div className="result-block">
-          <p className="authority-label">Result</p>
-          {!complete || !computedResult ? (
+          <p className="authority-label">{copy.resultLabel}</p>
+          {!complete ? (
             <>
-              <h2>Complete all five answers to see the diagnosis.</h2>
-              <p className="authority-summary">
-                The result will show whether the current operating model is still visible enough to keep the team from
-                turning the manager into the default bottleneck.
-              </p>
+              <h2>{copy.resultPromptTitle}</h2>
+              <p className="authority-summary">{copy.resultPromptBody}</p>
+              <LeadCaptureForm
+                copy={copy}
+                name={name}
+                email={email}
+                consentAccepted={consentAccepted}
+                status={status}
+                error={error}
+                disabled
+                onNameChange={setName}
+                onEmailChange={setEmail}
+                onConsentChange={setConsentAccepted}
+                onSubmit={handleLeadSubmit}
+              />
             </>
           ) : (
             <>
-              <h2>{computedResult.title}</h2>
-              <p className="authority-summary">{computedResult.summary}</p>
-              <p className="result-score">
-                Score <strong>{computedResult.totalScore}</strong> of {computedResult.maxScore}
-              </p>
-              <div className="result-stack">
-                <div className="result-card">
-                  <p className="authority-label">Diagnosis</p>
-                  <p className="authority-summary">{computedResult.diagnosis}</p>
-                </div>
-                <div className="result-card">
-                  <p className="authority-label">Next step</p>
-                  <p className="authority-summary">{computedResult.nextStep}</p>
-                  <p className="authority-summary">{computedResult.primaryCTA}</p>
-                  <p className="authority-summary">{computedResult.secondaryCTA}</p>
-                </div>
-              </div>
-
-              <form className="lead-form" onSubmit={handleLeadSubmit}>
-                <div className="form-grid">
-                  <label className="form-field">
-                    <span>Name</span>
-                    <input value={name} onChange={(event) => setName(event.target.value)} type="text" autoComplete="name" />
-                  </label>
-                  <label className="form-field">
-                    <span>Email</span>
-                    <input
-                      value={email}
-                      onChange={(event) => setEmail(event.target.value)}
-                      type="email"
-                      autoComplete="email"
-                      required
-                    />
-                  </label>
-                </div>
-
-                <div className="form-meta">
-                  <p className="authority-summary">The first report email goes out after you submit the email address.</p>
-                  <p className="authority-summary">UTM source: {utm.utmSource || "not set"}</p>
-                </div>
-
-                {error ? <p className="form-error">{error}</p> : null}
-
-                <button className="form-submit" type="submit" disabled={status === "submitting"}>
-                  {status === "submitting" ? "Sending report" : "Send the report"}
-                </button>
-              </form>
+              <h2>{copy.resultGateTitle}</h2>
+              <p className="authority-summary">{copy.resultGateBody}</p>
+              <LeadCaptureForm
+                copy={copy}
+                name={name}
+                email={email}
+                consentAccepted={consentAccepted}
+                status={status}
+                error={error}
+                onNameChange={setName}
+                onEmailChange={setEmail}
+                onConsentChange={setConsentAccepted}
+                onSubmit={handleLeadSubmit}
+              />
             </>
           )}
         </div>
       </aside>
     </div>
+  );
+}
+
+function LeadCaptureForm({
+  copy,
+  name,
+  email,
+  consentAccepted,
+  status,
+  error,
+  disabled = false,
+  onNameChange,
+  onEmailChange,
+  onConsentChange,
+  onSubmit,
+}: {
+  copy: PlayerTrapAssessmentCopy;
+  name: string;
+  email: string;
+  consentAccepted: boolean;
+  status: "idle" | "submitting" | "error";
+  error: string | null;
+  disabled?: boolean;
+  onNameChange: (value: string) => void;
+  onEmailChange: (value: string) => void;
+  onConsentChange: (value: boolean) => void;
+  onSubmit: (event: FormEvent<HTMLFormElement>) => void;
+}) {
+  return (
+    <form className="lead-form" onSubmit={onSubmit}>
+      <div className="form-grid">
+        <label className="form-field">
+          <span>{copy.nameLabel}</span>
+          <input
+            value={name}
+            onChange={(event) => onNameChange(event.target.value)}
+            type="text"
+            autoComplete="given-name"
+            required
+            disabled={disabled}
+          />
+        </label>
+        <label className="form-field">
+          <span>{copy.emailLabel}</span>
+          <input
+            value={email}
+            onChange={(event) => onEmailChange(event.target.value)}
+            type="email"
+            autoComplete="email"
+            required
+            disabled={disabled}
+          />
+        </label>
+      </div>
+
+      <label className="form-consent">
+        <input
+          type="checkbox"
+          checked={consentAccepted}
+          onChange={(event) => onConsentChange(event.target.checked)}
+          required
+          disabled={disabled}
+        />
+        <span>{copy.consentLabel}</span>
+      </label>
+
+      <div className="form-meta">
+        <p className="authority-summary">{copy.formMeta}</p>
+      </div>
+
+      {error ? <p className="form-error">{error}</p> : null}
+
+      <button className="form-submit" type="submit" disabled={disabled || status === "submitting"}>
+        {status === "submitting" ? copy.submitSubmitting : copy.submitIdle}
+      </button>
+    </form>
   );
 }
