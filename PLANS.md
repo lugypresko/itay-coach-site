@@ -550,7 +550,7 @@ Verification note:
 
 ### Task 012A - Authority Graph Verification Cleanup
 
-State: `ready`
+State: `completed`
 Lane: `content-seed`, `developer-tooling`
 Owner: Codex
 
@@ -598,9 +598,18 @@ Acceptance criteria:
 - No stray parent `package-lock.json` remains in the workspace root path.
 - `lint`, `typecheck`, `build`, and `verify:authority-graph` all pass.
 
+Verification notes:
+- Added `process.exit(0)` to `src/seed/verify-minimum-authority-graph.ts` so the verifier exits cleanly after successful execution.
+- Removed the safe unused `agentFactoryPhaseOptions` imports from `src/ai/agents/agentFactoryPromptShells.ts` and `src/ai/agents/agentRegistry.ts`.
+- Confirmed there is no parent `package-lock.json` at `..\\package-lock.json`.
+- Ran `npm run lint`: passed with the existing four warnings in `src/migrations/20260607_205054.ts`.
+- Ran `npm run verify:authority-graph`: passed and wrote `TASK_012_VERIFICATION_REPORT.md`.
+- Ran `npm run typecheck`: passed.
+- Ran `npm run build`: passed with the same pre-existing migration warnings.
+
 ### Task 026A - Workspace Hygiene & Commit Separation
 
-State: `in_progress`
+State: `completed`
 Lane: `release`, `developer-tooling`
 Owner: Codex
 
@@ -641,6 +650,13 @@ Acceptance criteria:
 - Unrelated files are not mixed into task commits.
 - Generated/cache files are separated from durable source changes.
 - The workspace is ready for the next focused task.
+
+Verification notes:
+- Separated the Task 025 contract work into commit `1a6db10` (`docs: add codex-run agent factory contracts`).
+- Separated the Task 023C Player Trap work into commit `be595ab` (`feat: align player trap flow copy`).
+- Added `tmp/` to `.gitignore` so generated verification artifacts are not part of the tracked release surface.
+- Confirmed `git status` no longer includes generated `tmp/` files.
+- The remaining untracked historical planning artifacts are intentionally preserved as context and not part of the release commits.
 
 ### Task 026 - Codex-Run First Knowledge Asset
 

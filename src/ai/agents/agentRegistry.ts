@@ -2,7 +2,6 @@ import { z } from "zod";
 
 import {
   agentFactoryAgentNameOptions,
-  agentFactoryPhaseOptions,
   agentFactoryVersion,
   approvedInsightSchema,
   claimLedgerEntrySchema,

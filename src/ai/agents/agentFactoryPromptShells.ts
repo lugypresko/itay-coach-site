@@ -2,7 +2,6 @@ import { z } from "zod";
 
 import {
   agentFactoryAgentNameOptions,
-  agentFactoryPhaseOptions,
   type AgentFactoryAgentName,
   type AgentFactoryPhase,
 } from "./agentFactoryContracts";
