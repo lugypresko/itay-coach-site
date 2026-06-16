@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: SectionPageProps) {
   }
 
   return {
-    title: `${spec.pluralLabel} | The Push`,
+    title: spec.pluralLabel,
     description: spec.description,
     alternates: {
       canonical: `/${section}`,
@@ -51,22 +51,60 @@ export default async function SectionLandingPage({ params }: SectionPageProps) {
 
   return (
     <main className="content-shell">
-      <header className="content-hero">
-        <p className="eyebrow">{spec.pluralLabel}</p>
-        <h1>{spec.description}</h1>
-        <p className="lede">
-          This section anchors the public knowledge graph that supports AI recommendation visibility for tech leadership coaching.
-        </p>
+      <header className="content-hero content-hero-split">
+        <div className="content-hero-copy">
+          <div className="content-hero-meta">
+            <p className="eyebrow">{spec.pluralLabel}</p>
+            <p className="content-status">Public knowledge graph</p>
+          </div>
+          <h1>{spec.description}</h1>
+          <p className="lede">
+            This section anchors the public knowledge graph that supports AI recommendation visibility for tech leadership coaching.
+          </p>
+          <div className="content-actions">
+            <Link className="primary-link" href="/book-a-fit-call">
+              Book a fit call
+            </Link>
+            <Link className="secondary-link" href="/invisible-executor-assessment">
+              Open the assessment
+            </Link>
+          </div>
+        </div>
+
+        <aside className="content-hero-panel">
+          <p className="authority-label">Section snapshot</p>
+          <dl className="authority-dl">
+            <div>
+              <dt>Collection</dt>
+              <dd>{spec.collectionSlug}</dd>
+            </div>
+            <div>
+              <dt>Schema</dt>
+              <dd>{spec.schemaType}</dd>
+            </div>
+            <div>
+              <dt>Canonical pages</dt>
+              <dd>{sectionPages.length}</dd>
+            </div>
+          </dl>
+          <p className="authority-summary">
+            Use this page to move from a section-level view into the canonical authority pages.
+          </p>
+        </aside>
       </header>
 
       <section className="content-grid">
         <article className="content-panel content-panel-wide">
           <h2>Canonical pages</h2>
-          <div className="directory-grid">
-            {sectionPages.map((page) => (
-              <Link key={page.slug} href={`/${section}/${page.slug}`} className="directory-card">
-                <strong>{page.title}</strong>
-                <span>{page.description}</span>
+          <div className="offer-grid">
+            {sectionPages.map((page, index) => (
+              <Link key={page.slug} href={`/${section}/${page.slug}`} className={`offer${index === 1 ? " offer--featured" : ""}`}>
+                <div className="offer-number">
+                  <span>{page.title}</span>
+                  <span>0{index + 1}</span>
+                </div>
+                <h3>{page.title}</h3>
+                <p className="for">{page.description}</p>
               </Link>
             ))}
           </div>

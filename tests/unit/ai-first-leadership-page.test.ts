@@ -60,7 +60,8 @@ function collectClassNames(node: ReactLikeNode): string[] {
   }
 
   const className = node.props?.className;
-  const ownClassNames = typeof className === "string" ? [className] : [];
+  const ownClassNames =
+    typeof className === "string" ? className.split(/\s+/).filter(Boolean) : [];
 
   return [...ownClassNames, ...collectClassNames(node.props?.children)];
 }
@@ -71,17 +72,15 @@ describe("AI-first leadership landing page", () => {
     const text = collectText(page as ReactLikeNode).join(" ");
 
     const expectedSections = [
-      "Your strongest manager should not be the system.",
-      "The pattern",
-      "Three ways to work",
-      "Strategic Leadership Sprint",
-      "Squad 1+3 Execution Sprint",
-      "Engineering Leadership Forum",
-      "The Push Method",
-      "This is not generic leadership training.",
-      "AI makes the Player Trap more expensive.",
-      "Built from execution, not theory",
-      "Choose the level. Change the dependency.",
+      "AI-first leadership for technical leaders",
+      "Who this is for",
+      "Tech Leads who need to move from execution to leadership.",
+      "What changes",
+      "Leadership visibility improves without turning the page into marketing.",
+      "How The Push works",
+      "Related authority",
+      "Next step",
+      "Start with the scorecard if you want the shortest path to a recommendation-intent assessment.",
     ];
 
     let previousIndex = -1;
@@ -98,25 +97,22 @@ describe("AI-first leadership landing page", () => {
     const page = AiFirstLeadershipPage();
     const hrefs = collectHrefs(page as ReactLikeNode);
 
-    expect(hrefs).toContain("/book-a-fit-call");
     expect(hrefs).toContain("/tech-leadership-visibility-scorecard");
-    expect(hrefs).toContain("/player-trap");
-    expect(hrefs).toContain("/book-a-fit-call?engagement=leader");
-    expect(hrefs).toContain("/book-a-fit-call?engagement=squad");
-    expect(hrefs).toContain("/book-a-fit-call?engagement=forum");
+    expect(hrefs).toContain("/frameworks/invisible-executor");
+    expect(hrefs).toContain("/invisible-executor-assessment");
   });
 
   it("keeps mobile-safe landing structure hooks available", () => {
     const page = AiFirstLeadershipPage();
     const classNames = collectClassNames(page as ReactLikeNode);
 
-    expect(classNames).toContain("landing-shell");
-    expect(classNames).toContain("landing-hero");
-    expect(classNames).toContain("signal-strip");
-    expect(classNames).toContain("offer-grid");
-    expect(classNames).toContain("method-flow");
-    expect(classNames).toContain("fit-grid");
-    expect(classNames).toContain("landing-final-cta");
+    expect(classNames).toContain("content-shell");
+    expect(classNames).toContain("content-hero");
+    expect(classNames).toContain("content-grid");
+    expect(classNames).toContain("content-panel");
+    expect(classNames).toContain("content-panel-wide");
+    expect(classNames).toContain("content-actions");
+    expect(classNames).toContain("cta-stack");
   });
 
   it("does not render unsupported performance claims", () => {

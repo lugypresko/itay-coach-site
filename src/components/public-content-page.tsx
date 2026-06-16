@@ -26,28 +26,54 @@ export function PublicContentPage({ page }: PublicContentPageProps) {
 
   return (
     <main className="content-shell">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd, null, 2) }}
-      />
-      <header className="content-hero">
-        <div className="content-hero-meta">
-          <p className="eyebrow">{page.spec.label}</p>
-          <p className="content-status">
-            {page.record.status}
-            {page.record.lastReviewedAt ? ` · reviewed ${new Date(page.record.lastReviewedAt).toLocaleDateString("en-GB")}` : ""}
-          </p>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd, null, 2) }} />
+
+      <header className="content-hero content-hero-split">
+        <div className="content-hero-copy">
+          <div className="content-hero-meta">
+            <p className="eyebrow">{page.spec.label}</p>
+            <p className="content-status">
+              {page.record.status}
+              {page.record.lastReviewedAt ? ` | reviewed ${new Date(page.record.lastReviewedAt).toLocaleDateString("en-GB")}` : ""}
+            </p>
+          </div>
+          <h1>{page.record.title}</h1>
+          <p className="lede">{page.record.excerpt}</p>
+          <div className="content-actions">
+            <Link className="primary-link" href="/book-a-fit-call">
+              Book a fit call
+            </Link>
+            <Link className="secondary-link" href="/invisible-executor-assessment">
+              Invisible Executor Assessment
+            </Link>
+          </div>
         </div>
-        <h1>{page.record.title}</h1>
-        <p className="lede">{page.record.excerpt}</p>
-        <div className="content-actions">
-          <Link className="primary-link" href="/book-a-fit-call">
-            Book a fit call
-          </Link>
-          <Link className="secondary-link" href="/invisible-executor-assessment">
-            Invisible Executor Assessment
-          </Link>
-        </div>
+
+        <aside className="content-hero-panel" aria-label="Authority snapshot">
+          <p className="authority-label">Authority snapshot</p>
+          <dl className="authority-dl">
+            <div>
+              <dt>Source type</dt>
+              <dd>{page.trustSignals.evidence.sourceType}</dd>
+            </div>
+            <div>
+              <dt>Audience</dt>
+              <dd>{page.trustSignals.entityContext.audienceServed.join(", ") || "Not specified"}</dd>
+            </div>
+            <div>
+              <dt>Target queries</dt>
+              <dd>{page.trustSignals.recommendationIntent.targetRecommendationQueries.length}</dd>
+            </div>
+          </dl>
+          <div className="authority-list-group">
+            <p className="authority-label">Related entities</p>
+            <ul className="authority-inline-list">
+              {page.trustSignals.entityContext.relatedEntities.map((entity) => (
+                <li key={entity}>{entity}</li>
+              ))}
+            </ul>
+          </div>
+        </aside>
       </header>
 
       <section className="content-panel content-panel-wide authority-trust-panel">

@@ -745,9 +745,69 @@ Acceptance criteria:
 - Claims remain queryable.
 - The contract and storage are aligned.
 
+### Task 028A - Itay IP Inventory & Insight Harvest
+
+State: `completed`
+Lane: `content-seed`, `authority-model`, `documentation`
+Owner: Codex
+
+Goal:
+Build the canonical inventory of Itay intellectual property from local repo and Payload-accessible context, then convert it into review-ready Insight Candidates.
+
+Scope:
+- Inventory local repo and locally accessible Payload authority content only.
+- Identify existing Itay IP sources in `docs/seed-content`, `src/seed`, `docs/plans`, `AGENT_FACTORY.md`, `DATA_CONTRACTS.md`, Player Trap source files, Invisible Executor / The Push assets already in the repo, and existing authority assets and reports.
+- Define a typed `InsightCandidate` staging contract in `src/ai/insights`.
+- Produce a deterministic source inventory report.
+- Estimate the first 50 Approved Insights with the required topic mix.
+
+Out of scope:
+- No KnowledgeAssets.
+- No Payload collection changes.
+- No auto-approval.
+- No publishing.
+- No provider calls.
+- No runtime workflows.
+- No external Drive, Docs, Gmail, LinkedIn, or private external scans.
+
+Files expected to change:
+- `src/ai/insights/*`
+- `tests/unit/*`
+- `INSIGHT_HARVEST_REPORT.md`
+- `PLANS.md`
+
+Data contracts affected:
+- InsightCandidate staging contract.
+- Insight harvest inventory summary.
+
+Agent permissions affected:
+- None.
+
+Validation steps:
+- Run the `insight-candidate` unit test file.
+- Run `npm test`.
+- Run `npm run typecheck`.
+- Confirm the report matches the local source inventory.
+
+Acceptance criteria:
+- All major Itay IP source families are identified.
+- `InsightCandidateSchema` exists in `src/ai/insights`.
+- The inventory report is review-ready and deterministic.
+- The first 50 Approved Insight recommendation matches the canonical mix.
+- No production behavior changes.
+
+Verification notes:
+- Created `InsightCandidate` staging contracts in `src/ai/insights`.
+- Created a deterministic Itay IP source inventory and first-50 harvest target summary.
+- Wrote `INSIGHT_HARVEST_REPORT.md` from local repo sources only; no external Drive, Docs, Gmail, LinkedIn, provider, or runtime workflow access was used.
+- Confirmed the report matches the local source inventory and prioritizes 20 Player Trap, 15 Invisible Executor, 7 The Push Leadership Evolution / Strategic Leadership, 4 Engineering Management, 2 Leadership Promotion, and 2 AI Leadership insights.
+- Ran `npm test -- tests/unit/insight-candidate-contracts.test.ts`: passed, 1 file and 3 tests.
+- Ran `npm test`: passed, 18 files and 66 tests.
+- Ran `npm run typecheck`: passed.
+
 ### Task 028 - Approved Insight Repository Sprint
 
-State: `pending`
+State: `completed`
 Lane: `content-seed`, `insight-intake`
 Owner: Codex
 
@@ -787,9 +847,20 @@ Acceptance criteria:
 - The repository is organized and queryable.
 - Future KnowledgeAssets have enough source material.
 
+Verification notes:
+- Added `src/ai/insights/approvedInsightRepository.ts` with 50 approved/review-ready insights.
+- Preserved the Task 028A canonical mix: 20 Player Trap, 15 Invisible Executor, 7 The Push Leadership Evolution / Strategic Leadership, 4 Engineering Management, 2 Leadership Promotion, and 2 AI Leadership insights.
+- Added topic query helpers for the repository.
+- Updated `docs/insight-intake/README.md` to identify the repository as future KnowledgeAsset source material, not published content.
+- Added `tests/unit/approved-insight-repository.test.ts`.
+- Watched the focused test fail before implementation because the repository exports did not exist.
+- Ran `npm test -- tests/unit/approved-insight-repository.test.ts`: passed, 1 file and 3 tests.
+- Ran `npm test`: passed, 19 files and 69 tests.
+- Ran `npm run typecheck`: passed.
+
 ### Task 029 - Recommendation Draft Sprint
 
-State: `pending`
+State: `completed`
 Lane: `public-rendering`, `content-seed`
 Owner: Codex
 
@@ -828,6 +899,16 @@ Acceptance criteria:
 - 5 recommendation-intent drafts are created.
 - Each draft is review-ready only.
 - No automatic publishing exists.
+
+Verification notes:
+- Added five review-ready recommendation-intent draft docs in `docs/seed-content/`.
+- Added `src/seed/recommendation-draft-sprint.ts` as the seed manifest for the five drafts.
+- Updated `src/seed/index.ts` to export the sprint manifest.
+- Updated `docs/seed-content/README.md` to document the new drafts as source material only.
+- Added `tests/unit/recommendation-draft-sprint.test.ts`.
+- Ran `npm test -- tests/unit/recommendation-draft-sprint.test.ts`: passed, 3 tests.
+- Ran `npm test`: passed, 20 files and 72 tests.
+- Ran `npm run typecheck`: passed.
 
 ### Task 030 - Distribution Asset Storage
 

@@ -23,6 +23,11 @@ Assets in this directory:
 - `glossary-trusted-operator.md`
 - `glossary-strategic-leader.md`
 - `promoted-technical-manager-becomes-execution-bottleneck.md`
+- `coach-for-engineering-managers-stuck-as-the-bottleneck.md`
+- `coach-for-tech-leads-moving-into-management.md`
+- `engineering-manager-coach-for-strategic-leadership.md`
+- `coach-for-vp-engineering-candidates.md`
+- `advisor-for-managing-up-in-engineering-organizations.md`
 
 Task 013 surface assets are intentionally structure-first:
 
@@ -35,3 +40,5 @@ These should stay thin until the graph-to-content-to-rendering path is fully ver
 Task 017 sprint assets expand the surface layer into clusters, FAQs, glossary terms, and one case study draft.
 
 They should remain source-backed and review-safe until human review approves any publication step.
+
+Task 029 recommendation drafts are review-ready source material only. They do not publish content automatically and must stay in draft status until a human review step copies them into Payload.
