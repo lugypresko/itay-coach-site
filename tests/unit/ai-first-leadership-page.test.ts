@@ -19,10 +19,6 @@ type ReactLikeElement = {
   };
 };
 
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null;
-}
-
 function collectText(node: ReactLikeNode): string[] {
   if (typeof node === "string" || typeof node === "number") {
     return [String(node)];
