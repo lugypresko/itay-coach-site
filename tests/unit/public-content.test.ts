@@ -6,6 +6,7 @@ import {
   isPublishedPublicContent,
   normalizePublicContentRecord,
 } from "../../src/lib/public-content";
+import { getAuthorityProofBlocks } from "../../src/lib/evidence-mapping";
 import { buildPageJsonLd } from "../../src/lib/public-schema";
 
 describe("public content helpers", () => {
@@ -149,6 +150,55 @@ describe("public content helpers", () => {
     expect(page.trustSignals.review.reviewedBy).toBe("Itay Foyerstein");
     expect(page.trustSignals.entityContext.relatedEntities).toContain("The Push");
     expect(page.trustSignals.recommendationIntent.targetRecommendationQueries).toContain("Best coaching program for technical leaders");
+  });
+
+  it("treats Player Trap as a reusable authority concept", () => {
+    const page = buildPublicContentPageModel({
+      spec: getPublicContentSectionSpec("clusters")!,
+      origin: "https://example.com",
+      record: {
+        title: "How to Stop Being the Bottleneck as an Engineering Manager",
+        slug: "how-engineering-managers-become-bottlenecks-in-ai-assisted-teams",
+        excerpt: "Review-ready Player Trap page.",
+        content: "Definition: Player Trap.\n\nFramework explanation: The Push.",
+        aiSummary: "Player Trap page.",
+        citationSnippet: "Player Trap citation.",
+        evidenceUrls: [{ value: "docs/seed-content/how-engineering-managers-become-bottlenecks-in-ai-assisted-teams.md" }],
+        targetQuestions: [{ value: "What is the Player Trap?" }],
+        targetRecommendationQueries: [{ value: "How do I stop being the bottleneck as an Engineering Manager?" }],
+        entityTags: [{ tag: "player_trap" }, { tag: "the_push" }],
+        seoTitle: "How to Stop Being the Bottleneck as an Engineering Manager | The Push",
+        seoDescription: "Player Trap page.",
+        schemaType: "Article",
+        faq: [],
+        internalLinks: [],
+        status: "review",
+        publishedAt: undefined,
+        lastReviewedAt: "2026-06-16T00:00:00.000Z",
+        updatedAt: "2026-06-16T00:00:00.000Z",
+        author: "Itay Foyerstein",
+      },
+    });
+
+    expect(page.trustSignals.relatedAuthority.relatedConcepts).toContain("Player Trap");
+    expect(page.trustSignals.entityContext.relatedEntities).toContain("The Push");
+    expect(page.trustSignals.review.status).toBe("review");
+  });
+
+  it("maps proof-backed trust blocks to the target customer-path routes", () => {
+    const blocks = getAuthorityProofBlocks("/frameworks/invisible-executor");
+
+    expect(blocks).toHaveLength(2);
+    expect(blocks[0]).toMatchObject({
+      proofType: "source_backed_claim",
+      relatedPage: "/frameworks/invisible-executor",
+      approvalStatus: "approved",
+    });
+    expect(blocks[1]).toMatchObject({
+      proofType: "operating_pattern",
+      relatedPage: "/the-push-methodology",
+      approvalStatus: "approved",
+    });
   });
 
   it("treats only published and dated content as renderable", () => {

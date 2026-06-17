@@ -3,10 +3,12 @@ import Link from "next/link";
 import {
   AuthorityEvidenceBlock,
   AuthorityEntityContextBlock,
+  AuthorityProofTrustBlock,
   AuthorityRecommendationIntentBlock,
   AuthorityRelatedAuthorityBlock,
   AuthorityReviewBlock,
 } from "@/components/authority-trust-blocks";
+import { getAuthorityProofBlocks } from "@/lib/evidence-mapping";
 import type { PublicContentPageModel } from "@/lib/public-content";
 import { buildPageJsonLd } from "@/lib/public-schema";
 
@@ -21,8 +23,40 @@ function toParagraphs(content: string): string[] {
     .filter(Boolean);
 }
 
+function splitContentBlocks(content: string) {
+  const paragraphs = toParagraphs(content);
+  const structuredBlocks: Array<{ title: string; body: string }> = [];
+  const narrativeBlocks: string[] = [];
+
+  for (const paragraph of paragraphs) {
+    const match = paragraph.match(
+      /^(Definition|Framework explanation|Specific symptoms|Uncomfortable truth|Target questions|Citation-worthy snippet):\s*(.+)$/i,
+    );
+
+    if (!match) {
+      narrativeBlocks.push(paragraph);
+      continue;
+    }
+
+    const rawTitle = match[1].toLowerCase();
+    const title =
+      rawTitle === "citation-worthy snippet"
+        ? "Citation-worthy snippet"
+        : rawTitle.replace(/^\w/, (char) => char.toUpperCase());
+
+    structuredBlocks.push({
+      title,
+      body: match[2],
+    });
+  }
+
+  return { structuredBlocks, narrativeBlocks };
+}
+
 export function PublicContentPage({ page }: PublicContentPageProps) {
   const jsonLd = buildPageJsonLd(page);
+  const { structuredBlocks, narrativeBlocks } = splitContentBlocks(page.record.content);
+  const proofBlocks = getAuthorityProofBlocks(page.pathname);
 
   return (
     <main className="content-shell">
@@ -43,8 +77,8 @@ export function PublicContentPage({ page }: PublicContentPageProps) {
             <Link className="primary-link" href="/book-a-fit-call">
               Book a fit call
             </Link>
-            <Link className="secondary-link" href="/invisible-executor-assessment">
-              Invisible Executor Assessment
+            <Link className="secondary-link" href="/player-trap">
+              Take the Player Trap test
             </Link>
           </div>
         </div>
@@ -78,6 +112,7 @@ export function PublicContentPage({ page }: PublicContentPageProps) {
 
       <section className="content-panel content-panel-wide authority-trust-panel">
         <h2>Authority signals</h2>
+        {proofBlocks.length ? <AuthorityProofTrustBlock blocks={proofBlocks} /> : null}
         <div className="authority-trust-grid">
           <AuthorityEvidenceBlock trustSignals={page.trustSignals} />
           <AuthorityReviewBlock trustSignals={page.trustSignals} />
@@ -107,12 +142,21 @@ export function PublicContentPage({ page }: PublicContentPageProps) {
           <p>{page.record.citationSnippet}</p>
         </article>
 
-        <article className="content-panel content-panel-wide">
-          <h2>Content</h2>
-          {toParagraphs(page.record.content).map((paragraph, index) => (
-            <p key={`${paragraph.slice(0, 32)}-${index}`}>{paragraph}</p>
-          ))}
-        </article>
+        {structuredBlocks.map((block) => (
+          <article className="content-panel content-panel-wide" key={`${page.pathname}-${block.title}`}>
+            <h2>{block.title}</h2>
+            <p>{block.body}</p>
+          </article>
+        ))}
+
+        {narrativeBlocks.length ? (
+          <article className="content-panel content-panel-wide">
+            <h2>Content</h2>
+            {narrativeBlocks.map((paragraph, index) => (
+              <p key={`${paragraph.slice(0, 32)}-${index}`}>{paragraph}</p>
+            ))}
+          </article>
+        ) : null}
 
         {page.record.faq.length ? (
           <article className="content-panel content-panel-wide">

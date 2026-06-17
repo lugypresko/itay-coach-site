@@ -1,7 +1,10 @@
+import Link from "next/link";
+
 import type {
   PublicAuthorityTrustSignals,
   NormalizedInternalLink,
 } from "@/lib/public-content";
+import type { AuthorityProofBlock } from "@/lib/evidence-mapping";
 
 function formatDate(value?: string) {
   if (!value) {
@@ -45,6 +48,56 @@ function AuthorityLinkList({ items }: { items: NormalizedInternalLink[] }) {
         </div>
       ))}
     </div>
+  );
+}
+
+function formatProofType(value: string) {
+  return value.replace(/_/g, " ");
+}
+
+export function AuthorityProofTrustBlock({ blocks }: { blocks: AuthorityProofBlock[] }) {
+  if (!blocks.length) {
+    return null;
+  }
+
+  return (
+    <section className="authority-trust-block">
+      <h3>Proof-backed trust</h3>
+      <div className="authority-trust-grid">
+        {blocks.map((block) => (
+          <article className="content-panel" key={`${block.relatedPage}-${block.claim}`}>
+            <p className="authority-label">{formatProofType(block.proofType)}</p>
+            <p className="authority-summary">{block.claim}</p>
+            <dl className="authority-dl">
+              <div>
+                <dt>Source</dt>
+                <dd>
+                  <code>{block.source}</code>
+                </dd>
+              </div>
+              <div>
+                <dt>Related entity</dt>
+                <dd>{block.relatedEntity}</dd>
+              </div>
+              <div>
+                <dt>Related page</dt>
+                <dd>
+                  <Link href={block.relatedPage}>{block.relatedPage}</Link>
+                </dd>
+              </div>
+              <div>
+                <dt>Confidence</dt>
+                <dd>{block.confidence}</dd>
+              </div>
+              <div>
+                <dt>Approval status</dt>
+                <dd>{block.approvalStatus}</dd>
+              </div>
+            </dl>
+          </article>
+        ))}
+      </div>
+    </section>
   );
 }
 
