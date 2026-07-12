@@ -1,6 +1,20 @@
 import { describe, expect, it } from "vitest";
 
 import { createContentDraftWorkflow } from "../../src/ai/workflows";
+import type { SemanticQualityEvaluation } from "../../src/ai/governance/content-quality-gate";
+
+const passingSemanticEvaluation: SemanticQualityEvaluation = {
+  dimensions: [
+    { dimension: "clarity", score: 4, passed: true, reason: "The opening gives a direct definition and keeps the operating shift easy to follow." },
+    { dimension: "depth", score: 4, passed: true, reason: "The draft explains why private operating rules keep decisions returning to one leader." },
+    { dimension: "usefulness", score: 4, passed: true, reason: "The reader receives a concrete next step for exposing one repeated decision rule." },
+    { dimension: "differentiation", score: 4, passed: true, reason: "The Invisible Executor framework provides a named first-party operating model." },
+    { dimension: "repetition", score: 4, passed: true, reason: "The definition and operating-model explanation make separate contributions." },
+    { dimension: "audience_fit", score: 5, passed: true, reason: "The examples focus on technical leaders, reviews, and team decision ownership." },
+    { dimension: "persuasion", score: 4, passed: true, reason: "The fit-call invitation follows a diagnostic explanation and states who it serves." },
+    { dimension: "authority_strength", score: 4, passed: true, reason: "The framework claim is bounded by an approved insight and first-party source." },
+  ],
+};
 
 describe("content draft workflow", () => {
   it("blocks content generation without a fresh approved insight", () => {
@@ -27,6 +41,7 @@ describe("content draft workflow", () => {
         entityTags: ["tech_leadership_coach"],
         targetRecommendationQueries: ["Best tech leadership coach for Engineering Managers"],
         schemaType: "Article",
+        maturity: "scaffold",
       },
       sourceNode: {
         slug: "tech-leadership-coaching",
@@ -36,7 +51,61 @@ describe("content draft workflow", () => {
         targetRecommendationQueries: ["Best tech leadership coach for Engineering Managers"],
       },
       candidateNodes: [],
+      pageBrief: {
+        id: "page-brief-1",
+        sourceInsightIds: ["insight-1"],
+        title: "Tech Leadership Coaching",
+        canonicalPath: "/clusters/tech-leadership-coaching",
+        reviewStatus: "draft",
+        marketContext: {
+          summary: "Technical leaders need coaching when execution load keeps returning to one person.",
+          marketMap: ["tech leadership coaching"],
+          trendList: ["AI-assisted reviews"],
+          riskNotes: ["Do not write generic leadership advice."],
+        },
+        audiencePain: {
+          summary: "The leader is still the default escalation path.",
+          painThemes: ["execution dependency"],
+          workarounds: ["more process"],
+          triggerEvents: ["the team waits for the leader"],
+        },
+        searchIntent: {
+          summary: "Best tech leadership coach for Engineering Managers",
+          intentClusters: ["coach intent"],
+          priorityQueries: ["Best tech leadership coach for Engineering Managers"],
+        },
+        topicClusterPosition: {
+          summary: "Core coaching pillar.",
+          pillar: "/pillars/tech-leadership-coaching",
+          cluster: "/clusters/tech-leadership-coaching",
+          clusterRole: "supporting authority page",
+          internalLinks: ["/pillars/tech-leadership-coaching", "/frameworks/invisible-executor"],
+        },
+        uniqueAngle: "Tech leaders need operating leverage, not more hustle.",
+        proofNeeded: ["Fresh insight"],
+        pagePromise: "A clear coaching page for technical leaders.",
+        contentPlan: [
+          {
+            sectionTitle: "Short answer",
+            purpose: "Answer the query directly.",
+            proofNeeded: ["Fresh insight"],
+          },
+          {
+            sectionTitle: "What this pattern looks like",
+            purpose: "Show the reader the operating pattern.",
+            proofNeeded: ["Fresh insight"],
+          },
+        ],
+        cta: {
+          label: "Book a fit call",
+          href: "/book-a-fit-call",
+          rationale: "Route readers to a human conversation.",
+        },
+      },
       now: "2026-06-07T00:00:00.000Z",
+      semanticQualityEvaluation: passingSemanticEvaluation,
+      canonicalOwnerPath: "/clusters/tech-leadership-coaching",
+      knownCollidingIntentKeys: [],
     });
 
     expect(result.saveStatus).toBe("blocked");
@@ -73,14 +142,41 @@ describe("content draft workflow", () => {
       draft: {
         slug: "invisible-executor",
         title: "Invisible Executor",
-        excerpt: "Framework page.",
-        content: "Step one.\n\nStep two.",
+        excerpt: "Framework page for leaders moving from hidden execution into visible operating leverage.",
+        content: [
+          "## Short answer",
+          "Invisible Executor is the starting point for technical leaders whose execution strength still hides the real operating model. Who created the Invisible Executor framework? This page answers that question and explains what it changes.",
+          "",
+          "## What this framework changes",
+          "The framework moves the leader from hidden execution into visible operating rules that the team can use without waiting for one person.",
+          "That shift matters because authority becomes reusable only when the leader's decisions are expressed as operating rules instead of private expertise, letting the team act without routing every choice back to one person.",
+          "",
+          "## Internal links",
+          "Connect this diagnosis to [Tech Leadership Coaching](/pillars/tech-leadership-coaching) and the related [Player Trap framework](/frameworks/player-trap).",
+          "",
+          "## CTA",
+          "If execution still routes through you, [Book a fit call](/book-a-fit-call) to decide whether this coaching path fits your situation.",
+          "",
+          "## Evidence",
+          "Fresh insight.",
+        ].join("\n"),
         aiSummary: "Framework summary.",
-        citationSnippet: "The framework belongs to Itay Foyerstein and The Push.",
+        citationSnippet: "Invisible Executor is part of The Push framework stack owned by Itay Foyerstein.",
         author: "Itay Foyerstein",
         entityTags: ["itay_foyerstein", "the_push"],
         targetRecommendationQueries: ["Who created the Invisible Executor framework?"],
         schemaType: "HowTo",
+        evidenceUrls: ["docs/seed-content/invisible-executor-framework.md"],
+        claimEvidenceMappings: [
+          {
+            claim: "Fresh insight.",
+            evidenceType: "approved_insight",
+            sourceReference: "https://example.com",
+            approvedInsightIds: ["insight-1"],
+            valid: true,
+          },
+        ],
+        maturity: "complete_draft",
       },
       sourceNode: {
         slug: "invisible-executor",
@@ -98,13 +194,69 @@ describe("content draft workflow", () => {
           targetRecommendationQueries: [],
         },
       ],
+      pageBrief: {
+        id: "page-brief-2",
+        sourceInsightIds: ["insight-1"],
+        title: "Invisible Executor",
+        canonicalPath: "/clusters/invisible-executor",
+        reviewStatus: "draft",
+        marketContext: {
+          summary: "Technical leaders need a clear operating model.",
+          marketMap: ["framework"],
+          trendList: ["AI-era leadership"],
+          riskNotes: ["Keep the claim bounded."],
+        },
+        audiencePain: {
+          summary: "The team still depends on one leader.",
+          painThemes: ["hidden load"],
+          workarounds: ["more reviews"],
+          triggerEvents: ["the leader becomes the final reviewer"],
+        },
+        searchIntent: {
+          summary: "Who created the Invisible Executor framework?",
+          intentClusters: ["framework intent"],
+          priorityQueries: ["Who created the Invisible Executor framework?"],
+        },
+        topicClusterPosition: {
+          summary: "Framework page.",
+          pillar: "/pillars/tech-leadership-coaching",
+          cluster: "/clusters/invisible-executor",
+          clusterRole: "framework surface",
+          internalLinks: ["/pillars/tech-leadership-coaching", "/frameworks/player-trap"],
+        },
+        uniqueAngle: "Move from execution to visible leadership.",
+        proofNeeded: ["Fresh insight."],
+        pagePromise: "Explain who owns the framework and what it changes.",
+        contentPlan: [
+          {
+            sectionTitle: "Short answer",
+            purpose: "Answer the query directly.",
+            proofNeeded: ["Fresh insight."],
+          },
+          {
+            sectionTitle: "What this framework changes",
+            purpose: "Explain the operating shift.",
+            proofNeeded: ["Fresh insight."],
+          },
+        ],
+        cta: {
+          label: "Book a fit call",
+          href: "/book-a-fit-call",
+          rationale: "Invite a human conversation.",
+        },
+      },
       now: "2026-06-07T00:00:00.000Z",
+      semanticQualityEvaluation: passingSemanticEvaluation,
+      canonicalOwnerPath: "/clusters/invisible-executor",
+      knownCollidingIntentKeys: [],
     });
 
     expect(result.readiness.canGenerate).toBe(true);
-    expect(result.saveStatus).toMatch(/draft|in_review/);
+    expect(result.contentMaturity).toBe("review_ready");
+    expect(result.saveStatus).toBe("review_ready");
+    expect(result.compliance?.passed).toBe(true);
+    expect(result.draft?.maturity).toBe("review_ready");
     expect(result.agentRuns.some((run) => run.agentName === "InternalLinkingAgent")).toBe(true);
     expect(result.linkSuggestions.length).toBeGreaterThanOrEqual(0);
   });
 });
-

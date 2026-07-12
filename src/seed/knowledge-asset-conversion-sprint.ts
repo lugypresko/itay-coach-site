@@ -38,15 +38,12 @@ function buildClaimIds(sourceInsightId: string, claimCount: number) {
   return Array.from({ length: Math.max(claimCount, 1) }, (_, index) => `${sourceInsightId}:claim-${index + 1}`);
 }
 
-function convertInsightToKnowledgeAsset(topic: KnowledgeAssetConversionSprintTopic, sourceInsightId: string) {
-  const insight = approvedInsightRepository.find((entry) => entry.id === sourceInsightId);
-
-  if (!insight) {
-    throw new Error(`Missing approved insight: ${sourceInsightId}`);
-  }
-
+export function convertApprovedInsightToKnowledgeAsset(
+  topic: KnowledgeAssetConversionSprintTopic,
+  insight: (typeof approvedInsightRepository)[number],
+) {
   const knowledgeAsset = knowledgeAssetSchema.parse({
-    id: `knowledge-asset-${sourceInsightId}`,
+    id: `knowledge-asset-${insight.id}`,
     sourceInsightId: insight.id,
     claimIds: buildClaimIds(insight.id, insight.claims.length),
     targetQueries: insight.targetQueries,
@@ -61,6 +58,16 @@ function convertInsightToKnowledgeAsset(topic: KnowledgeAssetConversionSprintTop
   });
 
   return knowledgeAsset;
+}
+
+function convertInsightToKnowledgeAsset(topic: KnowledgeAssetConversionSprintTopic, sourceInsightId: string) {
+  const insight = approvedInsightRepository.find((entry) => entry.id === sourceInsightId);
+
+  if (!insight) {
+    throw new Error(`Missing approved insight: ${sourceInsightId}`);
+  }
+
+  return convertApprovedInsightToKnowledgeAsset(topic, insight);
 }
 
 export function getKnowledgeAssetConversionSprintEntries(): KnowledgeAssetConversionSprintEntry[] {

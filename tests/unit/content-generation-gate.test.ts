@@ -35,7 +35,7 @@ describe("content generation gate", () => {
 
     expect(readiness.canGenerate).toBe(false);
     expect(readiness.daysSinceLatestInsight).toBeGreaterThan(30);
-    expect(readiness.reason).toMatch(/exceeding the 30-day freshness gate/);
+    expect(readiness.reason).toMatch(/claim-level evidence/);
   });
 
   it("allows generation when a fresh approved insight exists", () => {

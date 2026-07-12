@@ -1,7 +1,8 @@
-import { evaluateContentGenerationReadiness, type ItayInsight } from "../governance";
-import { evaluateContentQuality, type ContentQualityCandidate } from "../governance/content-quality-gate";
+import { evaluateContentGenerationReadiness, validatePageBriefCompliance, type ItayInsight, type PageBriefComplianceResult, type ContentMaturity } from "../governance";
+import { evaluateContentQuality, type ContentQualityCandidate, type SemanticQualityEvaluation } from "../governance/content-quality-gate";
 import { suggestInternalLinks, type ContentNode, type InternalLinkSuggestion } from "../linking";
 import type { ContentGenerationReadiness } from "../governance";
+import type { PageBrief } from "../agents";
 
 export interface ContentDraftJob {
   id: string;
@@ -15,6 +16,7 @@ export interface ContentDraftJob {
 
 export interface ContentDraftDraft extends ContentQualityCandidate {
   slug: string;
+  maturity: ContentMaturity;
 }
 
 export interface ContentDraftWorkflowInput {
@@ -23,8 +25,12 @@ export interface ContentDraftWorkflowInput {
   draft: ContentDraftDraft;
   sourceNode: ContentNode;
   candidateNodes: ContentNode[];
+  pageBrief: PageBrief;
   now?: string;
   requiredFreshnessDays?: number;
+  semanticQualityEvaluation?: SemanticQualityEvaluation;
+  canonicalOwnerPath?: string;
+  knownCollidingIntentKeys?: string[];
 }
 
 export interface AgentRunLog {
@@ -43,10 +49,12 @@ export interface AgentRunLog {
 
 export interface ContentDraftWorkflowResult {
   readiness: ContentGenerationReadiness;
+  compliance: PageBriefComplianceResult | null;
   quality: ReturnType<typeof evaluateContentQuality>;
   linkSuggestions: InternalLinkSuggestion[];
   agentRuns: AgentRunLog[];
-  saveStatus: "draft" | "in_review" | "blocked";
+  contentMaturity: ContentMaturity;
+  saveStatus: "needs_generation" | "needs_revision" | "review_ready" | "blocked";
   draft: ContentDraftDraft | null;
 }
 
@@ -89,11 +97,13 @@ export function createContentDraftWorkflow(config?: {
       if (!readiness.canGenerate) {
         return {
           readiness,
+          compliance: null,
           quality: {
             decision: "rejected",
             approved: false,
             issues: [],
             reasons: [readiness.reason],
+            dimensions: [],
           },
           linkSuggestions: [],
           agentRuns: [
@@ -101,7 +111,7 @@ export function createContentDraftWorkflow(config?: {
             {
               agentName: "QualityGateAgent",
               status: "skipped",
-              notes: "Content generation blocked by the freshness gate.",
+              notes: "Content generation blocked by claim-level evidence validation.",
             },
             {
               agentName: "PayloadPublisherAgent",
@@ -109,17 +119,69 @@ export function createContentDraftWorkflow(config?: {
               notes: "No draft was produced.",
             },
           ],
+          contentMaturity: "scaffold",
           saveStatus: "blocked",
           draft: null,
         };
       }
 
-      const quality = evaluateContentQuality(input.draft);
+      const compliance = validatePageBriefCompliance(input.pageBrief, input.draft, {
+        canonicalOwnerPath: input.canonicalOwnerPath,
+        knownCollidingIntentKeys: input.knownCollidingIntentKeys,
+      });
       const linkSuggestions = suggestInternalLinks(input.sourceNode, input.candidateNodes);
-      const saveStatus = quality.approved ? "draft" : "in_review";
+      const isScaffold = input.draft.maturity === "scaffold";
+
+      if (!compliance.passed || isScaffold) {
+        const reasons = compliance.failures.map((failure) => `${failure.code}: ${failure.detail}`);
+
+        return {
+          readiness,
+          compliance,
+          quality: {
+            decision: "rejected",
+            approved: false,
+            issues: [],
+            reasons: reasons.length ? reasons : ["Draft remains scaffold-level and is not review-ready."],
+            dimensions: [],
+          },
+          linkSuggestions,
+          agentRuns: [
+            ...agentRuns,
+            {
+              agentName: "LLMSEOAgent",
+              status: "succeeded",
+              notes: "Structured metadata and extractable sections prepared.",
+            },
+            {
+              agentName: "InternalLinkingAgent",
+              status: "succeeded",
+              notes: `Produced ${linkSuggestions.length} link suggestions.`,
+            },
+            {
+              agentName: "QualityGateAgent",
+              status: "skipped",
+              notes: "Quality scoring was skipped because hard-gate compliance did not pass.",
+            },
+            {
+              agentName: "PayloadPublisherAgent",
+              status: "skipped",
+              notes: "No automatic publish is allowed; save status remains needs_generation or needs_revision only.",
+            },
+          ],
+          contentMaturity: input.draft.maturity,
+          saveStatus: isScaffold ? "needs_generation" : "needs_revision",
+          draft: input.draft,
+        };
+      }
+
+      const quality = evaluateContentQuality(input.draft, input.semanticQualityEvaluation);
+      const saveStatus = quality.approved ? "review_ready" : "needs_revision";
+      const reviewedDraft = quality.approved ? { ...input.draft, maturity: "review_ready" as ContentMaturity } : input.draft;
 
       return {
         readiness,
+        compliance,
         quality,
         linkSuggestions,
         agentRuns: [
@@ -142,13 +204,13 @@ export function createContentDraftWorkflow(config?: {
           {
             agentName: "PayloadPublisherAgent",
             status: quality.approved ? "skipped" : "skipped",
-            notes: "No automatic publish is allowed; save status remains draft or in-review only.",
+            notes: "No automatic publish is allowed; save status remains review-ready or needs-revision only.",
           },
         ],
+        contentMaturity: quality.approved ? "review_ready" : input.draft.maturity,
         saveStatus,
-        draft: input.draft,
+        draft: reviewedDraft,
       };
     },
   };
 }
-

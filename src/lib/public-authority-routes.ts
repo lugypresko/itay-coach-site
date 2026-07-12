@@ -1,6 +1,6 @@
 import type { PublicContentSection } from "./public-content";
 import { canonicalAuthorityPages, publicContentSectionSpecs } from "./public-content";
-import { getProblemPagePathnames } from "./problem-pages";
+import { getPublishedProblemPagePathnames } from "./problem-pages";
 
 export type PublicAuthorityAssetStatus = "draft" | "review" | "published";
 
@@ -43,7 +43,7 @@ export const publicAuthorityLandingPathnames = [
   "/ai-first-leadership",
   "/invisible-executor-assessment",
   "/tech-leadership-visibility-scorecard",
-  ...getProblemPagePathnames(),
+  ...getPublishedProblemPagePathnames(),
 ] as const;
 
 export const publicAuthorityAssetRoutes: PublicAuthorityAssetRoute[] = [
@@ -235,7 +235,7 @@ export function getPublicAuthorityAssetPathnames(options?: { includeDrafts?: boo
   const includeDrafts = options?.includeDrafts ?? false;
 
   return publicAuthorityAssetRoutes
-    .filter((route) => includeDrafts || route.status !== "draft")
+    .filter((route) => includeDrafts || route.status === "published")
     .map((route) => `/${route.section}/${route.slug}`);
 }
 

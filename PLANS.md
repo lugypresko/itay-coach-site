@@ -3285,3 +3285,480 @@ Verification notes:
 - Ran `npm run typecheck`: passed.
 - Ran `npm test`: passed, 32 test files and 126 tests.
 - Ran `npm run build`: passed with the existing migration and seed lint warnings.
+
+### Task 058 - Post-Publication Production Observation and Chief of Staff Decision
+
+State: `completed`
+Lane: `production-observation`, `measurement`, `chief-of-staff`
+Owner: Codex
+
+Goal:
+Refresh the production observation after the June 17 authority publication and produce an evidence-bound Chief of Staff next-best-action decision.
+
+Scope:
+- Observe the live production deployment and canonical domain.
+- Verify public authority routes, crawlability, machine-readable surfaces, schema, internal links, CTAs, and measurement markers.
+- Reconcile the published surface with the draft and KnowledgeAsset backlog.
+- Produce a dated append-only observation report and a new Chief of Staff recommendation.
+
+Out of scope:
+- No provider calls to AI answer engines.
+- No new content generation.
+- No publishing changes.
+- No autonomous business decision.
+
+Acceptance criteria:
+- The observation names the platform, checked routes, timestamps, observed state, gaps, and evidence.
+- The report distinguishes verified production facts from unavailable AI recommendation measurements.
+- The Chief of Staff decision contains all required decision-loop outputs.
+- The next action is constrained to an existing safe action category and preserves human approval boundaries.
+
+Verification notes:
+- Observed Vercel production deployment `dpl_Eu2LeCHGpb74XbmEME6B1He2iJiE` in `Ready` state on July 12, 2026.
+- Verified all 50 sitemap URLs return HTTP 200; robots allows crawling and declares the canonical sitemap.
+- Verified `llms.txt`, canonical metadata, authority CTAs, internal links, Problem Page JSON-LD, and the Vercel Analytics script delivery surface.
+- Detected that all 10 Problem Pages are in the sitemap while 9 return `noindex`; `CTO Becomes the Bottleneck` is marked published in the repository but noindexed in production.
+- Produced `TASK_058_PRODUCTION_OBSERVATION.md` and `TASK_058_CHIEF_OF_STAFF_DECISION.md`.
+- Selected `repair_visibility_gap` as the next safe action and stopped at the human publication-state approval boundary.
+- Explicitly recorded answer-engine recommendation position and score delta as unavailable because no provider checks were authorized or performed.
+- Ran required-output and whitespace verification for the new reports: passed.
+- Incorporated the human-supplied GSC snapshot: 147 impressions, 1 click, `/pillars/tech-leadership-coaching` as the dominant page, `technical leadership coaching` as the dominant query, and 0 Problem Pages visible in GSC.
+- Updated the decision owner to Engineering and expanded `repair_visibility_gap` to cover Payload status, robots metadata, sitemap, `llms.txt`, draft-backlog resolution, and pillar internal-link verification.
+
+### Task 059 - Publication State Integrity and Operating Loop Heartbeat
+
+State: `completed`
+Lane: `production-observation`, `measurement`, `chief-of-staff`, `public-surface-contracts`
+Owner: Codex
+
+Goal:
+Repair publication-state integrity for the Problem Pages and add the minimal deterministic operating-loop heartbeat using one shared publication decision helper and one persisted OperatingCycle record.
+
+Scope:
+- Derive publication state from one shared `PublicationDecision` helper.
+- Keep route metadata, sitemap, and `llms.txt` aligned to the same source record and decision helper.
+- Add deterministic invalid-state reason codes for conflicting lifecycle and discovery states.
+- Add one persisted `OperatingCycle` contract with snapshot, next-best-action, stop-point, review-date, and measurement-window state.
+- Record local baseline and local post-repair verification only; keep real post-deployment observation pending human authorization.
+
+Out of scope:
+- No deployment, commit, push, or publish.
+- No autonomous publishing.
+- No new runtime agent.
+- No broad refactor of unrelated content contracts.
+
+Files expected to change:
+- `src/lib/problem-pages.ts`
+- `src/lib/public-content-loader.ts`
+- `src/app/(site)/problems/[slug]/page.tsx`
+- `src/app/sitemap.ts`
+- `src/app/llms.txt/route.ts`
+- `src/lib/public-authority-routes.ts`
+- `src/domain/authority-contracts.ts`
+- `src/ai/governance/authority-decisions.ts`
+- `src/ai/governance/index.ts`
+- `src/ai/workflows/*`
+- `tests/unit/*`
+- `TASK_058_PRODUCTION_OBSERVATION.md`
+- `TASK_058_CHIEF_OF_STAFF_DECISION.md`
+- `TASK_059_*`
+- `PLANS.md`
+
+Data contracts affected:
+- PublicationDecision
+- OperatingCycle
+- SystemSnapshot
+
+Agent permissions affected:
+- No new agent permissions.
+- Human publishing approval remains mandatory.
+
+Validation steps:
+- Run targeted unit tests for publication decision, sitemap/llms consistency, invalid-state reason codes, and operating-cycle persistence.
+- Run `npm test`.
+- Run `npm run typecheck`.
+
+Acceptance criteria:
+- Published Problem Pages are indexable and discoverable through the shared helper.
+- Draft Problem Pages are excluded from sitemap and `llms.txt`.
+- Invalid states emit explicit reason codes.
+- Exactly one active Next Best Action is persisted per cycle.
+- Local verification records the expected post-deployment measurement window but does not open it.
+- Human deployment approval remains outside this task.
+
+Verification completed 2026-07-12:
+- `npm test`: passed, 34 files / 136 tests.
+- `npm run typecheck`: passed.
+- `npm run build`: passed; only pre-existing unused-variable lint warnings in migrations and seed code.
+- Baseline preserved in `TASK_058_PRODUCTION_OBSERVATION.md`.
+- Local-only verification recorded in `TASK_059_LOCAL_POST_REPAIR_VERIFICATION.md`; it is explicitly not a Production Observation.
+- Resolution report, Chief of Staff decision, operating-cycle record, and architecture note added under `TASK_059_*` and `docs/notes/`.
+- Live Payload/GSC/Vercel access remains unavailable; AI recommendation visibility remains `unmeasured`.
+- No commit, push, deploy, or publish performed.
+
+Unresolved blocker: authorized human review and deployment are required before confirming production behavior or opening a real measurement window. Required pending action: **Run post-deployment Production Observation** after a deployment identifier or timestamp is provided.
+
+Next review trigger/date: immediately after authorized deployment, or scheduled review on `2026-07-13` if deployment has not occurred.
+
+Task 059 status clarification:
+- Implementation state: `completed`.
+- Production rollout state: `pending human deployment`.
+- Operating-cycle state: `blocked at deployment approval`.
+- Measurement window: `not opened`.
+
+Post-deployment observation attempted 2026-07-12 at `2026-07-12T19:18:46.3104335+03:00`:
+- Live HTTP was available, but no deployment identifier was supplied.
+- `CTO Becomes the Bottleneck` still returns `noindex, nofollow`; the repair is not confirmed in production.
+- The second published Problem Page is indexable; drafts remain noindex and excluded from sitemap/`llms.txt`.
+- The live pillar HTML did not contain links to either published Problem Page.
+- Production measurement window remains closed/pending deployment verification.
+- Follow-up remains **Run post-deployment Production Observation** after an authorized deployment identifier/timestamp is available.
+
+### Task 060 - Authority Content Factory Root-Cause Diagnosis
+
+State: `completed`
+Lane: `factory-diagnosis`, `chief-of-staff`, `governance`
+Owner: Codex
+
+Goal:
+Diagnose why production stopped after the first 10 KnowledgeAssets and 10 Problem Pages before proposing any new router, workflow, or contract.
+
+Scope:
+- Trace the exact KnowledgeAsset and Problem Page creation mechanisms.
+- Inspect PageBrief lifecycle, Chief of Staff decisions, freshness gates, automation, schedulers, and completion behavior.
+- Produce a repository-evidence root-cause report and the smallest implementation proposal.
+
+Out of scope:
+- No code implementation in this diagnosis phase.
+- No new Action Router or orchestration layer.
+- No deploy, publish, commit, or push.
+
+Deliverable:
+- `TASK_060_AUTHORITY_FACTORY_ROOT_CAUSE_REPORT.md`
+
+Verification notes:
+- Root cause documented from repository evidence: finite one-time seed/sprint execution plus no executable Chief of Staff continuation mapping or scheduler.
+- Secondary 30-day freshness gate identified in `content-generation-gate.ts` and `contentDraftWorkflow.ts`; no code changed.
+- Smallest proposal reuses existing conversion, Payload persistence, PageBrief, draft workflow, and OperatingCycle components without an Action Router.
+- No new material decision appended because the proposed approach has not been selected.
+
+### Task 061 - Bounded ProductionDirective Factory Continuation
+
+State: `completed`
+Lane: `factory`, `chief-of-staff`, `governance`
+Owner: Codex
+
+Goal:
+Execute one small bounded ProductionDirective using existing factory components, producing non-public KnowledgeAssets and review-ready drafts only.
+
+Scope:
+- Select up to three unconverted Approved Insights in one prioritized cluster.
+- Convert them to KnowledgeAssets and PageBrief-backed drafts.
+- Replace the global 30-day freshness gate with claim-level evidence-sensitive validation.
+- Persist bounded execution state on the existing OperatingCycle result.
+- Run a manual repository-only bounded execution and report its stop point.
+
+Out of scope:
+- No Action Router, scheduler, orchestration framework, AgentRun, ContentJob, deployment, publication, commit, or push.
+
+Files expected to change:
+- `src/ai/governance/content-generation-gate.ts`
+- `src/ai/workflows/contentDraftWorkflow.ts`
+- `src/ai/workflows/operating-cycle.ts`
+- `src/ai/workflows/production-directive.ts`
+- `src/domain/authority-contracts.ts`
+- `src/seed/knowledge-asset-conversion-sprint.ts`
+- `tests/unit/*`
+- `decisions.md`
+- `PLANS.md`
+
+Verification notes:
+- Added one bounded `runProductionDirective` executor; no Action Router, scheduler, AgentRun, ContentJob, or orchestration framework.
+- Manual run selected `Player Trap`, consumed `approved-insight-player-trap-05`, `-06`, and `-07`, created 3 KnowledgeAssets and 3 PageBrief-backed drafts, and stopped at `directive_target_reached`.
+- The Task 061 outputs were scaffold-level drafts that required additional validation before they could be considered review-ready; no publication path was invoked.
+- Claim-level evidence validation replaced the global captured-date freshness block.
+- ProductionDirective decision appended as `DEC-20260712-04` to `decisions.md`.
+- `npm test`: passed, 35 files / 139 tests.
+- `npm run typecheck`: passed.
+- Manual run report: `TASK_061_MANUAL_PRODUCTION_DIRECTIVE_RUN.md`.
+- No deploy, publish, commit, or push performed.
+
+### Task 062 - Player Trap ProductionDirective Publish-Readiness Review
+
+State: `completed`
+Lane: `review`, `content-quality`, `canonical-ownership`
+Owner: Codex
+
+Goal:
+Review the three drafts produced by the bounded Player Trap ProductionDirective before any further content production.
+
+Scope:
+- Inspect the actual draft prose and PageBrief metadata.
+- Check intent uniqueness, overlap, evidence, canonical ownership, links, CTA, schema, and quality validation.
+- Record the local dev-server cache/module issue from `start-3006.err` separately.
+
+Out of scope:
+- No new content generation.
+- No publication, deployment, commit, or push.
+
+Deliverable:
+- `TASK_062_PLAYER_TRAP_DRAFT_PUBLISH_READINESS_REVIEW.md`
+
+Verification notes:
+- Reviewed all three actual draft scaffolds, their PageBrief metadata, evidence context, canonical paths, overlap, links, CTAs, schema, and structural quality results.
+- Draft 05: `merge` into `/clusters/coach-for-engineering-managers-stuck-as-the-bottleneck`.
+- Draft 06: `merge` into `/frameworks/player-trap`.
+- Draft 07: `archive` as a standalone surface; preserve only as a possible supporting section.
+- No draft is approved for publication and no new content was generated.
+- Recorded `start-3006.err` as a local Next.js cache/module issue, separate from factory health.
+
+### Task 063 - Player Trap Draft Merge Into Canonical Cluster Page
+
+State: `completed`
+Lane: `content-seed`, `canonical-ownership`, `review`
+Owner: Codex
+
+Goal:
+Merge the reviewed Player Trap cluster draft into the canonical review-ready public surface and verify the resulting content remains review-safe.
+
+Scope:
+- Reuse the existing `coach-for-engineering-managers-stuck-as-the-bottleneck` cluster surface.
+- Add the diagnosis-first lead and explicit CTA block approved during the publish-readiness review.
+- Keep the asset in `review` status and preserve human approval boundaries.
+- Update the content-level regression test to cover the merge outcome.
+
+Out of scope:
+- No publication, deployment, commit, or push.
+- No new router, workflow, contract, or autonomous content generation.
+
+Files expected to change:
+- `docs/seed-content/coach-for-engineering-managers-stuck-as-the-bottleneck.md`
+- `src/seed/review-ready-public-surface-batch.ts`
+- `tests/unit/review-ready-public-surface-batch.test.ts`
+- `PLANS.md`
+
+Acceptance criteria:
+- The cluster draft reads as a coherent review-ready asset with diagnosis-first framing and an explicit CTA section.
+- The batch seed and source document remain aligned.
+- Regression tests pass.
+
+Verification notes:
+- Updated the canonical bottleneck cluster source to start with diagnosis-first framing and an explicit CTA section.
+- Synced the review-ready batch payload copy with the source document.
+- Added a unit test that asserts the merged surface keeps the diagnosis-first and CTA language in place.
+- `npm test`: passed, 35 files / 140 tests.
+- `npm run typecheck`: passed.
+- No publication, deployment, commit, or push performed.
+
+### Task 064 - Player Trap Draft 06 Canonical Merge
+
+State: `completed`
+Lane: `content`, `canonical-ownership`, `factory`
+Owner: Codex
+
+Goal:
+Merge the Player Trap Draft 06 insight into the existing canonical Player Trap framework surface without creating a new public route.
+
+Scope:
+- Update the canonical framework content so it frames the shift from answers to stronger operating systems.
+- Keep the merge target as `/frameworks/player-trap`.
+- Leave Draft 07 untouched for now.
+
+Out of scope:
+- No publication, deployment, commit, or push.
+- No new route, workflow, router, or contract.
+
+Files expected to change:
+- `src/lib/public-content.ts`
+- `tests/unit/public-content.test.ts`
+
+Acceptance criteria:
+- The Player Trap framework content includes the manager identity shift language from Draft 06.
+- The canonical framework surface remains review-safe and non-published.
+- Regression tests pass.
+
+Verification notes:
+- Merged Draft 06 into the canonical `/frameworks/player-trap` static content surface.
+- Added a regression test that asserts the framework surface carries the manager identity shift language.
+- `npm test -- tests/unit/review-ready-public-surface-batch.test.ts tests/unit/canonical-authority-sprint.test.ts tests/unit/public-content.test.ts`: passed, 16 tests.
+- `npm run typecheck`: passed.
+- No publication, deployment, commit, or push performed.
+
+### Task 065 - PageBrief Compliance Hard Gate
+
+State: `completed`
+Lane: `factory`, `governance`, `review`
+Owner: Codex
+
+Goal:
+Replace scaffold-level false positives with explicit content maturity states and a deterministic PageBrief compliance hard gate.
+
+Scope:
+- Classify draft maturity explicitly.
+- Add a deterministic `validatePageBriefCompliance(pageBrief, draft)` hard gate.
+- Ensure content-quality scoring runs only after hard-gate compliance passes.
+- Reclassify the Task 061 outputs as scaffolds / needs_generation in factual records.
+
+Out of scope:
+- No publication, deployment, commit, or push.
+- No new production directive.
+- No new authority asset.
+
+Files expected to change:
+- `src/ai/governance/*`
+- `src/ai/workflows/contentDraftWorkflow.ts`
+- `src/ai/workflows/production-directive.ts`
+- `src/seed/run-production-directive.ts`
+- `TASK_061_MANUAL_PRODUCTION_DIRECTIVE_RUN.md`
+- `tests/unit/*`
+- `PLANS.md`
+
+Verification notes:
+- `npm test`: passed, 36 files / 148 tests.
+- `npm run typecheck`: passed.
+- Exact Task 061 scaffold validation failures: `missing_required_section`, `missing_reader_facing_prose`, `missing_cta_label`, `missing_cta_href`, `missing_required_internal_link`, `primary_intent_unanswered`.
+
+### Task 066 - Canonical Bottleneck Positive Path Verification
+
+State: `completed`
+Lane: `factory`, `review`
+Owner: Codex
+
+Goal:
+Prove one bounded ProductionDirective can turn the canonical Player Trap scaffold into a complete review-ready draft on the existing bottleneck surface.
+
+Scope:
+- Reuse the existing `/clusters/coach-for-engineering-managers-stuck-as-the-bottleneck` surface.
+- Produce exactly one complete reader-facing draft with the existing ContentDraftingAgent path.
+- Verify compliance, quality, evidence, canonical ownership, and intent collision handling.
+
+Out of scope:
+- No new URL.
+- No new PageBrief.
+- No extra batch.
+- No publishing, deployment, commit, or push.
+
+Files expected to change:
+- `src/ai/workflows/production-directive.ts`
+- `src/ai/workflows/contentDraftWorkflow.ts`
+- `tests/unit/*`
+- `PLANS.md`
+
+Verification notes:
+- `npm test -- tests/unit/page-brief-compliance.test.ts tests/unit/content-draft-workflow.test.ts tests/unit/production-directive.test.ts`: passed, 12 tests.
+- `npm test`: passed, 36 files / 148 tests.
+- `npm run typecheck`: passed.
+- Factual correction recorded by Task 068: the original Task 066 output was a false positive and is preserved as the regression baseline with `maturity = complete_draft`, `saveStatus = needs_revision`, `review_ready = false`, and a premature human approval request.
+- The original verification counts above describe the historical false-positive run; they do not establish review readiness under the repaired contract.
+
+### Task 067 - Review-Ready Validation Repair Plan
+
+State: `completed`
+Lane: `governance`, `factory`, `content-quality`
+Owner: Codex
+
+Goal:
+Document the test-first repair plan for the false-positive `review_ready` decision exposed by Task 066.
+
+Scope:
+- Correct the factual classification of Task 066.
+- Define independent hard gates for generated prose, rendered links and CTA, claim-level evidence, intent/canonical ownership, and content quality.
+- Require real ContentDraftingAgent provenance before a generated artifact can advance.
+- Specify regression and positive-path verification using exactly the existing Draft 05 asset.
+
+Out of scope:
+- No implementation of the repair.
+- No new content generation, publication, deployment, commit, or push.
+
+Deliverable:
+- `docs/plans/2026-07-12-review-ready-validation-repair.md`
+
+Verification notes:
+- Documented the test-first repair sequence for the Task 066 false-positive `review_ready` result.
+- The plan preserves the existing ProductionDirective, ContentDraftingAgent boundary, content draft workflow, OperatingCycle, canonical URL, PageBrief, and human publication gate.
+- The plan requires exact Task 066 RED regression coverage, rendered Markdown link/CTA validation, claim-level evidence mapping, explanatory quality dimensions, truthful generation provenance, and one centralized readiness transition.
+- No implementation, content generation, publication, deployment, commit, or push was performed.
+- Accepted implementation scope was subsequently reduced to the objective 80/20 hard gates plus semantic quality evaluation described in Task 068 and `DEC-20260712-07`.
+
+### Task 068 - Review-Ready Gate 80/20 Repair and Draft 05 Revision
+
+State: `completed`
+Lane: `governance`, `factory`, `content-quality`
+Owner: Codex
+
+Goal:
+Implement the accepted reduced Task 067 scope so the exact Task 066 false positive is rejected and the existing Draft 05 can advance only through objective hard gates plus an explicit semantic quality evaluation.
+
+Scope:
+- Correct and preserve the Task 066 factual baseline.
+- Add objective Markdown link/CTA, meta-copy, evidence-map, canonical ownership, and known collision checks.
+- Add a structured semantic quality result for the eight requested dimensions.
+- Revise only `authority-draft-approved-insight-player-trap-05` on its existing PageBrief and canonical surface.
+
+Out of scope:
+- No generalized deterministic depth, usefulness, differentiation, audience-fit, persuasion, authority-strength, or semantic-purpose heuristics.
+- No new URL, PageBrief, authority asset, batch, router, scheduler, orchestration layer, deployment, publication, commit, or push.
+
+Files expected to change:
+- `src/ai/governance/page-brief-compliance.ts`
+- `src/ai/governance/content-quality-gate.ts`
+- `src/ai/workflows/contentDraftWorkflow.ts`
+- `src/ai/workflows/production-directive.ts`
+- `tests/unit/page-brief-compliance.test.ts`
+- `tests/unit/content-quality-gate.test.ts`
+- `tests/unit/content-draft-workflow.test.ts`
+- `tests/unit/production-directive.test.ts`
+- `TASK_066_CANONICAL_BOTTLENECK_POSITIVE_PATH.md`
+- `PLANS.md`
+
+Verification notes:
+- Corrected the original Task 066 classification to `complete_draft / needs_revision / review_ready=false` and preserved the rejected draft verbatim as the regression baseline.
+- Added objective hard gates for known reader-visible meta-copy, renderable Markdown CTA and internal links, CTA context, structured claim-level evidence mappings, canonical ownership, and known intent collisions.
+- No direct Markdown dependency exists in `package.json`; the implementation uses only a bounded inline-link extractor and does not implement a general Markdown parser.
+- The quality evaluator now requires all eight semantic dimensions to return score, pass/fail, a draft-grounded reason, and a revision recommendation when failed; generic success language is not accepted.
+- Revised only `authority-draft-approved-insight-player-trap-05`, reused its existing PageBrief identity and canonical path, and synchronized the existing canonical seed/source content without creating another URL, asset, or batch.
+- Bounded recheck result: insight consumed `approved-insight-player-trap-05`; deterministic validation passed with no failures; all eight semantic dimensions passed; final maturity/save status `review_ready`; publication remains non-public and human approval remains pending.
+- `npm test -- tests/unit/page-brief-compliance.test.ts tests/unit/content-quality-gate.test.ts tests/unit/content-draft-workflow.test.ts tests/unit/production-directive.test.ts tests/unit/review-ready-public-surface-batch.test.ts`: passed, 5 files / 24 tests.
+- `npm test`: passed, 36 files / 153 tests.
+- `npm run typecheck`: passed.
+- `git diff --check`: passed with existing LF-to-CRLF warnings only.
+- Decision appended as `DEC-20260712-07` in the append-only `decisions.md`.
+- No deployment, publication, commit, or push was performed.
+
+### Task 069 - Draft 05 Human Approval and Deployment Preparation
+
+State: `completed`
+Lane: `governance`, `approval`, `deployment-readiness`
+Owner: Codex
+
+Goal:
+Record the explicit human approval for Draft 05 and prepare a locally verified, narrowly scoped deployment package without executing deployment.
+
+Scope:
+- Transition only `authority-draft-approved-insight-player-trap-05` from `review_ready` to `human_approved`.
+- Bind approval to an immutable content revision hash, canonical path, supporting Approved Insights, validation result, approver record, and explicit publication scope.
+- Verify locally that the approved revision, CTA, internal links, canonical metadata, publication surfaces, CTO repair, and pillar-to-Problem-Page links are included.
+
+Out of scope:
+- No approval or publication of any other draft.
+- No ProductionDirective run.
+- No commit, push, deployment, or publication.
+
+Deliverables:
+- Machine-verifiable approval metadata on the existing Draft 05 authority asset.
+- `TASK_069_DRAFT_05_HUMAN_APPROVAL_AND_DEPLOYMENT_PACKAGE.md`.
+- Regression tests for approval scope and deployment prerequisites.
+
+Verification notes:
+- Recorded the transition for only `authority-draft-approved-insight-player-trap-05`: `review_ready → human_approved`.
+- Approval timestamp: `2026-07-12T22:50:58.0453369+03:00`; approver recorded as `human_user_via_codex_session` because no personal name was provided.
+- Approved canonical path: `/clusters/coach-for-engineering-managers-stuck-as-the-bottleneck`.
+- Approved SHA-256 revision: `f95ab45388c077de87efc8228e9788bf4fa9cca1a146a7ec02233e5c1b818211`; tests recompute it from the exact Payload title, canonical path, and content.
+- Exactly one authority asset carries human approval metadata. Drafts 06 and 07 and all other drafts remain excluded from approval and publication scope.
+- Pre-deployment checks passed locally for CTA, internal links, canonical model, CTO publication repair, pillar links to both approved Problem Pages, and revision identity.
+- Corrected sitemap selection so non-published `review` assets are excluded, matching their absence from `llms.txt`; the human-approved Draft 05 remains non-public until a separately authorized publication transition.
+- Focused deployment-readiness suite: passed, 5 files / 23 tests.
+- `npm test`: passed, 37 files / 157 tests.
+- `npm run typecheck`: passed.
+- `git diff --check`: passed with LF-to-CRLF warnings only.
+- Deployment, publication, commit, push, and ProductionDirective execution were not performed.

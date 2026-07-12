@@ -22,11 +22,8 @@ export function evaluateContentGenerationReadiness(input: {
   const requiredFreshnessDays = input.requiredFreshnessDays ?? 30;
   const now = input.now ? toUtcDate(input.now) : new Date();
   const approvedInsights = input.insights.filter((insight) => insight.status === "approved");
-  const latestApprovedInsight = approvedInsights
-    .map((insight) => ({ insight, capturedAt: toUtcDate(insight.capturedAt) }))
-    .sort((a, b) => b.capturedAt.getTime() - a.capturedAt.getTime())[0];
 
-  if (!latestApprovedInsight) {
+  if (!approvedInsights.length) {
     return {
       canGenerate: false,
       reason: "No approved Itay insight exists, so the system must not generate new content.",
@@ -36,32 +33,30 @@ export function evaluateContentGenerationReadiness(input: {
     };
   }
 
-  const daysSinceLatestInsight = diffDays(now, latestApprovedInsight.capturedAt);
-
-  if (daysSinceLatestInsight > requiredFreshnessDays) {
+  const evidenceBackedInsights = approvedInsights.filter((insight) => insight.evidenceUrls.length > 0);
+  if (!evidenceBackedInsights.length) {
     return {
       canGenerate: false,
-      reason: `Latest approved Itay insight is ${daysSinceLatestInsight} days old, exceeding the ${requiredFreshnessDays}-day freshness gate.`,
-      latestInsightAt: latestApprovedInsight.insight.capturedAt,
-      daysSinceLatestInsight,
-      freshApprovedInsightCount: approvedInsights.filter((insight) => {
-        const capturedAt = toUtcDate(insight.capturedAt);
-        return diffDays(now, capturedAt) <= requiredFreshnessDays;
-      }).length,
+      reason: "No approved Itay insight has claim-level evidence for the proposed content.",
+      latestInsightAt: approvedInsights[0]?.capturedAt,
+      daysSinceLatestInsight: approvedInsights[0] ? diffDays(now, toUtcDate(approvedInsights[0].capturedAt)) : undefined,
+      freshApprovedInsightCount: 0,
       requiredFreshnessDays,
       requiredInsightStatus: "approved",
     };
   }
 
+  const latestApprovedInsight = evidenceBackedInsights
+    .map((insight) => ({ insight, capturedAt: toUtcDate(insight.capturedAt) }))
+    .sort((a, b) => b.capturedAt.getTime() - a.capturedAt.getTime())[0];
+  const daysSinceLatestInsight = diffDays(now, latestApprovedInsight.capturedAt);
+
   return {
     canGenerate: true,
-    reason: "A fresh approved Itay insight exists, so content generation is allowed.",
+    reason: "An approved Itay insight with claim-level evidence exists; freshness is evaluated per claim, not by a global age threshold.",
     latestInsightAt: latestApprovedInsight.insight.capturedAt,
     daysSinceLatestInsight,
-    freshApprovedInsightCount: approvedInsights.filter((insight) => {
-      const capturedAt = toUtcDate(insight.capturedAt);
-      return diffDays(now, capturedAt) <= requiredFreshnessDays;
-    }).length,
+    freshApprovedInsightCount: evidenceBackedInsights.length,
     requiredFreshnessDays,
     requiredInsightStatus: "approved",
   };

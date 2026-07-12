@@ -41,11 +41,34 @@ export interface AuthoritySeedContentPayload {
   author: "Itay Foyerstein";
 }
 
+export interface AuthoritySeedHumanApproval {
+  draftId: string;
+  maturity: "human_approved";
+  approvalTimestamp: string;
+  approver: string;
+  approverLimitation?: string;
+  canonicalPath: string;
+  contentRevisionHash: string;
+  supportingApprovedInsightIds: string[];
+  validationResult: {
+    deterministicHardGatesPassed: boolean;
+    semanticQualityPassed: boolean;
+    failureCodes: string[];
+  };
+  publicationScope: {
+    approvedCanonicalPaths: string[];
+    excludedDraftIds: string[];
+    deploymentAuthorized: boolean;
+    publicationAuthorized: boolean;
+  };
+}
+
 export interface AuthoritySeedContentAsset {
   kind: "content";
   payloadCollection: AuthoritySeedContentCollection;
   sourceDocumentPath: string;
   reviewRequired: true;
+  humanApproval?: AuthoritySeedHumanApproval;
   payloadData: AuthoritySeedContentPayload;
 }
 

@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: ProblemPageProps): Promise<Me
     alternates: {
       canonical: page.canonicalUrl,
     },
-    robots: page.record.status === "published" ? { index: true, follow: true } : { index: false, follow: false },
+    robots: page.publicationDecision.indexable ? { index: true, follow: true } : { index: false, follow: false },
   };
 }
 
@@ -43,4 +43,3 @@ export default async function ProblemPageRoute({ params }: ProblemPageProps) {
 
   return <ProblemPage page={page} />;
 }
-

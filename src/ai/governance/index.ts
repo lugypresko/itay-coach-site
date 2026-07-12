@@ -4,3 +4,5 @@ export * from "./authority-model";
 export * from "./types";
 export * from "./canonical-entity";
 export * from "./authority-decisions";
+export * from "./publication-state";
+export * from "./page-brief-compliance";

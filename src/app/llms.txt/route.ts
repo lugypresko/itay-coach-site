@@ -1,7 +1,9 @@
 import { getSiteUrl } from "@/lib/site-url";
+import { getPublishedProblemPagePathnames } from "@/lib/problem-pages";
 
 export async function GET() {
   const origin = getSiteUrl();
+  const publishedProblemPageRoutes = getPublishedProblemPagePathnames(origin);
   const body = [
     "# The Push LLM SEO Authority Engine",
     "",
@@ -20,12 +22,11 @@ export async function GET() {
     `- ${origin}/frameworks`,
     `- ${origin}/frameworks/player-trap`,
     `- ${origin}/frameworks/invisible-executor`,
-    `- ${origin}/problems/cto-becomes-the-bottleneck`,
-    `- ${origin}/problems/vp-rnd-losing-execution-control`,
     `- ${origin}/case-studies`,
     `- ${origin}/faqs`,
     `- ${origin}/glossary`,
     `- ${origin}/player-trap`,
+    ...publishedProblemPageRoutes.map((pathname) => `- ${origin}${pathname}`),
     "",
     "Canonical authority sprint targets:",
     `- ${origin}/pillars/tech-leadership-coaching`,

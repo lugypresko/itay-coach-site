@@ -3,7 +3,7 @@ import { createElement } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { PublicContentPage } from "../../src/components/public-content-page";
-import { getProblemPageCatalogEntry } from "../../src/lib/problem-pages";
+import { buildProblemPagePublicationDecision, getProblemPageCatalogEntry } from "../../src/lib/problem-pages";
 import { buildProblemPageJsonLd } from "../../src/lib/problem-page-schema";
 import {
   canonicalAuthoritySprintTargetPathnames,
@@ -114,6 +114,10 @@ describe("canonical authority sprint", () => {
         record: record!,
         pathname: `/problems/${slug}`,
         canonicalUrl: `https://itayfoyerstein.com/problems/${slug}`,
+        publicationDecision: buildProblemPagePublicationDecision(record!, {
+          origin: "https://itayfoyerstein.com",
+          pathname: `/problems/${slug}`,
+        }),
       };
       const jsonLd = buildProblemPageJsonLd(page);
 

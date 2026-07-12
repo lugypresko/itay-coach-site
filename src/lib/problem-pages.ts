@@ -1,4 +1,5 @@
 import { getServerPayload } from "./payload";
+import { buildPublicationDecision, type PublicationDecision, type PublicationSourceRecord } from "../ai/governance/publication-state";
 export { buildProblemPageJsonLd } from "./problem-page-schema";
 
 export type ProblemPageStatus = "draft" | "review" | "published";
@@ -32,6 +33,9 @@ export interface ProblemPageRecord {
   seoTitle: string;
   seoDescription: string;
   status: ProblemPageStatus;
+  humanApproved?: boolean;
+  canonicalUrl?: string | null;
+  publishedAt?: string;
   updatedAt?: string;
 }
 
@@ -39,6 +43,7 @@ export interface ProblemPageModel {
   record: ProblemPageRecord;
   pathname: string;
   canonicalUrl: string;
+  publicationDecision: PublicationDecision;
 }
 
 const problemPages = [
@@ -573,6 +578,17 @@ export function getProblemPagePathnames() {
   return problemPageCatalog.map((page) => `/problems/${page.slug}`);
 }
 
+export function getPublishedProblemPagePathnames(origin = "https://itayfoyerstein.com") {
+  return problemPageCatalog.flatMap((page) => {
+    const decision = buildProblemPagePublicationDecision(page, {
+      origin,
+      pathname: `/problems/${page.slug}`,
+    });
+
+    return decision.sitemapEligible ? [`/problems/${page.slug}`] : [];
+  });
+}
+
 export function getProblemPageCatalogEntry(slug: string): ProblemPageRecord | undefined {
   return problemPageCatalog.find((page) => page.slug === slug);
 }
@@ -580,6 +596,53 @@ export function getProblemPageCatalogEntry(slug: string): ProblemPageRecord | un
 export function getProblemPagesForSurface(pathname: string): ProblemPageRecord[] {
   return problemPageCatalog.filter((page) =>
     page.relatedFrameworks.some((link) => link.href === pathname) || page.relatedClusters.some((link) => link.href === pathname),
+  );
+}
+
+export function buildProblemPagePublicationDecision(
+  record: ProblemPageRecord & Partial<PublicationSourceRecord>,
+  context: {
+    origin: string;
+    pathname?: string;
+    treatAsHumanApproved?: boolean;
+    canonicalUrl?: string | null;
+    indexable?: boolean;
+    sitemapEligible?: boolean;
+    llmsTxtEligible?: boolean;
+    schemaEligible?: boolean;
+    publiclyAccessible?: boolean;
+  },
+) {
+  const pathname = context.pathname ?? `/problems/${record.slug}`;
+  const canonicalUrl = context.canonicalUrl !== undefined ? context.canonicalUrl : new URL(pathname, context.origin).toString();
+
+  return buildPublicationDecision(
+    {
+      slug: record.slug,
+      status: record.status,
+      title: record.title,
+      seoTitle: record.seoTitle,
+      seoDescription: record.seoDescription,
+      painStatement: record.painStatement,
+      diagnosis: record.diagnosis,
+      humanApproved: record.humanApproved,
+      canonicalUrl: record.canonicalUrl ?? null,
+      indexable: record.indexable,
+      sitemapEligible: record.sitemapEligible,
+      llmsTxtEligible: record.llmsTxtEligible,
+      schemaEligible: record.schemaEligible,
+    },
+    {
+      origin: context.origin,
+      pathname,
+      treatAsHumanApproved: context.treatAsHumanApproved,
+      canonicalUrl,
+      indexable: context.indexable,
+      sitemapEligible: context.sitemapEligible,
+      llmsTxtEligible: context.llmsTxtEligible,
+      schemaEligible: context.schemaEligible,
+      publiclyAccessible: context.publiclyAccessible,
+    },
   );
 }
 
@@ -601,10 +664,16 @@ export async function loadProblemPage(slug: string, origin: string): Promise<Pro
     const normalized = record ? normalizeProblemPageRecord(record) : undefined;
 
     if (normalized) {
+      const publicationDecision = buildProblemPagePublicationDecision(normalized, {
+        origin,
+        pathname: `/problems/${normalized.slug}`,
+      });
+
       return {
         record: normalized,
         pathname: `/problems/${normalized.slug}`,
         canonicalUrl: new URL(`/problems/${normalized.slug}`, origin).toString(),
+        publicationDecision,
       };
     }
   } catch {
@@ -617,10 +686,16 @@ export async function loadProblemPage(slug: string, origin: string): Promise<Pro
     return null;
   }
 
+  const publicationDecision = buildProblemPagePublicationDecision(fallback, {
+    origin,
+    pathname: `/problems/${fallback.slug}`,
+  });
+
   return {
     record: fallback,
     pathname: `/problems/${fallback.slug}`,
     canonicalUrl: new URL(`/problems/${fallback.slug}`, origin).toString(),
+    publicationDecision,
   };
 }
 

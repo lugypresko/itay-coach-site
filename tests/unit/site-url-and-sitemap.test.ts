@@ -4,7 +4,7 @@ import robots from "../../src/app/robots";
 import sitemap from "../../src/app/sitemap";
 import { GET as getLlmsTxt } from "../../src/app/llms.txt/route";
 import { publicAuthorityAssetRoutes, getPublicAuthorityAssetPathnames } from "../../src/lib/public-authority-routes";
-import { getProblemPagePathnames } from "../../src/lib/problem-pages";
+import { getProblemPagePathnames, getPublishedProblemPagePathnames } from "../../src/lib/problem-pages";
 import { getSiteUrl } from "../../src/lib/site-url";
 
 afterEach(() => {
@@ -54,14 +54,6 @@ describe("robots and sitemap", () => {
         "/book-a-fit-call",
         "/problems/cto-becomes-the-bottleneck",
         "/problems/vp-rnd-losing-execution-control",
-        "/problems/engineering-managers-stuck-in-firefighting",
-        "/problems/senior-developer-still-acting-like-a-developer",
-        "/problems/ai-adoption-creates-more-work-not-leverage",
-        "/problems/product-engineering-misalignment",
-        "/problems/squads-depend-on-one-strong-manager",
-        "/problems/busy-execution-without-business-results",
-        "/problems/leadership-team-cannot-scale-decisions",
-        "/problems/good-managers-burning-out-quietly",
         "/ai-first-leadership",
         "/invisible-executor-assessment",
         "/tech-leadership-visibility-scorecard",
@@ -74,23 +66,24 @@ describe("robots and sitemap", () => {
         "/frameworks/player-trap",
         "/frameworks/invisible-executor",
         "/clusters",
-        "/clusters/how-engineering-managers-become-bottlenecks-in-ai-assisted-teams",
-        "/clusters/how-to-lead-ai-generated-code-reviews-without-drowning",
-        "/clusters/from-technical-expert-to-strategic-engineering-leader",
-        "/clusters/why-tech-leads-struggle-after-promotion",
-        "/clusters/ai-era-leadership-operating-system-for-engineering-managers",
         "/faqs",
-        "/faqs/ai-first-leadership-for-tech-managers",
         "/glossary",
-        "/glossary/invisible-executor",
-        "/glossary/trusted-operator",
-        "/glossary/strategic-leader",
         "/case-studies",
       ]),
     );
 
+    expect(sitemapPathnames).not.toContain("/problems/engineering-managers-stuck-in-firefighting");
+    expect(sitemapPathnames).not.toContain("/problems/good-managers-burning-out-quietly");
     expect(sitemapPathnames).not.toContain("/case-studies/promoted-technical-manager-becomes-execution-bottleneck");
     expect(sitemapPathnames).not.toContain("/case-studies/case-study-new-engineering-manager");
+    expect(sitemapPathnames).not.toContain("/clusters/coach-for-engineering-managers-stuck-as-the-bottleneck");
+    expect(sitemapPathnames).not.toContain("/clusters/how-engineering-managers-become-bottlenecks-in-ai-assisted-teams");
+    expect(sitemapPathnames).not.toContain("/faqs/ai-first-leadership-for-tech-managers");
+    expect(sitemapPathnames).not.toContain("/glossary/invisible-executor");
+    expect(getPublishedProblemPagePathnames()).toEqual([
+      "/problems/cto-becomes-the-bottleneck",
+      "/problems/vp-rnd-losing-execution-control",
+    ]);
     expect(getProblemPagePathnames()).toHaveLength(10);
   });
 

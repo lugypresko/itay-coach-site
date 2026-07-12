@@ -4,6 +4,8 @@ import {
   approvedInsightSchema,
   authorityContentSchema,
   knowledgeAssetSchema,
+  operatingCycleSchema,
+  publicationDecisionSchema,
   visibilityObservationSchema,
 } from "../../src/domain/authority-contracts";
 
@@ -79,5 +81,66 @@ describe("canonical authority contracts", () => {
       citedUrls: [],
       competitorNames: [],
     }).recommendationLevel).toBe(2);
+  });
+
+  it("accepts a publication decision contract with explicit reason codes", () => {
+    expect(publicationDecisionSchema.parse({
+      lifecycleStatus: "published",
+      humanApproved: true,
+      publiclyAccessible: true,
+      indexable: true,
+      sitemapEligible: true,
+      llmsTxtEligible: true,
+      canonicalUrl: "https://itayfoyerstein.com/problems/cto-becomes-the-bottleneck",
+      schemaEligible: true,
+      reasonCodes: [],
+    }).indexable).toBe(true);
+  });
+
+  it("accepts an operating cycle contract with one active next best action", () => {
+    expect(operatingCycleSchema.parse({
+      cycleId: "manual_trigger:2026-07-12T10:00:00.000Z:publication_state_integrity:repair_visibility_gap:repair-publication-state-integrity",
+      trigger: "manual_trigger",
+      observedAt: "2026-07-12T10:00:00.000Z",
+      snapshot: {
+        observedAt: "2026-07-12T10:00:00.000Z",
+        trigger: "manual_trigger",
+        publishedProblemPages: ["/problems/cto-becomes-the-bottleneck"],
+        draftProblemPages: ["/problems/good-managers-burning-out-quietly"],
+        latestVisibilityObservationAt: "2026-07-12T08:00:00.000Z",
+        visibilityObservationState: "fresh",
+        gscLiveAccess: "unavailable",
+        vercelLiveAccess: "unavailable",
+        payloadLiveAccess: "unavailable",
+        aiRecommendationVisibility: "unmeasured",
+      },
+      currentState: "publication_state_integrity",
+      bottleneck: "publication_state_integrity",
+      supportingEvidence: ["draft pages are leaking into discovery surfaces"],
+      nextBestAction: {
+        category: "repair_visibility_gap",
+        title: "Repair publication-state integrity",
+        targetIds: ["problems:cto-becomes-the-bottleneck"],
+        owner: "Engineering",
+        expectedImpact: "Restore consistent discovery surfaces.",
+        requiredEvidence: ["shared publication decision helper in use"],
+        humanApprovalRequired: true,
+        stopPoint: "wait_for_human_publication_approval",
+        nextReviewAt: "2026-07-13T00:00:00.000Z",
+        whatNotToDo: ["Do not publish drafts automatically."],
+      },
+      supportingRecommendations: ["Keep the recommendation layer deterministic."],
+      measurementWindow: {
+        status: "pending_deployment",
+        requiredDeploymentReference: "deployment identifier or timestamp",
+        intendedStartCondition: "After verified deployment.",
+        intendedDurationOrMinimumSample: "One post-deployment observation window.",
+      },
+      humanApprovalRequired: true,
+      stopPoint: "wait_for_human_publication_approval",
+      nextReviewAt: "2026-07-13T00:00:00.000Z",
+      whatNotToDo: ["Do not publish drafts automatically."],
+      revision: 1,
+    }).measurementWindow.status).toBe("pending_deployment");
   });
 });

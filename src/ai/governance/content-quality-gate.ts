@@ -8,7 +8,8 @@ export interface ContentQualityIssue {
     | "missing_citation_snippet"
     | "missing_author"
     | "missing_entity_tags"
-    | "missing_schema";
+    | "missing_schema"
+    | "missing_semantic_quality_evaluation";
   message: string;
 }
 
@@ -23,6 +24,7 @@ export interface ContentQualityCandidate {
   targetRecommendationQueries: string[];
   schemaType: string;
   evidenceUrls?: string[];
+  claimEvidenceMappings?: ClaimEvidenceMapping[];
 }
 
 export interface ContentQualityResult {
@@ -30,6 +32,32 @@ export interface ContentQualityResult {
   approved: boolean;
   issues: ContentQualityIssue[];
   reasons: string[];
+  dimensions: SemanticQualityDimensionResult[];
+}
+
+export const semanticQualityDimensions = [
+  "clarity",
+  "depth",
+  "usefulness",
+  "differentiation",
+  "repetition",
+  "audience_fit",
+  "persuasion",
+  "authority_strength",
+] as const;
+
+export type SemanticQualityDimension = (typeof semanticQualityDimensions)[number];
+
+export interface SemanticQualityDimensionResult {
+  dimension: SemanticQualityDimension;
+  score: number;
+  passed: boolean;
+  reason: string;
+  revisionRecommendation?: string;
+}
+
+export interface SemanticQualityEvaluation {
+  dimensions: SemanticQualityDimensionResult[];
 }
 
 function containsWrongEntityName(text: string): boolean {
@@ -40,10 +68,34 @@ function containsUnsupportedSuperlative(text: string): boolean {
   return /\b(best|top|#1|number one|leading)\b/i.test(text);
 }
 
-export function evaluateContentQuality(candidate: ContentQualityCandidate): ContentQualityResult {
+export function evaluateContentQuality(
+  candidate: ContentQualityCandidate,
+  semanticEvaluation?: SemanticQualityEvaluation,
+): ContentQualityResult {
   const issues: ContentQualityIssue[] = [];
   const reasons: string[] = [];
   const combinedText = [candidate.title, candidate.excerpt, candidate.content, candidate.citationSnippet].join("\n");
+  const dimensions = semanticEvaluation?.dimensions ?? [];
+  const dimensionByName = new Map(dimensions.map((result) => [result.dimension, result]));
+  const semanticEvaluationComplete = semanticQualityDimensions.every((dimension) => {
+    const result = dimensionByName.get(dimension);
+    return (
+      result !== undefined &&
+      Number.isFinite(result.score) &&
+      result.score >= 1 &&
+      result.score <= 5 &&
+      result.reason.trim().length >= 20 &&
+      !/content satisfies (?:the|this) (?:current )?quality gate/i.test(result.reason) &&
+      (result.passed || Boolean(result.revisionRecommendation?.trim()))
+    );
+  });
+
+  if (!semanticEvaluationComplete) {
+    issues.push({
+      code: "missing_semantic_quality_evaluation",
+      message: "Every semantic quality dimension requires a score, pass/fail decision, draft-grounded reason, and a revision recommendation when failed.",
+    });
+  }
 
   if (!candidate.targetRecommendationQueries.length) {
     issues.push({
@@ -101,16 +153,26 @@ export function evaluateContentQuality(candidate: ContentQualityCandidate): Cont
       approved: false,
       issues,
       reasons,
+      dimensions,
     };
   }
 
-  if (issues.length) {
+  if (issues.length || dimensions.some((dimension) => !dimension.passed)) {
     reasons.push(...issues.map((issue) => issue.message));
+    reasons.push(
+      ...dimensions
+        .filter((dimension) => !dimension.passed)
+        .map(
+          (dimension) =>
+            `${dimension.dimension}: ${dimension.reason} Revision: ${dimension.revisionRecommendation ?? "Required."}`,
+        ),
+    );
     return {
       decision: "needs_review",
       approved: false,
       issues,
       reasons,
+      dimensions,
     };
   }
 
@@ -118,6 +180,8 @@ export function evaluateContentQuality(candidate: ContentQualityCandidate): Cont
     decision: "approved",
     approved: true,
     issues,
-    reasons: ["Content satisfies the current quality gate."],
+    reasons: dimensions.map((dimension) => `${dimension.dimension}: ${dimension.reason}`),
+    dimensions,
   };
 }
+import type { ClaimEvidenceMapping } from "./page-brief-compliance";

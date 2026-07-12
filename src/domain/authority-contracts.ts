@@ -78,8 +78,132 @@ export const visibilityObservationSchema = z.object({
   competitorNames: z.array(nonEmpty).default([]),
 }).strict();
 
+export const publicationReasonCodeSchema = z.enum([
+  "draft_not_indexable",
+  "draft_not_in_sitemap",
+  "draft_not_in_llms_txt",
+  "published_not_human_approved",
+  "published_missing_canonical_url",
+  "published_noindex_conflict",
+  "publication_surface_conflict",
+  "schema_ineligible",
+]);
+
+export const publicationDecisionSchema = z
+  .object({
+    lifecycleStatus: z.enum(["draft", "review", "published", "archived"]),
+    humanApproved: z.boolean(),
+    publiclyAccessible: z.boolean(),
+    indexable: z.boolean(),
+    sitemapEligible: z.boolean(),
+    llmsTxtEligible: z.boolean(),
+    canonicalUrl: z.string().url().nullable(),
+    schemaEligible: z.boolean(),
+    reasonCodes: z.array(publicationReasonCodeSchema).default([]),
+  })
+  .strict();
+
+export const operatingCycleTriggerSchema = z.enum([
+  "weekly_observation",
+  "content_published",
+  "measurement_window_closed",
+  "material_signal_change",
+  "manual_trigger",
+]);
+
+export const systemSnapshotSchema = z
+  .object({
+    observedAt: z.string().datetime(),
+    trigger: operatingCycleTriggerSchema,
+    publishedProblemPages: z.array(z.string().trim().startsWith("/problems/")).default([]),
+    draftProblemPages: z.array(z.string().trim().startsWith("/problems/")).default([]),
+    latestVisibilityObservationAt: z.string().datetime().nullable(),
+    visibilityObservationState: z.enum(["fresh", "stale", "missing"]),
+    gscLiveAccess: z.enum(["available", "unavailable"]),
+    vercelLiveAccess: z.enum(["available", "unavailable"]),
+    payloadLiveAccess: z.enum(["available", "unavailable"]),
+    aiRecommendationVisibility: z.enum(["unmeasured", "measured"]),
+  })
+  .strict();
+
+export const operatingCycleNextBestActionSchema = z
+  .object({
+    category: z.enum([
+      "publish_more_evidence",
+      "stop_publishing",
+      "improve_conversion_path",
+      "repair_visibility_gap",
+      "repair_inventory_gap",
+      "refresh_authority_asset",
+      "request_human_review",
+      "tighten_internal_links",
+      "improve_measurement",
+    ]),
+    title: z.string().trim().min(1),
+    targetIds: z.array(z.string().trim().min(1)).min(1),
+    owner: z.string().trim().min(1),
+    expectedImpact: z.string().trim().min(1),
+    requiredEvidence: z.array(z.string().trim().min(1)).min(1),
+    humanApprovalRequired: z.boolean(),
+    stopPoint: z.string().trim().min(1),
+    nextReviewAt: z.string().datetime(),
+    whatNotToDo: z.array(z.string().trim().min(1)).min(1),
+  })
+  .strict();
+
+export const operatingCycleMeasurementWindowSchema = z
+  .object({
+    status: z.enum(["pending_deployment", "open", "closed"]),
+    requiredDeploymentReference: z.string().trim().optional(),
+    deploymentReference: z.string().trim().optional(),
+    intendedStartCondition: z.string().trim().min(1),
+    intendedDurationOrMinimumSample: z.string().trim().min(1),
+  })
+  .strict();
+
+export const productionDirectiveExecutionStateSchema = z
+  .object({
+    directiveId: z.string().trim().min(1),
+    cluster: z.string().trim().min(1),
+    targetKnowledgeAssets: z.number().int().nonnegative(),
+    maxDrafts: z.number().int().nonnegative(),
+    reviewWipLimit: z.number().int().nonnegative(),
+    currentReviewWip: z.number().int().nonnegative(),
+    consumedInsightIds: z.array(z.string().trim().min(1)),
+    createdKnowledgeAssetIds: z.array(z.string().trim().min(1)),
+    createdDraftIds: z.array(z.string().trim().min(1)),
+    blockedCandidates: z.array(
+      z.object({ insightId: z.string().trim().min(1), reason: z.string().trim().min(1) }).strict(),
+    ),
+    stopPoint: z.string().trim().min(1),
+  })
+  .strict();
+
+export const operatingCycleSchema = z
+  .object({
+    cycleId: z.string().trim().min(1),
+    trigger: operatingCycleTriggerSchema,
+    observedAt: z.string().datetime(),
+    snapshot: systemSnapshotSchema,
+    currentState: z.string().trim().min(1),
+    bottleneck: z.string().trim().min(1),
+    supportingEvidence: z.array(z.string().trim().min(1)).default([]),
+    nextBestAction: operatingCycleNextBestActionSchema,
+    supportingRecommendations: z.array(z.string().trim().min(1)).default([]),
+    measurementWindow: operatingCycleMeasurementWindowSchema,
+    humanApprovalRequired: z.boolean(),
+    stopPoint: z.string().trim().min(1),
+    nextReviewAt: z.string().datetime(),
+    whatNotToDo: z.array(z.string().trim().min(1)).min(1),
+    revision: z.number().int().nonnegative(),
+    productionDirective: productionDirectiveExecutionStateSchema.optional(),
+  })
+  .strict();
+
 export type AuthorityClaim = z.infer<typeof authorityClaimSchema>;
 export type ApprovedInsight = z.infer<typeof approvedInsightSchema>;
 export type KnowledgeAsset = z.infer<typeof knowledgeAssetSchema>;
 export type AuthorityContent = z.infer<typeof authorityContentSchema>;
 export type VisibilityObservation = z.infer<typeof visibilityObservationSchema>;
+export type PublicationDecision = z.infer<typeof publicationDecisionSchema>;
+export type OperatingCycle = z.infer<typeof operatingCycleSchema>;

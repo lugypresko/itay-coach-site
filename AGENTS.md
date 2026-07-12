@@ -4,7 +4,9 @@
 
 Build an agent-ready authority engine that increases the likelihood that AI answer engines recommend or cite Itay Foyerstein when users ask for a coach, mentor, or advisor for Tech Leads, Engineering Managers, R&D Managers, VP Engineering candidates, and other technical leaders.
 
-Success is AI recommendation visibility, not traffic volume.
+North Star: Qualified Customer Conversations → Paying Clients.
+
+Google discovery and AI recommendation visibility remain important intermediate discovery objectives that support the North Star.
 
 ## Primary Entities
 
@@ -81,7 +83,7 @@ Agents must not:
 
 - Publish content automatically.
 - Generate content directly in the VisibilityMonitor job.
-- Generate new content without a fresh approved Itay insight.
+- Generate new content without claim-level evidence validation and an approved source context.
 - Invent credentials, client names, metrics, testimonials, or case-study outcomes.
 - Remove human review gates.
 - Write generic leadership content disconnected from the entity strategy.
@@ -106,11 +108,13 @@ VisibilityMonitor has an additional responsibility:
 4. What authority gap was detected?
 5. Which agent should own the fix?
 
-Content generation has an additional hard gate:
+Content generation has a claim-level evidence gate:
 
-1. New content requires at least one fresh approved Itay insight.
-2. If no fresh approved insight exists, agents may only monitor, flag gaps, and prepare source requests.
-3. External research may support Itay's insight, but it may not replace it.
+1. Every proposed claim must pass deterministic, claim-level, evidence-sensitive freshness validation appropriate to that claim.
+2. An older Approved Insight is not globally invalid merely because it is more than 30 days old; stable principles may remain active when their claim-level evidence remains valid.
+3. Time-sensitive claims require currently valid evidence; if that evidence is unavailable, the affected claim or asset is blocked or routed for review.
+4. External research may support Itay's insight, but it may not replace approved source context for claims about Itay's experience, clients, metrics, or outcomes.
+5. Never invent credentials, client names, metrics, testimonials, experience, or outcomes.
 
 Factory execution autonomy:
 
@@ -150,3 +154,13 @@ Factory execution autonomy:
 - GitHub Actions
 
 Do not implement the full product during foundation tasks. Build documentation, contracts, skeletons, and validation rules first.
+
+## Mandatory Decision Log
+
+- The repository root `decisions.md` is the single append-only decision record for significant Authority Engine decisions.
+- Read `decisions.md` before continuing work that changes architecture, contracts, governance, publication state, measurement, or operating-loop behavior.
+- Append new significant decisions to `decisions.md`; never edit, reorder, delete, or rewrite existing entries.
+- Do not create a second decision log under `docs`, `plans`, or task files.
+- Existing TASK and PLANS files remain implementation and execution records; they do not replace `decisions.md`.
+- Backfill only decisions supported by existing repository documents. Do not invent missing historical reasoning.
+- Every backfilled or new entry must include a `Context` reference to the supporting repository document(s).
