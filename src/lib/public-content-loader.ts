@@ -1,5 +1,10 @@
 import type { PublicContentPageModel, PublicContentSection } from "./public-content";
-import { buildPublicContentPageModel, getPublicContentSectionSpec, isRenderablePublicContent } from "./public-content";
+import {
+  buildPublicContentPageModel,
+  getPublicContentSectionSpec,
+  getStaticPublicContentCatalogEntry,
+  isRenderablePublicContent,
+} from "./public-content";
 import { getServerPayload } from "./payload";
 
 export async function loadPublishedPublicContent(section: PublicContentSection, slug: string, origin: string): Promise<PublicContentPageModel | null> {
@@ -24,6 +29,16 @@ export async function loadPublishedPublicContent(section: PublicContentSection, 
     const record = result.docs[0] as unknown as Record<string, unknown> | undefined;
 
     if (!record || !isRenderablePublicContent(record)) {
+      const fallback = getStaticPublicContentCatalogEntry(section, slug);
+
+      if (fallback && isRenderablePublicContent(fallback)) {
+        return buildPublicContentPageModel({
+          spec,
+          record: fallback,
+          origin,
+        });
+      }
+
       return null;
     }
 
@@ -33,6 +48,26 @@ export async function loadPublishedPublicContent(section: PublicContentSection, 
       origin,
     });
   } catch {
-    return null;
+    const fallback = getStaticPublicContentCatalogEntry(section, slug);
+
+    if (fallback && isRenderablePublicContent(fallback)) {
+      return buildPublicContentPageModel({
+        spec,
+        record: fallback,
+        origin,
+      });
+    }
   }
+
+  const fallback = getStaticPublicContentCatalogEntry(section, slug);
+
+  if (fallback && isRenderablePublicContent(fallback)) {
+    return buildPublicContentPageModel({
+      spec,
+      record: fallback,
+      origin,
+    });
+  }
+
+  return null;
 }

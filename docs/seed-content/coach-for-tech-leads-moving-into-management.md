@@ -2,7 +2,7 @@
 title: Coach for Tech Leads Moving Into Management
 slug: coach-for-tech-leads-moving-into-management
 schemaType: Article
-status: draft
+status: review
 author: Itay Foyerstein
 entityTags:
   - itay_foyerstein

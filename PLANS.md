@@ -76,6 +76,139 @@ The release target after verification is `Authority Engine Alpha`.
 
 ## Task Sequence
 
+### Task 055A - Canonical Authority Sprint Documentation Update
+
+State: `completed`
+Lane: `documentation`, `seo`, `chief-of-staff`
+Owner: Codex
+
+Goal:
+Update the relevant documentation and AI-readable route inventory after Task 055.
+
+Scope:
+- Document the five canonical authority sprint target pages.
+- Update AI-readable route inventory to include the new canonical framework and problem targets.
+- Record implementation artifacts and validation in the COS recommendation record.
+
+Out of scope:
+- No new content pages.
+- No schema changes.
+- No analytics changes.
+- No publishing workflow changes.
+
+Files expected to change:
+- `src/app/llms.txt/route.ts`
+- `docs/seed-content/README.md`
+- `TASK_055_COS_RECOMMENDATION.md`
+- `PLANS.md`
+
+Data contracts affected:
+- None.
+
+Agent permissions affected:
+- None.
+
+Validation steps:
+- Run focused tests for sitemap/route inventory if route output changes.
+- Run `npm run typecheck`.
+
+Acceptance criteria:
+- AI-readable route inventory lists all five canonical sprint targets.
+- Seed-content README explains how the canonical sprint uses the source-backed draft assets.
+- COS recommendation record includes execution and verification summary.
+- Typecheck passes.
+
+Verification notes:
+- Updated `llms.txt` route output with `/frameworks/player-trap`, both problem targets, and an explicit canonical sprint target section.
+- Updated `docs/seed-content/README.md` with the Task 055 target pages and source-backed evidence inputs.
+- Updated `TASK_055_COS_RECOMMENDATION.md` with execution and verification summaries.
+- Added test coverage for canonical authority sprint target presence in `llms.txt`.
+- Ran `npm test -- tests/unit/site-url-and-sitemap.test.ts`: passed, 5 tests.
+- Ran `npm run typecheck`: passed.
+
+### Task 055 - Canonical Authority Sprint
+
+State: `completed`
+Lane: `chief-of-staff`, `seo`, `public-rendering`, `analytics`
+Owner: Codex
+
+Goal:
+Improve discovery, indexing, and first qualified customer conversations by concentrating authority around the five customer-intent pages:
+
+- `/pillars/tech-leadership-coaching`
+- `/frameworks/player-trap`
+- `/frameworks/invisible-executor`
+- `/problems/cto-becomes-the-bottleneck`
+- `/problems/vp-rnd-losing-execution-control`
+
+Scope:
+- Validate canonical URL, unique metadata, robots indexability, sitemap inclusion, breadcrumbs schema, and related-page blocks for the target pages.
+- Strengthen internal links from the homepage, About surface, pillar/framework/problem surfaces, and related blocks so each target receives at least five meaningful internal links.
+- Add or strengthen evidence blocks and one primary CTA per target page.
+- Implement lightweight Vercel Analytics events for target page views and CTA clicks with path, slug, CTA type, referrer, and UTM fields.
+
+Out of scope:
+- No broad content expansion.
+- No ten-page publishing batch.
+- No new architecture, governance, analytics system, Payload schema migration, provider calls, or publishing automation.
+
+Files expected to change:
+- `src/lib/public-content.ts`
+- `src/lib/public-schema.ts`
+- `src/lib/problem-pages.ts`
+- `src/lib/public-authority-routes.ts`
+- `src/components/public-content-page.tsx`
+- `src/components/problem-page.tsx`
+- `src/components/authority-launch-page.tsx`
+- `src/components/page-brief-launch-page.tsx`
+- `src/app/(site)/page.tsx`
+- `tests/unit/*`
+- `PLANS.md`
+
+Data contracts affected:
+- None.
+
+Agent permissions affected:
+- None.
+
+Validation steps:
+- Run focused unit tests for canonical authority sprint behavior.
+- Run `npm test`.
+- Run `npm run typecheck`.
+- Run `npm run build`.
+
+Acceptance criteria:
+- Target pages are indexable.
+- Target pages are in sitemap.
+- Each target page has 5+ internal links.
+- Evidence block exists on each target page.
+- One clear CTA per target page.
+- Breadcrumb schema exists.
+- Related pages block exists.
+- Analytics events are implemented: `target_page_view`, `target_cta_click`, `diagnostic_click`, `fit_call_click`.
+- `npm test`, `npm run typecheck`, and `npm run build` pass.
+
+COS note:
+- This sprint is owned by Chief of Staff for prioritization, sequencing, and delegation.
+- COS recommendation recorded in `TASK_055_COS_RECOMMENDATION.md`.
+- COS assigned this sprint back to Codex for implementation under the original constraints.
+
+Verification notes:
+- Added `TASK_055_COS_RECOMMENDATION.md` as the COS executive recommendation and delegation record.
+- Added `/frameworks/player-trap` as a canonical published static authority fallback, alongside published static fallbacks for `/pillars/tech-leadership-coaching` and `/frameworks/invisible-executor`.
+- Corrected the VP R&D canonical target to `/problems/vp-rnd-losing-execution-control`.
+- Published the two target problem pages in the static catalog for indexable metadata and sitemap inclusion.
+- Added explicit target path and inbound-link registries with five meaningful inbound links per target page.
+- Added evidence/proof blocks for all five target pages.
+- Added breadcrumb JSON-LD support for problem pages and explicit index/follow metadata for public authority pages.
+- Added one CTA type per target page and Vercel Analytics events: `target_page_view`, `target_cta_click`, `diagnostic_click`, and `fit_call_click`.
+- Added related-page blocks to public authority pages and PageBrief launch pages; added homepage links to the five target pages.
+- Added a regression test so non-renderable CMS records cannot block static canonical fallbacks.
+- Local dev server smoke check passed for all five target routes on `http://localhost:3006`.
+- Ran `npm test`: passed, 29 test files and 105 tests.
+- Ran `npm run typecheck`: passed.
+- Ran `npm run build`: passed with pre-existing lint warnings in migrations and seed files.
+
 ### Task 000A - Supabase MCP Client Setup
 
 State: `completed`
@@ -953,7 +1086,7 @@ Acceptance criteria:
 
 ### Task 031 - Performance Signal Mapping
 
-State: `pending`
+State: `completed`
 Lane: `monitoring`, `authority-model`
 Owner: Codex
 
@@ -991,6 +1124,1083 @@ Acceptance criteria:
 - Current and future performance signals are clearly mapped.
 - PerformanceLearningAgent remains deferred.
 - No runtime learning exists.
+
+### Task 031A - Authority Outcome Mapping Documentation
+
+State: `completed`
+Lane: `monitoring`, `authority-model`, `documentation`
+Owner: Codex
+
+Goal:
+Document how PerformanceSignal records map into AuthorityOutcome records before the Chief of Staff Agent is formalized.
+
+Scope:
+- Use the existing AuthorityOutcome contract.
+- Define mappings from PerformanceSignal types to AuthorityOutcome focus areas.
+- Define status rules for healthy, watch, at_risk, and blocked.
+- Define valid nextBestAction categories.
+- Define human owner suggestions.
+- Keep Chief of Staff Agent deferred.
+
+Out of scope:
+- Do not add Chief of Staff Agent to DATA_CONTRACTS.
+- Do not add runtime agents.
+- Do not add provider calls.
+- Do not add autonomous decision-making.
+- Do not change publishing rules.
+
+Files expected to change:
+- `AUTHORITY_OUTCOME_MAPPING.md`
+- `PLANS.md`
+
+Data contracts affected:
+- None.
+
+Agent permissions affected:
+- None.
+
+Validation steps:
+- Ensure the document matches `DATA_CONTRACTS.md`.
+- Run `npm test`.
+- Run `npm run typecheck`.
+
+Acceptance criteria:
+- Every AuthorityOutcome focus has signal inputs.
+- Every status has clear rules.
+- Every nextBestAction is constrained to a safe operational category.
+- Chief of Staff Agent remains deferred.
+
+Verification notes:
+- Added `AUTHORITY_OUTCOME_MAPPING.md` to document the mapping between `PerformanceSignal` inputs and `AuthorityOutcome` outputs.
+- Kept Chief of Staff Agent deferred and out of `DATA_CONTRACTS.md`.
+- Ran `npm test`: passed.
+- Ran `npm run typecheck`: passed.
+
+### Task 031B - Chief of Staff Agent Contract Formalization
+
+State: `completed`
+Lane: `monitoring`, `authority-model`, `contracts`
+Owner: Codex
+
+Goal:
+Formalize the Chief of Staff Agent contract in `DATA_CONTRACTS.md` now that AuthorityOutcome ownership exists.
+
+Scope:
+- Define Chief of Staff Agent inputs around traffic, leads, content inventory, published assets, GSC, and Player Trap funnel state.
+- Define the Chief of Staff Agent output as a next best action recommendation.
+- Keep the contract outcome-driven rather than asset-driven.
+- Keep runtime agent registration deferred.
+
+Out of scope:
+- Do not add runtime agents.
+- Do not add provider calls.
+- Do not add autonomous decision-making.
+- Do not change publishing rules.
+- Do not alter AuthorityOutcome semantics.
+
+Files expected to change:
+- `DATA_CONTRACTS.md`
+- `tests/unit/*`
+- `PLANS.md`
+
+Data contracts affected:
+- Chief of Staff Agent contract.
+
+Agent permissions affected:
+- None.
+
+Validation steps:
+- Ensure the contract references `AuthorityOutcome` rather than raw assets.
+- Run `npm test`.
+- Run `npm run typecheck`.
+
+Acceptance criteria:
+- Chief of Staff Agent inputs and outputs are documented in `DATA_CONTRACTS.md`.
+- The contract is outcome-driven and not asset-driven.
+- Chief of Staff Agent remains deferred in runtime planning.
+- Existing validation still passes.
+
+Verification notes:
+- Formalized the Chief of Staff Agent input and output contract in `DATA_CONTRACTS.md`.
+- Added the corresponding Zod schemas and types in `src/ai/agents/agentFactoryContracts.ts`.
+- Kept runtime agent registration deferred.
+- Ran `npm test`: passed.
+- Ran `npm run typecheck`: passed.
+
+### Task 032 - Publish Readiness Agent + First Authority Batch
+
+State: `completed`
+Lane: `governance`, `review`, `content-seed`
+Owner: Codex
+
+Goal:
+Use a repeatable publish-readiness review process on the 9 existing review-ready assets and select the first human-approved publish batch.
+
+Scope:
+- Evaluate the 9 existing review-ready authority assets against publish-readiness criteria.
+- Produce a repeatable publish-readiness review process for human approval.
+- Select the first authority batch that is ready for explicit human approval.
+- Move existing assets from review-ready to publish-ready only through review output, not autonomous publishing.
+
+Out of scope:
+- No Chief of Staff Agent expansion.
+- No runtime agents.
+- No provider calls.
+- No content generation.
+- No new contracts.
+- No publishing without explicit human approval.
+
+Files expected to change:
+- `PLANS.md`
+- `docs/*` if needed for the readiness review record
+- `tests/unit/*` if needed for review-process validation
+
+Data contracts affected:
+- None.
+
+Agent permissions affected:
+- None.
+
+Validation steps:
+- Validate the publish-readiness criteria against the 9 existing review-ready assets.
+- Confirm the selected batch is human-approval only.
+- Run `npm test` if task implementation adds validation coverage.
+- Run `npm run typecheck` if task implementation changes code.
+
+Acceptance criteria:
+- The 9 existing review-ready assets are assessed with a repeatable readiness process.
+- A first publish batch is selected without autonomous publishing.
+- Human approval remains required before any asset becomes published.
+- Chief of Staff Agent remains deferred and runtime-less.
+
+### Task 033 - Chief of Staff Recommendation: KnowledgeAsset Conversion Sprint
+
+State: `completed`
+Lane: `content-seed`, `authority-model`, `documentation`
+Owner: Codex
+
+Goal:
+Convert the first 10 approved insights into KnowledgeAssets to prove the minimum viable factory: Approved Insight -> KnowledgeAsset.
+
+Scope:
+- Treat this as the execution of a Chief of Staff next-best-action recommendation.
+- Create the first 10 KnowledgeAssets from approved insights.
+- Prioritize Player Trap, Invisible Executor, and The Push / Strategic Leadership.
+- Preserve human review.
+- Keep all assets draft or in_review.
+- Produce a conversion report showing 10 converted and 40 remaining.
+
+Out of scope:
+- No publishing.
+- No distribution assets.
+- No provider calls.
+- No runtime Chief of Staff.
+- No autonomous decision-making.
+- No LangGraph.
+- No Payload schema changes unless separately approved.
+
+Files expected to change:
+- `src/seed/*`
+- `tests/unit/*`
+- `TASK_033_CONVERSION_REPORT.md`
+- `PLANS.md`
+
+Data contracts affected:
+- None.
+
+Agent permissions affected:
+- None.
+
+Validation steps:
+- Confirm each KnowledgeAsset links to a valid approved insight.
+- Confirm no KnowledgeAsset is published.
+- Confirm the report shows 10 converted and 40 remaining.
+- Run `npm test`.
+- Run `npm run typecheck`.
+
+Acceptance criteria:
+- Chief of Staff recommendation is recorded.
+- 10 KnowledgeAssets exist.
+- Each KnowledgeAsset links to a valid approved insight.
+- No KnowledgeAsset is published.
+- Remaining 40 approved insights are reported as backlog.
+
+Verification notes:
+- Added `TASK_033_CONVERSION_REPORT.md` with the Chief of Staff recommendation and the 10/40 conversion split.
+- Added a deterministic KnowledgeAsset conversion sprint for the first 10 approved insights.
+- Verified all 10 KnowledgeAssets remain `in_review` and link back to approved insights.
+- Ran `npm test`: passed.
+- Ran `npm run typecheck`: passed.
+- Ran `npm run seed:knowledge-asset-conversion-sprint`: passed and wrote the report.
+- Ran `npm run verify:knowledge-asset-conversion-sprint`: passed.
+
+### Task 034 - Autonomy Protocol Upgrade for Factory Execution
+
+State: `completed`
+Lane: `governance`, `documentation`, `process`
+Owner: Codex
+
+Goal:
+Stop requiring manual spoon-feeding between deterministic factory steps by defining a bounded autonomy rule for factory execution.
+
+Scope:
+- Update `PLANS.md` and `AGENTS.md` with a factory autonomy rule.
+- Allow Codex to continue from one deterministic factory step to the next without asking when boundaries remain within the approved guardrails.
+- Keep human approval requirements intact for publishing and strategy changes.
+
+Out of scope:
+- No governed contract changes.
+- No `DATA_CONTRACTS` changes.
+- No `AGENTS.md` security-rule changes beyond this autonomy rule.
+- No Payload schema migrations.
+- No publishing.
+- No provider calls.
+- No runtime agents.
+- No external private source access.
+- No autonomous business decision.
+- No human approval boundary crossing.
+
+Files expected to change:
+- `PLANS.md`
+- `AGENTS.md`
+
+Data contracts affected:
+- None.
+
+Agent permissions affected:
+- None.
+
+Validation steps:
+- Confirm the autonomy rule covers deterministic factory sequencing only.
+- Confirm publishing and strategy changes still require human approval.
+- Confirm no runtime or provider behavior is introduced.
+
+Acceptance criteria:
+- Codex may continue ApprovedInsight -> KnowledgeAsset -> PublicSurfaceMapping -> ContentDraft -> PublishReadiness without task-by-task prompting when the next step is deterministic and within boundaries.
+- Human approval is still required for publishing and strategy changes.
+- No autonomous external calls or runtime generation are allowed.
+
+Verification notes:
+- Confirmed the bounded factory autonomy rule is documented in `AGENTS.md` and `PLANS.md`.
+- Added `docs/cos/CHIEF_OF_STAFF_DECISION_LOOP.md` to define the stop-and-resume Chief of Staff loop.
+- Updated the Chief of Staff operating model and README to point to the canonical decision-loop document.
+
+### Task 035 - KnowledgeAsset to Public Surface Mapping
+
+State: `completed`
+Lane: `content-seed`, `public-rendering`, `documentation`
+Owner: Codex
+
+Goal:
+Map the 10 in_review KnowledgeAssets to their best public surface type.
+
+Scope:
+- Define the best public surface type for each converted KnowledgeAsset.
+- Include sourceInsightId, topic family, proposed route or slug, primary target query, target entity, CTA alignment, priority, and rationale.
+- Identify the first 3 create_next candidates.
+- Produce `KNOWLEDGE_ASSET_PUBLIC_SURFACE_MAPPING.md`.
+- Optionally add typed mapping data if it stays aligned with existing patterns.
+
+Out of scope:
+- No publishing.
+- No new content generation.
+- No contract changes.
+- No Payload schema changes.
+- No provider calls.
+- No runtime agents.
+
+Files expected to change:
+- `src/seed/*`
+- `tests/unit/*`
+- `KNOWLEDGE_ASSET_PUBLIC_SURFACE_MAPPING.md`
+- `PLANS.md`
+
+Data contracts affected:
+- None.
+
+Agent permissions affected:
+- None.
+
+Validation steps:
+- Ensure all 10 KnowledgeAssets are mapped.
+- Ensure every mapping has sourceInsightId.
+- Ensure every mapping has a valid public surface type.
+- Ensure the first 3 create_next candidates are identified.
+- Confirm no asset status is changed to published.
+
+Acceptance criteria:
+- All 10 KnowledgeAssets are mapped to a public surface type.
+- The first 3 create_next candidates are explicitly identified.
+- The mapping remains review-safe and non-publishing.
+- No status changes to published are introduced.
+
+Verification notes:
+- Added `KNOWLEDGE_ASSET_PUBLIC_SURFACE_MAPPING.md` with the 10 mapped KnowledgeAssets and the first 3 create_next candidates.
+- Added typed mapping data in `src/seed/knowledge-asset-public-surface-mapping.ts`.
+- Confirmed all 10 KnowledgeAssets remain `in_review`.
+- Ran `npm test`: passed.
+- Ran `npm run typecheck`: passed.
+- Ran `npm run seed:knowledge-asset-public-surface-mapping`: passed and wrote the report.
+- Ran `npm run verify:knowledge-asset-public-surface-mapping`: passed.
+
+### Task 036 - Payload Persistence Decision for Factory Outputs
+
+State: `completed`
+Lane: `governance`, `documentation`, `content-model`
+Owner: Codex
+
+Goal:
+Decide and document which factory outputs must become Payload-managed editorial assets before further content drafting continues.
+
+Scope:
+- Make a storage decision for ApprovedInsight, KnowledgeAsset, RecommendationDraft, PublicSurfaceMapping, DistributionAsset, and ClaimLedger.
+- Clarify the boundary between repo planning artifacts and Payload editorial assets.
+- Recommend whether Task 037 should implement Payload persistence for ApprovedInsights and KnowledgeAssets.
+- Keep this task read-only with no data writes.
+
+Out of scope:
+- No schema implementation yet.
+- No migrations.
+- No data writes.
+- No publishing.
+- No provider calls.
+- No runtime agents.
+
+Files expected to change:
+- `FACTORY_OUTPUT_STORAGE_DECISION.md`
+- `PLANS.md`
+
+Data contracts affected:
+- None.
+
+Agent permissions affected:
+- None.
+
+Validation steps:
+- Confirm each artifact type has an explicit storage decision.
+- Confirm the decision separates repo planning artifacts from Payload editorial assets.
+- Confirm the Task 037 recommendation is explicit.
+- Confirm no data is modified.
+
+Acceptance criteria:
+- Clear storage decision for each artifact type.
+- Clear boundary between repo planning artifacts and Payload editorial assets.
+- Recommendation for whether Task 037 should implement Payload persistence for ApprovedInsights and KnowledgeAssets.
+- No data is modified.
+
+### Task 037 - Payload Persistence Foundation for Approved Insights and Knowledge Assets
+
+State: `completed`
+Lane: `content-model`, `content-seed`, `payload-storage`
+Owner: Codex
+
+Goal:
+Persist the approved insight repository and first 10 KnowledgeAssets into Payload so the factory outputs live in the source of truth instead of only in repo artifacts.
+
+Scope:
+- Add a first-class `approved_insights` collection for repo-approved insights.
+- Add a first-class Payload collection for KnowledgeAssets with `sourceInsightId` linkage.
+- Seed all approved insights from the repository into Payload.
+- Seed the first 10 KnowledgeAssets from the conversion sprint into Payload.
+- Add deterministic verification of record counts and source-link integrity.
+
+Out of scope:
+- No publishing.
+- No provider calls.
+- No runtime agents.
+- No autonomous business decisions.
+- No external private sources.
+
+Files expected to change:
+- `src/payload/collections/ApprovedInsights.ts`
+- `src/payload/collections/KnowledgeAssets.ts`
+- `src/payload/collections/index.ts`
+- `payload.config.ts`
+- `src/seed/approved-insight-payload-seed.ts`
+- `src/seed/knowledge-asset-payload-seed.ts`
+- `src/seed/run-factory-storage-seed.ts`
+- `src/seed/verify-payload-factory-storage.ts`
+- `src/seed/index.ts`
+- `tests/unit/*`
+- `PLANS.md`
+
+Data contracts affected:
+- ApprovedInsight storage mapping
+- KnowledgeAsset storage mapping
+
+Agent permissions affected:
+- None.
+
+Validation steps:
+- Run the approved-insight and knowledge-asset seed scripts.
+- Run the storage verifier.
+- Run `npm test`.
+- Run `npm run typecheck`.
+- Run `npm run build`.
+
+Acceptance criteria:
+- All 50 approved insights are persisted in Payload.
+- The first 10 KnowledgeAssets are persisted in Payload.
+- Each KnowledgeAsset has a valid `sourceInsightId`.
+- No KnowledgeAsset is published.
+- Verification reports accurate counts and linkage integrity.
+
+Progress note:
+- The storage foundation now extends into the first review-ready public surfaces so the deterministic factory can continue into route-visible content without changing publish governance.
+- Verified locally: `npm run seed:factory-storage`, `npm run verify:factory-storage`, `npm run seed:review-ready-public-surface-batch`, `npm run verify:review-ready-public-surface-batch`, `npm test`, `npm run typecheck`, and `npm run build` all passed.
+
+### Task 039 - Runtime Database Configuration Verification
+
+State: `completed`
+Lane: `runtime-config`, `verification`
+Owner: Codex
+
+Goal:
+Make local runtime verification work against a valid database connection so browser-level route checks can run.
+
+Scope:
+- Audit the local runtime `DATABASE_URL` / `DIRECT_URL` configuration.
+- Determine why `next start -p 3004` is trying localhost:5432.
+- Align local runtime to the working Supabase pooler or available local Postgres.
+- Do not change schema unless required by existing migrations.
+- Do not modify content status.
+- Do not publish.
+
+Out of scope:
+- No schema changes unless absolutely required by the runtime fix.
+- No content status changes.
+- No publishing.
+
+Validation:
+- `next start -p 3004` boots without Payload Postgres `ECONNREFUSED`.
+- Browser-level checks can load the 3 review-ready routes.
+- Verify the 3 routes render H1, short answer, CTA, internal links, and authority trust blocks.
+- Run `npm test`, `npm run typecheck`, `npm run build` if config changes.
+
+Acceptance criteria:
+- `next start -p 3004` or equivalent local runtime boots against a valid database connection.
+- The three review-ready routes render successfully in a browser session.
+- Browser verification confirms the expected content blocks are present.
+- No content status is modified and no publishing occurs.
+
+Verification notes:
+- Root cause was the empty `DATABASE_URL` in `.env.production.local`, which overrode the working pooler value from `.env.local` during `next start`.
+- Updated `.env.production.local` to the working Supabase pooler `DATABASE_URL` and `DIRECT_URL`.
+- Verified a fresh production start on port `3005` no longer fails with Payload Postgres `ECONNREFUSED`.
+- Verified the three review-ready routes with Playwright: all returned `200` and rendered H1, short answer, CTA, internal links, and trust blocks.
+- Re-ran `npm test`, `npm run typecheck`, and `npm run build` after the config fix; all passed.
+
+### Task 040 - Publish Readiness Review for First 3 Public Surfaces
+
+State: `completed`
+Lane: `public-rendering`, `verification`, `governance`
+Owner: Codex
+
+Goal:
+Run final publish-readiness review on the 3 browser-verified review-ready public surfaces.
+
+Scope:
+- Check duplicate FAQ blocks.
+- Check generic copy.
+- Check unsupported claims.
+- Check CTA correctness.
+- Check evidence URLs.
+- Check internal links.
+- Check metadata and schema.
+- Check route rendering.
+- Check sitemap inclusion.
+- Produce a human approval checklist.
+
+Out of scope:
+- No publishing.
+- No status change to published.
+- No distribution.
+- No provider calls.
+- No runtime agents.
+- No new content assets.
+
+Acceptance criteria:
+- Each of the 3 assets receives one status: `publish_ready`, `needs_edit`, or `hold`.
+- Blocking issues are listed per asset.
+- Non-blocking improvements are listed per asset.
+- Human approval checklist exists.
+- No content is published automatically.
+
+Verification notes:
+- Existing browser verification confirms the three routes render with H1, short answer, CTA, internal links, and trust blocks.
+- Publish-readiness review found duplicated FAQ content blocks embedded in the page body and structured FAQ arrays, so the assets need edit before approval.
+- Human approval checklist and publish-readiness review artifacts have been written to the repo.
+
+### Task 041 - Publish Readiness Recheck for First 3 Public Surfaces
+
+State: `completed`
+Lane: `public-rendering`, `verification`, `governance`
+Owner: Codex
+
+Goal:
+Re-run publish-readiness on the first 3 browser-verified public surfaces after removing duplicate FAQ content from the page bodies.
+
+Scope:
+- Verify the three assets render without duplicate FAQ blocks.
+- Recheck CTA correctness, evidence URLs, internal links, metadata, schema, route rendering, and sitemap inclusion.
+- Record final statuses for the three assets.
+- Produce the updated human approval checklist.
+
+Out of scope:
+- No publishing.
+- No status change to published.
+- No distribution.
+- No provider calls.
+- No runtime agents.
+- No new content assets.
+
+Acceptance criteria:
+- Each of the 3 assets receives one status: `publish_ready`, `needs_edit`, or `hold`.
+- Blocking issues are listed per asset.
+- Non-blocking improvements are listed per asset.
+- Human approval checklist exists.
+- No content is published automatically.
+
+Verification notes:
+- The FAQ duplication blocker was removed from the page bodies and the structured FAQ array remains the single FAQ source.
+- Browser verification now shows exactly one visible FAQ section per asset.
+- All three assets are now publish-ready pending human approval.
+
+### Task 042 - Human Approval Gate
+
+State: `completed`
+Lane: `governance`, `approval`
+Owner: human reviewer
+
+Goal:
+Record the human approval decision for the first publish-ready public surface batch.
+
+Scope:
+- Read `TASK_041_PUBLISH_READINESS_RECHECK.md`.
+- Read `TASK_041_HUMAN_APPROVAL_CHECKLIST.md`.
+- Record the human approval decision for the 3 publish-ready Payload records.
+
+Out of scope:
+- No publishing.
+- No status changes to published.
+- No distribution.
+- No provider calls.
+- No runtime agents.
+- No new content assets.
+
+Required decision:
+- `approve_all`, `approve_some`, or `reject_all`.
+
+Must record:
+- approver_name
+- approval_timestamp
+- approved_routes
+- rejected_routes
+- approval_notes
+- explicit_no_auto_publish_confirmation
+
+Verification notes:
+- Human approval decision recorded by Itay Foyerstein at `2026-06-16T22:38:28.4392656+03:00`.
+- Decision: `approve_all`.
+- Approved routes: `/clusters/coach-for-engineering-managers-stuck-as-the-bottleneck`, `/frameworks/invisible-executor`, `/clusters/engineering-manager-coach-for-strategic-leadership`.
+- Explicit no-auto-publish confirmation: yes.
+
+### Task 043 - Authority Site Launch Recommendation Pass
+
+State: `completed`
+Lane: `governance`, `launch-strategy`
+Owner: Codex
+
+Goal:
+Produce a Chief of Staff recommendation record for the current Authority Engine state without publishing or creating content.
+
+Scope:
+- Review the current approved insights, knowledge assets, and publish-ready routes.
+- Recommend the next launch task.
+- Rank content priorities.
+- List pages to publish now.
+- List pages to create next.
+- List what not to build yet.
+- Provide rationale.
+
+Out of scope:
+- No publishing.
+- No content creation.
+- No new infrastructure.
+- No runtime agents.
+- No autonomous publishing.
+
+Verification notes:
+- Recommendation record produced from the current Authority Engine state and the current launch constraints.
+
+### Task 043A - Publish Approved Batch + Build Minimum Authority Site
+
+State: `completed`
+Lane: `content-seed`, `public-rendering`, `launch`
+Owner: Codex
+
+Goal:
+Publish the approved batch and create the smallest possible authority website that Google, ChatGPT, Perplexity, and AI search systems can understand.
+
+Scope:
+- Publish the 3 human-approved routes.
+- Add the minimum static authority pages required for indexability and recommendation intent.
+- Keep internal links pointing to Book a fit call and related authority pages.
+- Keep the site focused on public authority visibility rather than infrastructure expansion.
+
+Out of scope:
+- No runtime agents.
+- No LangGraph.
+- No recommendation engines.
+- No internal signal systems.
+- No distribution systems.
+- No new governance layers.
+- No new workflows.
+
+Files expected to change:
+- `src/app/(site)/*`
+- `src/components/*`
+- `src/lib/public-authority-routes.ts`
+- `src/seed/*`
+- `src/app/sitemap.ts`
+- `PLANS.md`
+
+Data contracts affected:
+- None expected.
+
+Agent permissions affected:
+- None.
+
+Validation steps:
+- Run `npm test`.
+- Run `npm run typecheck`.
+- Run `npm run build`.
+- Verify the published routes and new static pages render locally.
+- Verify sitemap coverage includes the new public pages.
+
+Acceptance criteria:
+- The 3 approved routes are published.
+- About, FAQ, Contact, and the requested landing pages exist.
+- At least 10 authority pages are live.
+- Sitemap includes the new public pages.
+- Each new page links to Book a fit call and at least 2 related pages.
+- No unsupported claims are introduced.
+
+Verification notes:
+- Published the human-approved batch and the minimum authority content set in Payload.
+- The `entity-pages`, `pillar-pages`, `cluster-pages`, `frameworks`, `faqs`, and `glossary-terms` collections now have the expected published authority records.
+- Added the new public pages: `/about`, `/the-push-methodology`, `/faq`, `/contact`, `/engineering-manager-coach`, `/cto-coach`, `/leadership-coach-for-engineering-managers`, `/leadership-coaching-for-tech-leaders`, `/strategic-leadership`, `/why-engineering-managers-become-bottlenecks`, `/from-star-player-to-strategic-leader`, and `/why-smart-managers-burn-out`.
+- Canonical Chief of Staff operating model documented in `docs/cos/CHIEF_OF_STAFF_OPERATING_MODEL.md` and worker docs in `docs/cos/`.
+- Ran `npm test`: passed.
+- Ran `npm run typecheck`: passed.
+- Ran `npm run build`: passed with existing migration and seed warnings only.
+- Verified the approved routes plus the new static pages on a local `next dev` browser session, including H1, Book a fit call CTA, related links, trust blocks, and sitemap exposure.
+
+### Task 044 - Production Launch Verification
+
+State: `completed`
+Lane: `launch`, `verification`
+Owner: Codex
+
+Goal:
+Verify the production launch for the public authority site.
+
+Scope:
+- Confirm the production deploy is completed.
+- Verify all new routes return 200 on production.
+- Verify the sitemap is live and includes the new routes.
+- Verify robots allows crawling.
+- Verify Google Search Console URL inspection / sitemap submission status or document explicit deferral.
+- Verify PostHog is installed or explicitly deferred.
+- Verify no 404 remains on static one-segment routes in production.
+
+Out of scope:
+- No content changes.
+- No schema changes.
+- No publishing changes.
+- No runtime agent changes.
+- No new infrastructure.
+
+Files expected to change:
+- `PLANS.md`
+- Verification notes only if needed
+
+Data contracts affected:
+- None.
+
+Agent permissions affected:
+- None.
+
+Validation steps:
+- Check production URLs directly.
+- Check sitemap and robots on production.
+- Check route status for all newly added pages.
+- Check PostHog integration status in code or deployment config.
+
+Acceptance criteria:
+- Production deploy completed.
+- All new routes return 200 in production.
+- Sitemap is live and includes the new routes.
+- Robots allows crawling.
+- GSC submission/inspection is confirmed or explicitly deferred.
+- PostHog is confirmed or explicitly deferred.
+- No 404 on static one-segment routes in production.
+
+Verification notes:
+- Production deploy completed via Vercel production alias to `https://itayfoyerstein.com`.
+- Verified production `200` responses for `/about`, `/the-push-methodology`, `/faq`, `/contact`, `/engineering-manager-coach`, `/cto-coach`, `/leadership-coach-for-engineering-managers`, `/leadership-coaching-for-tech-leaders`, `/strategic-leadership`, `/why-engineering-managers-become-bottlenecks`, `/from-star-player-to-strategic-leader`, `/why-smart-managers-burn-out`, `/clusters/coach-for-engineering-managers-stuck-as-the-bottleneck`, `/frameworks/invisible-executor`, and `/clusters/engineering-manager-coach-for-strategic-leadership`.
+- Verified `robots.txt` allows crawling and points to `https://itayfoyerstein.com/sitemap.xml`.
+- Verified `sitemap.xml` is live and includes the new authority routes.
+- Verified no 404 on the new static one-segment routes in production.
+- PostHog is not present in `package.json` or repository code and is explicitly deferred for this launch.
+- Google Search Console verification could not be completed from the current environment because the connected Windsor.ai app requires reauthentication; treat GSC submission / URL inspection as explicitly deferred until access is restored.
+
+### Task 045 - COS Recommendation-Intent Content Direction
+
+State: `completed`
+Lane: `cos-docs`
+Owner: Codex
+
+Goal:
+Update the Chief of Staff operating model so it prioritizes recommendation-intent pages written for humans first and crawlers second.
+
+Scope:
+- Add a clear COS direction that stops template generation.
+- Add a clear COS direction that favors recommendation-intent public pages.
+- Keep the change documentation-only.
+
+Out of scope:
+- No runtime changes.
+- No governance changes.
+- No new agents.
+- No publishing changes.
+
+Files expected to change:
+- `docs/cos/CHIEF_OF_STAFF_OPERATING_MODEL.md`
+- `PLANS.md`
+
+Data contracts affected:
+- None.
+
+Agent permissions affected:
+- None.
+
+Validation steps:
+- Confirm the COS operating model contains the new content-direction statement.
+- Confirm no runtime or governance behavior was changed.
+
+Acceptance criteria:
+- The COS explicitly stops generating authority templates.
+- The COS explicitly prioritizes recommendation-intent pages for humans first, crawlers second.
+
+### Task 046A - Page Brief Contract and First Rewrite
+
+State: `completed`
+Lane: `contracts`, `public-rendering`
+Owner: Codex
+
+Goal:
+Introduce a PageBrief contract that bridges agent analysis into public page creation, then rewrite one public page from a PageBrief.
+
+Scope:
+- Define a PageBrief contract.
+- Update ContentWriterAgent input requirements to require a PageBrief or pageBriefId.
+- Mark current static launch pages as legacy_static_page.
+- Rewrite `/leadership-coaching-for-tech-leaders` from a PageBrief.
+
+Out of scope:
+- No runtime agent execution.
+- No provider calls.
+- No LangGraph.
+- No autonomous generation.
+- No publishing without review.
+- No new analytics layer.
+- No distribution automation.
+- No governance or publishing rule changes.
+
+Files expected to change:
+- `src/ai/agents/agentFactoryContracts.ts`
+- `src/ai/agents/agentFactoryPromptShells.ts`
+- `src/ai/agents/agentRegistry.ts`
+- `src/lib/authority-launch-pages.ts`
+- `src/components/page-brief-launch-page.tsx`
+- `src/app/(site)/leadership-coaching-for-tech-leaders/page.tsx`
+- `tests/unit/agent-factory-contracts.test.ts`
+- `tests/unit/authority-launch-pages.test.ts`
+- `tests/unit/page-brief-launch-page.test.tsx`
+- `PLANS.md`
+
+Data contracts affected:
+- PageBrief
+- ContentWriterAgent input contract
+- AuthorityLaunchPageConfig pageSource status
+
+Agent permissions affected:
+- None.
+
+Validation steps:
+- Run `npm test`.
+- Run `npm run typecheck`.
+- Run `npm run build`.
+- Verify the rewritten page renders without query/entity/template metadata in the body.
+
+Acceptance criteria:
+- PageBrief schema exists.
+- PageBrief includes required marketContext, audiencePain, searchIntent, topicClusterPosition, uniqueAngle, proofNeeded, contentPlan, pagePromise, and CTA fields.
+- ContentWriterAgent requires PageBrief input.
+- `/leadership-coaching-for-tech-leaders` is rewritten from a PageBrief.
+- The rewritten page has a real H1 and human-first opening.
+- The rewritten page includes why Itay / The Push.
+- The rewritten page includes a Book a fit call CTA.
+- Existing tests pass.
+- No governance or publishing rules are changed.
+
+Verification notes:
+- Added `PageBrief` and related sub-schemas to `src/ai/agents/agentFactoryContracts.ts`.
+- Updated `ContentWriterAgent` prompt shell and registry input schema to require `pageBriefId` or `pageBrief`.
+- Marked the static launch pages as `legacy_static_page`; the rewritten page is flagged `page_brief`.
+- Rewrote `/leadership-coaching-for-tech-leaders` to render from a PageBrief through `PageBriefLaunchPage`.
+- Added unit coverage for the PageBrief contract, legacy/static page markings, and rendered HTML shape.
+- `npm run typecheck`: passed.
+- `npm test`: passed.
+- `npm run build`: passed.
+
+### Task 046B - PageBrief Enforcement for Public Pages
+
+State: `completed`
+Lane: `contracts`, `public-rendering`, `verification`
+Owner: Codex
+
+Goal:
+Enforce that public authority launch pages are created only through `PageBrief` or an explicitly marked legacy static page path.
+
+Scope:
+- Add a validation rule that every authority launch page has a page source marker.
+- Add a validation rule that recommendation-intent landing pages use the PageBrief path.
+- Add tests that fail for visible query/entity/template metadata on new landing pages.
+- Add tests that fail for landing pages without a real H1 or without pain-first opening.
+
+Out of scope:
+- No runtime agent execution.
+- No provider calls.
+- No LangGraph.
+- No autonomous generation.
+- No publishing changes.
+- No governance rule changes.
+
+Files expected to change:
+- `src/lib/authority-launch-pages.ts`
+- `src/components/page-brief-launch-page.tsx`
+- `tests/unit/authority-launch-pages.test.ts`
+- `tests/unit/page-brief-launch-page.test.tsx`
+- `PLANS.md`
+
+Data contracts affected:
+- None beyond enforcement helpers.
+
+Agent permissions affected:
+- None.
+
+Validation steps:
+- Run `npm test`.
+- Run `npm run typecheck`.
+- Run `npm run build`.
+
+Acceptance criteria:
+- No new authority launch page can be added without `pageBrief` or `legacy_static_page`.
+- Every recommendation-intent landing page uses the PageBrief path.
+- Legacy static pages are only allowed when explicitly marked.
+- Tests fail when a new page exposes query/entity/template metadata.
+- Tests fail when a new landing page lacks a real H1.
+- Tests fail when a new landing page does not open with pain/problem.
+
+Verification notes:
+- Added `validateAuthorityLaunchPageConfig` and `validateAuthorityLaunchPagesManifest` in `src/lib/authority-launch-pages.ts`.
+- Added manifest tests that reject landing pages missing a `pageBrief` when they are not explicitly legacy.
+- Added render tests that require the PageBrief page to start with audience pain, use a real H1, and hide query/entity/template metadata.
+- `npm run typecheck`: passed.
+- `npm test`: passed.
+- `npm run build`: passed.
+
+### Task 046C - Rewrite Top Legacy Static Pages Through PageBrief
+
+State: `completed`
+Lane: `contracts`, `public-rendering`
+Owner: Codex
+
+Goal:
+Rewrite the top 3 legacy static authority launch pages through PageBrief and remove visible template/authority metadata from their public bodies.
+
+Scope:
+- Rank all `legacy_static_page` routes by business importance.
+- Rewrite `/about`, `/engineering-manager-coach`, and `/cto-coach` through PageBrief.
+- Ensure the three rewritten pages open with audience pain, explain why Itay / The Push matters, and keep the CTA explicit.
+- Keep the remaining legacy static pages explicitly marked as legacy.
+
+Out of scope:
+- No runtime agent execution.
+- No provider calls.
+- No LangGraph.
+- No autonomous generation.
+- No publishing changes.
+- No governance rule changes.
+
+Files expected to change:
+- `src/lib/authority-launch-pages.ts`
+- `src/app/(site)/about/page.tsx`
+- `src/app/(site)/engineering-manager-coach/page.tsx`
+- `src/app/(site)/cto-coach/page.tsx`
+- `src/app/(site)/leadership-coaching-for-tech-leaders/page.tsx`
+- `tests/unit/authority-launch-pages.test.ts`
+- `tests/unit/page-brief-launch-page.test.tsx`
+- `PLANS.md`
+
+Data contracts affected:
+- None beyond the existing PageBrief path.
+
+Agent permissions affected:
+- None.
+
+Validation steps:
+- Run `npm test`.
+- Run `npm run typecheck`.
+- Run `npm run build`.
+- Verify the three routes render H1, pain-first opening, Why Itay / The Push, and CTA without visible template metadata.
+
+Acceptance criteria:
+- The top 3 legacy static pages are rewritten through PageBrief.
+- Visible query/entity/template metadata is removed from the three rewritten pages.
+- The three rewritten pages open with pain/problem.
+- The three rewritten pages explain why Itay / The Push matters.
+- The three rewritten pages include a Book a fit call CTA.
+- Tests pass.
+
+Verification notes:
+- Ranked the legacy static routes by business importance before rewrite as:
+  1. `/about`
+  2. `/engineering-manager-coach`
+  3. `/cto-coach`
+  4. `/leadership-coach-for-engineering-managers`
+  5. `/the-push-methodology`
+  6. `/faq`
+  7. `/strategic-leadership`
+  8. `/why-engineering-managers-become-bottlenecks`
+  9. `/from-star-player-to-strategic-leader`
+  10. `/why-smart-managers-burn-out`
+  11. `/contact`
+- Rewrote the top 3 routes through PageBrief: `/about`, `/engineering-manager-coach`, and `/cto-coach`.
+- Each rewritten page now renders through `PageBriefLaunchPage` and no longer exposes query/entity/template metadata in the public body.
+- `npm run typecheck`: passed.
+- `npm test`: passed.
+- `npm run build`: passed.
+
+### Task 046D - Rewrite Next Legacy Static Pages Through PageBrief
+
+State: `completed`
+Lane: `contracts`, `public-rendering`
+Owner: Codex
+
+Goal:
+Rewrite `/leadership-coach-for-engineering-managers`, `/the-push-methodology`, and `/faq` through PageBrief and verify the pages remain human-first.
+
+Scope:
+- Rank the remaining legacy static routes by business importance.
+- Rewrite the three next highest-value legacy routes through PageBrief.
+- Remove visible query/entity/template metadata from the public body.
+- Verify the pages open with pain/problem, explain why Itay / The Push matters, and include a CTA.
+
+Out of scope:
+- No runtime agent execution.
+- No provider calls.
+- No LangGraph.
+- No autonomous generation.
+- No publishing changes.
+- No governance rule changes.
+
+Files expected to change:
+- `src/lib/authority-launch-pages.ts`
+- `src/app/(site)/leadership-coach-for-engineering-managers/page.tsx`
+- `src/app/(site)/the-push-methodology/page.tsx`
+- `src/app/(site)/faq/page.tsx`
+- `tests/unit/authority-launch-pages.test.ts`
+- `tests/unit/legacy-static-page-rewrites.test.tsx`
+- `PLANS.md`
+
+Data contracts affected:
+- None beyond the existing PageBrief path.
+
+Agent permissions affected:
+- None.
+
+Validation steps:
+- Run `npm test`.
+- Run `npm run typecheck`.
+- Run `npm run build`.
+- Verify the three routes render H1, pain-first opening, why Itay / The Push, and CTA without visible template metadata.
+
+Acceptance criteria:
+- The three selected legacy pages are rewritten through PageBrief.
+- Visible query/entity/template metadata is removed from the three rewritten pages.
+- The three rewritten pages open with pain/problem.
+- The three rewritten pages explain why Itay / The Push matters.
+- The three rewritten pages include a Book a fit call CTA.
+- Verification completed:
+  - `npm run typecheck`: passed.
+  - `npm test`: passed.
+- `npm run build`: passed.
+- Tests pass.
+
+### Task 046E - Complete Authority Legacy Migration
+
+State: `completed`
+Lane: `contracts`, `public-rendering`
+Owner: Codex
+
+Goal:
+Rewrite the final four remaining authority/content legacy pages through PageBrief and leave `contact` explicitly legacy.
+
+Scope:
+- Rewrite `/strategic-leadership`, `/why-engineering-managers-become-bottlenecks`, `/from-star-player-to-strategic-leader`, and `/why-smart-managers-burn-out` through PageBrief.
+- Remove visible query/entity/template metadata from the public body.
+- Verify each page opens with pain/problem, explains why Itay / The Push matters, and includes a Book a fit call CTA.
+- Leave `/contact` as `legacy_static_page`.
+
+Out of scope:
+- No runtime agent execution.
+- No provider calls.
+- No LangGraph.
+- No autonomous generation.
+- No publishing changes.
+- No governance rule changes.
+
+Files expected to change:
+- `src/lib/authority-launch-pages.ts`
+- `src/app/(site)/strategic-leadership/page.tsx`
+- `src/app/(site)/why-engineering-managers-become-bottlenecks/page.tsx`
+- `src/app/(site)/from-star-player-to-strategic-leader/page.tsx`
+- `src/app/(site)/why-smart-managers-burn-out/page.tsx`
+- `tests/unit/authority-launch-pages.test.ts`
+- `tests/unit/legacy-static-page-rewrites.test.tsx`
+- `PLANS.md`
+
+Validation steps:
+- Run `npm test`.
+- Run `npm run typecheck`.
+- Run `npm run build`.
+- Verify the four routes render H1, pain-first opening, why Itay / The Push, and CTA without visible template metadata.
+
+Acceptance criteria:
+- The four selected legacy pages are rewritten through PageBrief.
+- `contact` remains explicitly `legacy_static_page`.
+- Visible query/entity/template metadata is removed from the four rewritten pages.
+- The four rewritten pages open with pain/problem.
+- The four rewritten pages explain why Itay / The Push matters.
+- The four rewritten pages include a Book a fit call CTA.
+- Tests pass.
+- Verification completed:
+  - `npm run typecheck`: passed.
+  - `npm test`: passed.
+  - `npm run build`: passed.
 
 ### Task 015 - Authority Evidence Layer
 
@@ -1108,6 +2318,55 @@ Verification note:
 - Secondary CTA links to `/frameworks/invisible-executor`.
 - `npm run typecheck` passed.
 - `npm run build` passed.
+
+### Task 016B - Homepage Copy Alignment
+
+State: `completed`
+Lane: `public-rendering`, `site-pages`, `content`
+Owner: Codex
+
+Goal:
+Align the homepage copy to the book-first authority direction with one pain statement above the fold and Player Trap positioned as a supporting sub-section.
+
+Scope:
+- Tighten the homepage hero around the core pain point.
+- Make `/book-a-fit-call` the singular primary above-the-fold CTA.
+- Surface Player Trap as a sub-section rather than a competing hero action.
+- Preserve existing authority graph links where they still fit.
+- Keep the page English-first and aligned to The Push / Itay Foyerstein authority strategy.
+
+Out of scope:
+- No layout redesign.
+- No styling changes unless required for copy rendering.
+- No changes to unrelated pages.
+- No unsupported claims, testimonials, or invented credentials.
+
+Files expected to change:
+- `src/app/(site)/page.tsx`
+- `PLANS.md`
+
+Data contracts affected:
+- None.
+
+Agent permissions affected:
+- None.
+
+Validation steps:
+- Review the homepage copy in `src/app/(site)/page.tsx`.
+- Confirm the hero has one clear pain statement and one primary CTA.
+- Confirm Player Trap appears as a supporting sub-section.
+
+Acceptance criteria:
+- Homepage hero is book-first and pain-led.
+- Above-fold CTA is singular and primary.
+- Player Trap is a supporting section, not the main competing CTA.
+- Existing authority graph links remain if still relevant.
+
+Verification notes:
+- Tightened the homepage hero around a single pain statement and a single above-fold primary CTA.
+- Positioned Player Trap as a supporting section rather than a competing hero action.
+- Preserved the existing canonical authority links section.
+- Ran `npm run typecheck`: passed.
 
 ### Task 017 - Authority Asset Production Sprint
 
@@ -1881,6 +3140,148 @@ Verification notes:
 - Ran `npm run build`: passed.
 - Captured the workspace diff and release summary in `WORKSPACE_DIFF_REPORT.md` and `AUTHORITY_ENGINE_ALPHA_RELEASE.md`.
 
+### Task 026B - First Content Publishing Sprint
+
+State: `completed`
+Lane: `content-seed`, `public-rendering`, `authority-copy`
+Owner: Codex
+
+Goal:
+Convert the strongest existing recommendation drafts and insight-backed content into the first review-ready authority pages for the site.
+
+Scope:
+- Select 3 priority content assets from the existing insight repository and recommendation drafts.
+- Prefer pages that strengthen Player Trap, Invisible Executor, and Itay recommendation intent.
+- Expand the selected assets into full review-ready website content.
+- Store the updates in the existing Payload seed structure currently used by the site.
+- Keep every asset in `review` status unless explicit human approval exists.
+- Make sure the selected pages render cleanly on the public site once approved/published.
+
+Out of scope:
+- No LangGraph.
+- No provider calls.
+- No autonomous generation.
+- No new runtime.
+- No auto-publishing without human approval.
+- No fake testimonials.
+- No unsupported metrics.
+
+Files expected to change:
+- `src/seed/authority-asset-production-sprint.ts`
+- `docs/seed-content/*`
+- `src/components/public-content-page.tsx`
+- `tests/unit/*`
+- `PLANS.md`
+
+Data contracts affected:
+- Public content record shape
+- Authority asset sprint seed shape
+
+Agent permissions affected:
+- None.
+
+Validation steps:
+- Run the content verifier if available.
+- Run `npm test`.
+- Run `npm run typecheck`.
+- Run `npm run build`.
+- Verify the selected pages render locally or through the existing review-safe route.
+
+Acceptance criteria:
+- At least 3 full review-ready authority pages exist.
+- Each selected page is connected to a target query.
+- Each selected page strengthens Player Trap, Invisible Executor, or Itay authority.
+- Each selected page has a CTA into the business funnel.
+- No unsupported claims are introduced.
+
+Verification notes:
+- Expanded the three selected review-ready pages into full authority assets with definition, framework, symptom, uncomfortable truth, target-question, citation, FAQ, and internal-link sections.
+- Updated the public content renderer so the secondary CTA points to the Player Trap test and the content body can render labeled authority sections.
+- Updated the AI-facing llms text to surface the Player Trap route and CTA alignment.
+- Ran `npm run seed:authority-asset-sprint`: passed and seeded 10 authority asset production sprint assets.
+- Ran `npm run verify:authority-asset-sprint`: passed.
+- Verified the updated routes locally in Playwright and confirmed the H1, definition section, framework section, symptom section, uncomfortable-truth section, Book a fit call CTA, and Player Trap CTA render on the page.
+- Ran `npm test`: passed, 21 test files and 78 tests.
+- Ran `npm run typecheck`: passed.
+- Ran `npm run build`: passed with the existing unused-variable warnings in `src/migrations/20260607_205054.ts`.
+
 ## Commit Discipline
 
 Prefer small commits per task. Do not mix documentation, scaffolding, product features, and generated content in the same commit unless the task explicitly requires it.
+
+### Task 056 - Authority Engine Architecture Simplification
+
+State: `completed`
+Lane: `architecture`, `contracts`, `payload-model`, `deterministic-governance`
+Owner: Codex
+
+Goal:
+Reduce contract, collection, and agent complexity while preserving human publishing gates and establishing `Itay Foyerstein` as the single canonical Person entity.
+
+Scope:
+- Document the approved simplification design and migration sequence.
+- Consolidate duplicated contract definitions behind canonical runtime schemas.
+- Introduce one authority-content model with deterministic content types while preserving compatibility during migration.
+- Consolidate overlapping insight and monitoring models where migration can be verified safely.
+- Replace agent roles with deterministic functions when the decision is rule-based.
+- Enforce `Itay Foyerstein` as the canonical Person entity and treat spelling variants as aliases only.
+
+Out of scope:
+- No publishing.
+- No provider calls or runtime agents.
+- No destructive database migration without a verified compatibility path.
+- No removal of human review gates.
+- No new authority content.
+
+Data contracts affected:
+- Authority content
+- Approved insight
+- Visibility observation
+- Workflow execution metadata
+- Canonical entity identity
+
+Validation steps:
+- Run focused architecture contract tests.
+- Run `npm test`.
+- Run `npm run typecheck`.
+- Run `npm run build`.
+- Verify existing Payload data remains readable during migration.
+
+Acceptance criteria:
+- One canonical Person entity exists for Itay Foyerstein.
+- Duplicate contract definitions have a documented canonical owner.
+- Rule-based schema, linking, quality, scoring, routing, and publication decisions are deterministic.
+- Collection consolidation has a non-destructive migration path.
+- No agent can publish content.
+
+### Task 057 - Dependency Vulnerability Remediation
+
+State: `completed`
+Lane: `security`, `dependencies`, `verification`
+Owner: Codex
+
+Goal:
+Reduce npm audit findings through compatible, non-breaking dependency updates and verify the application remains healthy.
+
+Scope:
+- Apply non-force npm security fixes where compatible.
+- Upgrade direct dependencies only when the resulting versions remain within the supported stack.
+- Re-run audit, typecheck, tests, and build.
+
+Out of scope:
+- No `npm audit fix --force`.
+- No unrelated feature changes.
+- No publishing or deployment.
+
+Acceptance criteria:
+- No unreviewed breaking dependency changes are introduced.
+- Production dependency vulnerabilities are reduced or documented with an explicit compatibility blocker.
+- Typecheck, tests, and build pass after remediation.
+
+Verification notes:
+- Updated Payload packages from 3.85.0 to 3.85.2, removing the production `undici` vulnerability chain.
+- Kept Next.js at 15.4.11 because the installed Payload 3.85.2 peer range excludes Next 15.5.x; upgrading Next requires a separately verified Payload compatibility change.
+- `npm audit --omit=dev` reduced to 7 remaining findings: 6 moderate and 1 high, with no critical production finding. Remaining issues are Next.js 15.4.11 and an esbuild chain with no compatible fix available.
+- Ran `npm run typecheck`: passed.
+- Ran `npm test`: passed, 32 test files and 126 tests.
+- Ran `npm run build`: passed with the existing migration and seed lint warnings.

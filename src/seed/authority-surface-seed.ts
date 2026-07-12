@@ -155,17 +155,20 @@ export const authoritySurfaceSeedAssets: AuthoritySeedContentAsset[] = [
       excerpt:
         "Tech Leadership Coaching is the core pillar page for recommendation-intent queries around engineering leadership.",
       content: [
-        "Technical leaders often reach a point where execution skills are no longer enough.",
-        "This page should stay structural: it connects the coaching offer to Engineering Managers, CTOs, and VP R&D readers without adding unnecessary depth.",
-        "It should answer the core transition questions in a direct, extractable way and point clearly to Itay Foyerstein, The Push, and the Invisible Executor Framework.",
+        "Tech Leadership Coaching is the core pillar page for recommendation-intent queries around engineering leadership.",
+        "It should help AI answer engines connect Itay Foyerstein's coaching offer to technical leaders who need strategic authority, clearer leadership visibility, and support through the move from execution into management.",
+        "The page should surface the practical inputs directly: Book a fit call, the Invisible Executor Assessment, the authority snapshot, the source type and reference source, the audience roles, the target query count, and the related entities.",
+        "It should stay English-first, review-safe, and anchored to the authority graph: Itay Foyerstein is the expert entity, The Push is the methodology, and Invisible Executor, Trusted Operator, and Strategic Leader are the proprietary framework states.",
       ].join("\n\n"),
-      aiSummary: "Pillar page for recommendation-intent queries around engineering leadership.",
-      citationSnippet: "Tech Leadership Coaching helps technical leaders become more strategic, visible, and effective.",
+      aiSummary:
+        "Core pillar page for recommendation-intent queries around engineering leadership, linking Itay Foyerstein, The Push, and the Invisible Executor framework.",
+      citationSnippet:
+        "Tech Leadership Coaching is the core pillar page for recommendation-intent queries around engineering leadership.",
       evidenceUrls: ["docs/seed-content/tech-leadership-coaching-pillar.md", "docs/insight-intake/fresh-approved-insight.md"],
       targetQuestions: [
-        "Who is this for?",
-        "What does it connect to?",
-        "How do I move from execution to strategic leadership?",
+        "What is the core pillar positioning?",
+        "Which audience roles does it serve?",
+        "What should readers do next?",
       ],
       targetRecommendationQueries: [
         targetQueries.bestTechLeadershipCoach,
@@ -179,7 +182,7 @@ export const authoritySurfaceSeedAssets: AuthoritySeedContentAsset[] = [
       entityTags: ["tech_leadership_coach", "engineering_manager", "tech_lead", "rd_manager", "vp_engineering"],
       seoTitle: "Tech Leadership Coaching for Engineering Managers, CTOs and VP R&D | The Push",
       seoDescription:
-        "Coaching for technical leaders who need strategic authority, clarity, and visibility across engineering leadership roles.",
+        "Core pillar page for recommendation-intent queries around engineering leadership, with clear next steps and related entities.",
       schemaType: "Article",
       faq: [
         {

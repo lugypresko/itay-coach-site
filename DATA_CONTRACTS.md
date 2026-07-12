@@ -139,6 +139,8 @@ export interface AuthorityContent {
 }
 ```
 
+`Itay Foyerstein` is the canonical Person entity for all authority contracts. Any spelling variants are alias data, not separate entities.
+
 ## FAQ Contract
 
 ```ts
@@ -280,6 +282,8 @@ export interface AgentRun {
 `PayloadPublisherAgent` is a draft persistence agent. It may save content to Payload as `draft` or `in_review` only. It must not set content to `published`; publishing requires a human CMS action.
 
 `VisibilityMonitorAgent` is a measurement agent. It may read published or draft content, run scorecard checks, and emit recommendations. It must not create, modify, or publish content directly.
+
+Rule-based content decisions such as schema selection, CTA selection, freshness checks, transition permission, and visibility routing should be handled by deterministic services rather than agent output.
 
 ## Agent Factory Contracts
 
@@ -429,6 +433,117 @@ export interface PerformanceSignal {
 ```
 
 Performance signals must distinguish observed signals from placeholders so future learning work can stay explicit about what is real versus planned.
+
+### AuthorityOutcome Contract
+
+```ts
+export type AuthorityOutcomeFocus =
+  | "authority_visibility"
+  | "content_inventory_health"
+  | "content_release_velocity"
+  | "lead_pipeline_quality"
+  | "player_trap_conversion"
+  | "search_visibility_health";
+
+export type AuthorityOutcomeStatus = "healthy" | "watch" | "at_risk" | "blocked";
+
+export interface AuthorityOutcome {
+  id: string;
+  focus: AuthorityOutcomeFocus;
+  title: string;
+  status: AuthorityOutcomeStatus;
+  summary: string;
+  signalIds: string[];
+  signals: PerformanceSignal[];
+  observedAt: string;
+  nextBestAction: string;
+  ownerSuggestion?: string;
+  reviewerNotes?: string;
+}
+```
+
+Authority outcomes are the business-level decision layer produced from performance signals. They describe what the system is trying to improve, not which content asset exists. The Chief of Staff Agent must reason over `AuthorityOutcome`, not raw content assets. The Chief of Staff contract is now formalized, but runtime orchestration remains deferred.
+
+### Chief of Staff Agent Contract
+
+```ts
+export type ChiefOfStaffActionCategory =
+  | "publish_more_evidence"
+  | "stop_publishing"
+  | "improve_conversion_path"
+  | "repair_visibility_gap"
+  | "repair_inventory_gap"
+  | "refresh_authority_asset"
+  | "request_human_review"
+  | "tighten_internal_links"
+  | "improve_measurement";
+
+export interface ChiefOfStaffTrafficSnapshot {
+  sessions?: number;
+  users?: number;
+  topSource?: string;
+  notes?: string;
+}
+
+export interface ChiefOfStaffLeadSnapshot {
+  totalLeads?: number;
+  qualifiedLeads?: number;
+  bookedCalls?: number;
+  notes?: string;
+}
+
+export interface ChiefOfStaffContentInventorySnapshot {
+  totalAssets?: number;
+  reviewReadyAssets?: number;
+  publishedAssets?: number;
+  notes?: string;
+}
+
+export interface ChiefOfStaffPublishedAssetsSnapshot {
+  slugs: string[];
+  notes?: string;
+}
+
+export interface ChiefOfStaffGscSnapshot {
+  queriesTracked?: number;
+  impressions?: number;
+  clicks?: number;
+  notes?: string;
+}
+
+export interface ChiefOfStaffPlayerTrapFunnelSnapshot {
+  visits?: number;
+  completions?: number;
+  diagnosisCallRequests?: number;
+  bookedCalls?: number;
+  notes?: string;
+}
+
+export interface ChiefOfStaffInput {
+  traffic: ChiefOfStaffTrafficSnapshot;
+  leads: ChiefOfStaffLeadSnapshot;
+  contentInventory: ChiefOfStaffContentInventorySnapshot;
+  publishedAssets: ChiefOfStaffPublishedAssetsSnapshot;
+  gsc: ChiefOfStaffGscSnapshot;
+  playerTrapFunnel: ChiefOfStaffPlayerTrapFunnelSnapshot;
+  authorityOutcomes: AuthorityOutcome[];
+  supportingSignals: PerformanceSignal[];
+}
+
+export interface ChiefOfStaffRecommendation {
+  id: string;
+  generatedAt: string;
+  primaryOutcomeId: string;
+  supportingOutcomeIds: string[];
+  nextBestActionCategory: ChiefOfStaffActionCategory;
+  nextBestAction: string;
+  rationale: string;
+  humanOwnerSuggestion?: string;
+  supportingSignalIds: string[];
+}
+```
+
+The Chief of Staff Agent contract is outcome-driven. It receives business snapshots plus `AuthorityOutcome` records and returns a constrained next-best-action recommendation. Runtime orchestration remains deferred until the agent is explicitly implemented.
 
 ## Required Payload Collections
 

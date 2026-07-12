@@ -12,6 +12,8 @@ This repo now defines the codex-run agent factory as contracts first. The goal i
 - No automatic publishing in Task 025.
 - No Payload writes from agents in Task 025.
 
+Deterministic functions own rule-based schema selection, linking, quality checks, freshness checks, routing, and publish permission. Agents are reserved for semantic work that needs interpretation.
+
 ## Contract Rules
 
 - `ApprovedInsight` requires `approvedBy`, `approvedAt`, and at least one `targetQuery`.
@@ -23,26 +25,56 @@ This repo now defines the codex-run agent factory as contracts first. The goal i
 
 ## Factory Agents
 
-The factory registry contains 16 content-production agents:
+The factory keeps only semantic agent roles in the active core:
 
-1. `MarketIntelligenceAgent`
-2. `AudiencePainAgent`
-3. `SearchIntentAgent`
-4. `TopicClusterAgent`
-5. `ResearchSourceAgent`
-6. `SourceVerificationAgent`
-7. `FrameworkBuilderAgent`
-8. `OutlineAgent`
-9. `ContentWriterAgent`
-10. `LLMCitationAgent`
-11. `InternalLinkingAgent`
-12. `SchemaAgent`
-13. `BrandVoiceAgent`
-14. `QualityGateAgent`
-15. `PayloadPublisherAgent`
-16. `DistributionAgent`
+1. `InsightExtractionAgent`
+2. `ResearchSynthesisAgent`
+3. `ContentDraftingAgent`
+
+Legacy names such as `MarketIntelligenceAgent`, `OutlineAgent`, and `PayloadPublisherAgent` are compatibility labels that map to deterministic services or deprecated boundaries, not new runtime autonomy.
 
 `PerformanceLearningAgent` is intentionally deferred to Task 031.
+
+## Deferred Agent Specs
+
+### Chief of Staff Agent
+
+Status: deferred
+
+Canonical operating model:
+- `docs/cos/CHIEF_OF_STAFF_OPERATING_MODEL.md`
+- `docs/cos/README.md`
+
+Purpose:
+- Turn operational signals into the next best action for the authority engine.
+- Act as a decision-support layer, not a content generator.
+
+Inputs:
+- Traffic
+- Leads
+- Content inventory
+- Published assets
+- GSC
+- Player Trap funnel
+
+Outputs:
+- Next best action
+
+Example outputs:
+- "Don't create more content. Publish the 5 recommendation pages."
+- "Stop publishing. Build more evidence."
+- "Player Trap converts poorly. Improve report page."
+
+Constraints:
+- No autonomous publishing.
+- No provider calls.
+- No runtime agent registry entry until the release freeze is lifted.
+- No duplicate role that overlaps with `VisibilityMonitorAgent` metrics ownership.
+- No agent may own deterministic routing, scoring, or publication permission.
+
+Ownership boundary:
+- `VisibilityMonitorAgent` measures and classifies authority visibility gaps.
+- `Chief of Staff Agent` recommends the next operational move after those gaps are known.
 
 ## Storage Notes
 

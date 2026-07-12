@@ -36,6 +36,10 @@ export async function generateMetadata({ params }: ContentPageProps): Promise<Me
     alternates: {
       canonical: page.canonicalUrl,
     },
+    robots: {
+      index: true,
+      follow: true,
+    },
     openGraph: {
       title: page.record.seoTitle || page.record.title,
       description: page.record.seoDescription || page.record.excerpt,

@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+	<title></title>
+	<meta name="generator" content="LibreOffice 25.8.6.2 (Windows)"/>
+	<meta name="created" content="2026-06-09T21:52:01.176745900"/>
+	<meta name="changed" content="2026-06-09T22:47:03.055475000"/>
+	<style type="text/css">
+		@page { size: 8.5in 11in; margin: 0.79in }
+		p { orphans: 2; color: #000000; line-height: 115%; widows: 2; margin-bottom: 0.1in; direction: ltr; background: transparent }
+		p.western { font-family: "Liberation Serif", "Times New Roman", serif; font-size: 12pt; so-language: en-US }
+		p.cjk { font-size: 12pt; so-language: zh-CN; font-family: "NSimSun" }
+		p.ctl { font-family: "Lucida Sans", sans-serif; font-size: 12pt; so-language: hi-IN }
+		h1 { orphans: 2; color: #000000; widows: 2; margin-bottom: 0.08in; direction: ltr; background: transparent; page-break-after: avoid }
+		h1.western { font-family: "Liberation Serif", "Times New Roman", serif; font-weight: bold; font-size: 24pt; so-language: en-US }
+		h1.cjk { font-size: 24pt; so-language: zh-CN; font-weight: bold; font-family: "NSimSun" }
+		h1.ctl { font-family: "Lucida Sans", sans-serif; font-size: 24pt; so-language: hi-IN; font-weight: bold }
+		h2 { orphans: 2; color: #000000; widows: 2; margin-top: 0.14in; margin-bottom: 0.08in; direction: ltr; background: transparent; page-break-after: avoid }
+		h2.western { font-family: "Liberation Serif", "Times New Roman", serif; font-weight: bold; font-size: 18pt; so-language: en-US }
+		h2.cjk { font-size: 18pt; so-language: zh-CN; font-weight: bold; font-family: "NSimSun" }
+		h2.ctl { font-family: "Lucida Sans", sans-serif; font-size: 18pt; so-language: hi-IN; font-weight: bold }
+		pre { orphans: 2; color: #000000; widows: 2; direction: ltr; background: transparent }
+		pre.western { font-family: "Liberation Mono", "Courier New", monospace; font-size: 10pt; so-language: en-US }
+		pre.cjk { font-size: 10pt; so-language: zh-CN; font-family: "NSimSun", monospace }
+		pre.ctl { font-family: "Liberation Mono", "Courier New", monospace; font-size: 10pt; so-language: hi-IN }
+		code.western { font-family: "Liberation Mono", "Courier New", monospace }
+		code.cjk { font-family: "NSimSun", monospace }
+		code.ctl { font-family: "Liberation Mono", "Courier New", monospace }
+	</style>
+</head>
+<body lang="en-US" text="#000000" link="#000080" vlink="#800000" dir="ltr"><h1 class="western" align="left">
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">Phase
+1 — Agent Factory Contracts (Revised)</font></font></h1>
+<h2 class="western" style="line-height: 115%; margin-top: 0.17in"><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">Goal</font></font></h2>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">Create
+the canonical contracts for the Authority Engine Agent Factory before
+any runtime orchestration is implemented.</font></p>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">This
+phase defines:</font></p>
+<ul>
+	<li><p class="western" style="margin-top: 0.17in; margin-bottom: 0in">
+	<font face="Arial, sans-serif">agent interfaces </font>
+	</p></li>
+	<li><p class="western" style="margin-top: 0.17in; margin-bottom: 0in">
+	<font face="Arial, sans-serif">schemas </font>
+	</p></li>
+	<li><p class="western" style="margin-top: 0.17in; margin-bottom: 0in">
+	<font face="Arial, sans-serif">contracts </font>
+	</p></li>
+	<li><p class="western" style="margin-top: 0.17in; margin-bottom: 0in">
+	<font face="Arial, sans-serif">governance rules </font>
+	</p></li>
+	<li><p class="western" style="margin-top: 0.17in; margin-bottom: 0in">
+	<font face="Arial, sans-serif">claim taxonomy </font>
+	</p></li>
+	<li><p class="western" style="margin-top: 0.17in; margin-bottom: 0in">
+	<font face="Arial, sans-serif">insight model </font>
+	</p></li>
+	<li><p class="western" style="margin-top: 0.17in; margin-bottom: 0.2in">
+	<font face="Arial, sans-serif">provider abstraction </font>
+	</p></li>
+</ul>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">No
+runtime generation is allowed in this phase.</font></p>
+<hr/>
+
+<h1 class="western" style="line-height: 115%"><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">Architecture
+Decision 1 — Factory Scope</font></font></h1>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">The
+factory consists of 16 content-production agents.</font></p>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">PerformanceLearningAgent
+is intentionally excluded from the factory.</font></p>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">Reason:</font></p>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">It
+consumes performance data and improves the system after content is
+published.</font></p>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">It
+is not part of the content creation pipeline.</font></p>
+<h2 class="western" style="line-height: 115%; margin-top: 0.17in"><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">Phase
+1 Agents</font></font></h2>
+<ol>
+	<li><p class="western" style="margin-top: 0.17in; margin-bottom: 0in">
+	<font face="Arial, sans-serif">MarketIntelligenceAgent </font>
+	</p></li>
+	<li><p class="western" style="margin-top: 0.17in; margin-bottom: 0in">
+	<font face="Arial, sans-serif">AudiencePainAgent </font>
+	</p></li>
+	<li><p class="western" style="margin-top: 0.17in; margin-bottom: 0in">
+	<font face="Arial, sans-serif">SearchIntentAgent </font>
+	</p></li>
+	<li><p class="western" style="margin-top: 0.17in; margin-bottom: 0in">
+	<font face="Arial, sans-serif">TopicClusterAgent </font>
+	</p></li>
+	<li><p class="western" style="margin-top: 0.17in; margin-bottom: 0in">
+	<font face="Arial, sans-serif">ResearchSourceAgent </font>
+	</p></li>
+	<li><p class="western" style="margin-top: 0.17in; margin-bottom: 0in">
+	<font face="Arial, sans-serif">SourceVerificationAgent </font>
+	</p></li>
+	<li><p class="western" style="margin-top: 0.17in; margin-bottom: 0in">
+	<font face="Arial, sans-serif">FrameworkBuilderAgent </font>
+	</p></li>
+	<li><p class="western" style="margin-top: 0.17in; margin-bottom: 0in">
+	<font face="Arial, sans-serif">OutlineAgent </font>
+	</p></li>
+	<li><p class="western" style="margin-top: 0.17in; margin-bottom: 0in">
+	<font face="Arial, sans-serif">ContentWriterAgent </font>
+	</p></li>
+	<li><p class="western" style="margin-top: 0.17in; margin-bottom: 0in">
+	<font face="Arial, sans-serif">LLMCitationAgent </font>
+	</p></li>
+	<li><p class="western" style="margin-top: 0.17in; margin-bottom: 0in">
+	<font face="Arial, sans-serif">InternalLinkingAgent </font>
+	</p></li>
+	<li><p class="western" style="margin-top: 0.17in; margin-bottom: 0in">
+	<font face="Arial, sans-serif">SchemaAgent </font>
+	</p></li>
+	<li><p class="western" style="margin-top: 0.17in; margin-bottom: 0in">
+	<font face="Arial, sans-serif">BrandVoiceAgent </font>
+	</p></li>
+	<li><p class="western" style="margin-top: 0.17in; margin-bottom: 0in">
+	<font face="Arial, sans-serif">QualityGateAgent </font>
+	</p></li>
+	<li><p class="western" style="margin-top: 0.17in; margin-bottom: 0in">
+	<font face="Arial, sans-serif">PayloadPublisherAgent </font>
+	</p></li>
+	<li><p class="western" style="margin-top: 0.17in; margin-bottom: 0.2in">
+	<font face="Arial, sans-serif">DistributionAgent </font>
+	</p></li>
+</ol>
+<h2 class="western" style="line-height: 115%; margin-top: 0.17in"><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">Deferred
+Agent</font></font></h2>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">Task
+031:</font></p>
+<ol start="17">
+	<li><p class="western" style="margin-top: 0.17in; margin-bottom: 0.2in">
+	<font face="Arial, sans-serif">PerformanceLearningAgent </font>
+	</p></li>
+</ol>
+<hr/>
+
+<h1 class="western" style="line-height: 115%"><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">Architecture
+Decision 2 — Canonical Output</font></font></h1>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">The
+canonical output of the factory is not an article.</font></p>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">The
+canonical output is:</font></p>
+<div id="code-block-viewer" dir="ltr"><pre class="western" style="line-height: 115%; margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><code class="western">Knowledge Asset</code></font></font></pre>
+</div>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">Reason:</font></p>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">One
+approved insight may later produce:</font></p>
+<ul>
+	<li><p class="western" style="margin-top: 0.17in; margin-bottom: 0in">
+	<font face="Arial, sans-serif">Article </font>
+	</p></li>
+	<li><p class="western" style="margin-top: 0.17in; margin-bottom: 0in">
+	<font face="Arial, sans-serif">FAQ </font>
+	</p></li>
+	<li><p class="western" style="margin-top: 0.17in; margin-bottom: 0in">
+	<font face="Arial, sans-serif">Recommendation Page </font>
+	</p></li>
+	<li><p class="western" style="margin-top: 0.17in; margin-bottom: 0in">
+	<font face="Arial, sans-serif">LinkedIn Post </font>
+	</p></li>
+	<li><p class="western" style="margin-top: 0.17in; margin-bottom: 0in">
+	<font face="Arial, sans-serif">Email Teaser </font>
+	</p></li>
+	<li><p class="western" style="margin-top: 0.17in; margin-bottom: 0in">
+	<font face="Arial, sans-serif">Video Script </font>
+	</p></li>
+	<li><p class="western" style="margin-top: 0.17in; margin-bottom: 0.2in">
+	<font face="Arial, sans-serif">Case Study </font>
+	</p></li>
+</ul>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">The
+factory should generate reusable knowledge assets first.</font></p>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">Flow:</font></p>
+<div id="Section1" dir="ltr"><pre class="western" style="line-height: 115%; margin-top: 0.17in; margin-bottom: 0.08in"><a name="code-block-viewer"></a><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><code class="western">Approved Insight</code></font></font>
+<code class="western">↓</code>
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><code class="western">Knowledge Asset</code></font></font>
+<code class="western">↓</code>
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><code class="western">Channel-Specific Assets</code></font></font></pre>
+</div>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">Not:</font></p>
+<div id="Section2" dir="ltr"><pre class="western" style="line-height: 115%; margin-top: 0.17in; margin-bottom: 0.08in"><a name="code-block-viewer Copy 1"></a><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><code class="western">Approved Insight</code></font></font>
+<code class="western">↓</code>
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><code class="western">Article</code></font></font>
+<code class="western">↓</code>
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><code class="western">Everything Else</code></font></font></pre>
+</div>
+<hr/>
+
+<h1 class="western" style="line-height: 115%"><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">Architecture
+Decision 3 — Approved Insight Contract</font></font></h1>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">No
+content generation may begin without an approved insight.</font></p>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">Approved
+Insight becomes the canonical source of truth.</font></p>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">Schema:</font></p>
+<div id="Section3" dir="ltr"><pre class="western" style="line-height: 115%; margin-top: 0.17in; margin-bottom: 0.08in"><a name="code-block-viewer Copy 2"></a><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><code class="western">Insight {</code></font></font>
+<code class="western">  </code><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><code class="western">id</code></font></font>
+<code class="western">  </code><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><code class="western">title</code></font></font>
+<code class="western">  </code><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><code class="western">rawSource</code></font></font>
+<code class="western">  </code><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><code class="western">sourceType</code></font></font>
+<code class="western">  </code><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><code class="western">// note</code></font></font>
+<code class="western">  </code><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><code class="western">// interview</code></font></font>
+<code class="western">  </code><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><code class="western">// linkedin</code></font></font>
+<code class="western">  </code><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><code class="western">// coaching-session</code></font></font>
+<code class="western">  </code><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><code class="western">// workshop</code></font></font>
+<code class="western">  </code><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><code class="western">// voice-note</code></font></font>
+<code class="western">  </code><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><code class="western">extractedInsight</code></font></font>
+<code class="western">  </code><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><code class="western">status</code></font></font>
+<code class="western">  </code><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><code class="western">// draft</code></font></font>
+<code class="western">  </code><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><code class="western">// review</code></font></font>
+<code class="western">  </code><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><code class="western">// approved</code></font></font>
+<code class="western">  </code><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><code class="western">// archived</code></font></font>
+<code class="western">  </code><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><code class="western">approvedBy</code></font></font>
+<code class="western">  </code><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><code class="western">approvedAt</code></font></font>
+<code class="western">  </code><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><code class="western">evidenceUrls[]</code></font></font>
+<code class="western">  </code><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><code class="western">targetEntities[]</code></font></font>
+<code class="western">  </code><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><code class="western">targetQueries[]</code></font></font>
+<code class="western">  </code><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><code class="western">freshnessExpiresAt</code></font></font>
+<code class="western">  </code><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><code class="western">createdAt</code></font></font>
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><code class="western">}</code></font></font></pre>
+</div>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">Rule:</font></p>
+<div id="Section4" dir="ltr"><pre class="western" style="line-height: 115%; margin-top: 0.17in; margin-bottom: 0.08in"><a name="code-block-viewer Copy 3"></a><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><code class="western">status = approved</code></font></font>
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><code class="western">AND</code></font></font>
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><code class="western">freshnessExpiresAt &gt; now</code></font></font></pre>
+</div>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">must
+be true before any content workflow starts.</font></p>
+<hr/>
+
+<h1 class="western" style="line-height: 115%"><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">Architecture
+Decision 4 — Runtime Dependencies</font></font></h1>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">Task
+025 may introduce runtime dependencies.</font></p>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">Allowed:</font></p>
+<ul>
+	<li><p class="western" style="margin-top: 0.17in; margin-bottom: 0in">
+	<font face="Arial, sans-serif">zod </font>
+	</p></li>
+	<li><p class="western" style="margin-top: 0.17in; margin-bottom: 0in">
+	<font face="Arial, sans-serif">langgraph </font>
+	</p></li>
+	<li><p class="western" style="margin-top: 0.17in; margin-bottom: 0.2in">
+	<font face="Arial, sans-serif">langchain-core </font>
+	</p></li>
+</ul>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">Not
+allowed:</font></p>
+<ul>
+	<li><p class="western" style="margin-top: 0.17in; margin-bottom: 0in">
+	<font face="Arial, sans-serif">workflow execution </font>
+	</p></li>
+	<li><p class="western" style="margin-top: 0.17in; margin-bottom: 0in">
+	<font face="Arial, sans-serif">content generation </font>
+	</p></li>
+	<li><p class="western" style="margin-top: 0.17in; margin-bottom: 0.2in">
+	<font face="Arial, sans-serif">provider calls </font>
+	</p></li>
+</ul>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">Reason:</font></p>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">Contracts
+should be built against the real runtime stack.</font></p>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">Task
+026 will implement orchestration.</font></p>
+<hr/>
+
+<h1 class="western" style="line-height: 115%"><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">Architecture
+Decision 5 — Provider Layer</font></font></h1>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">The
+system must never depend directly on a single model provider.</font></p>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">Introduce:</font></p>
+<div id="Section5" dir="ltr"><pre class="western" style="line-height: 115%; margin-top: 0.17in; margin-bottom: 0.08in"><a name="code-block-viewer Copy 4"></a><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><code class="western">LLMProvider</code></font></font></pre>
+</div>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">abstraction.</font></p>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">Initial
+implementation:</font></p>
+<div id="Section6" dir="ltr"><pre class="western" style="line-height: 115%; margin-top: 0.17in; margin-bottom: 0.08in"><a name="code-block-viewer Copy 5"></a><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><code class="western">OpenRouter</code></font></font></pre>
+</div>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">Supported
+models:</font></p>
+<ul>
+	<li><p class="western" style="margin-top: 0.17in; margin-bottom: 0in">
+	<font face="Arial, sans-serif">GPT </font>
+	</p></li>
+	<li><p class="western" style="margin-top: 0.17in; margin-bottom: 0in">
+	<font face="Arial, sans-serif">Claude </font>
+	</p></li>
+	<li><p class="western" style="margin-top: 0.17in; margin-bottom: 0.2in">
+	<font face="Arial, sans-serif">DeepSeek </font>
+	</p></li>
+</ul>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">Environment
+variables:</font></p>
+<div id="Section7" dir="ltr"><pre class="western" style="line-height: 115%; margin-top: 0.17in; margin-bottom: 0.08in"><a name="code-block-viewer Copy 6"></a><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><code class="western">OPENROUTER_API_KEY</code></font></font>
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><code class="western">DEFAULT_RESEARCH_MODEL</code></font></font>
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><code class="western">DEFAULT_WRITER_MODEL</code></font></font>
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><code class="western">DEFAULT_REVIEW_MODEL</code></font></font></pre>
+</div>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">Task
+025 defines the contracts.</font></p>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">Task
+026 implements execution.</font></p>
+<hr/>
+
+<h1 class="western" style="line-height: 115%"><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">Architecture
+Decision 6 — Prompt Versioning</font></font></h1>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">Every
+agent execution must be traceable.</font></p>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">Required
+metadata:</font></p>
+<div id="Section8" dir="ltr"><pre class="western" style="line-height: 115%; margin-top: 0.17in; margin-bottom: 0.08in"><a name="code-block-viewer Copy 7"></a><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><code class="western">AgentRun {</code></font></font>
+<code class="western">  </code><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><code class="western">agentName</code></font></font>
+<code class="western">  </code><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><code class="western">promptVersion</code></font></font>
+<code class="western">  </code><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><code class="western">model</code></font></font>
+<code class="western">  </code><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><code class="western">startedAt</code></font></font>
+<code class="western">  </code><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><code class="western">completedAt</code></font></font>
+<code class="western">  </code><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><code class="western">status</code></font></font>
+<font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><code class="western">}</code></font></font></pre>
+</div>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">Reason:</font></p>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">Without
+prompt versioning the system cannot be debugged or improved safely.</font></p>
+<hr/>
+
+<h1 class="western" style="line-height: 115%"><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">Architecture
+Decision 7 — Claim Taxonomy</font></font></h1>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">Every
+generated statement must belong to a claim category.</font></p>
+<h2 class="western" style="line-height: 115%; margin-top: 0.17in"><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">Factual
+Claim</font></font></h2>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">Example:</font></p>
+<div id="Section9" dir="ltr"><pre class="western" style="line-height: 115%; margin-top: 0.17in; margin-bottom: 0.08in"><a name="code-block-viewer Copy 8"></a><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><code class="western">Engineering managers spend 40% of their time in meetings.</code></font></font></pre>
+</div>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">Requires
+evidence.</font></p>
+<hr/>
+
+<h2 class="western" style="line-height: 115%; margin-top: 0.17in"><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">Research
+Claim</font></font></h2>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">Example:</font></p>
+<div id="Section10" dir="ltr"><pre class="western" style="line-height: 115%; margin-top: 0.17in; margin-bottom: 0.08in"><a name="code-block-viewer Copy 9"></a><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><code class="western">A Gartner study found...</code></font></font></pre>
+</div>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">Requires
+evidence and date.</font></p>
+<hr/>
+
+<h2 class="western" style="line-height: 115%; margin-top: 0.17in"><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">Client
+Outcome Claim</font></font></h2>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">Example:</font></p>
+<div id="Section11" dir="ltr"><pre class="western" style="line-height: 115%; margin-top: 0.17in; margin-bottom: 0.08in"><a name="code-block-viewer Copy 10"></a><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><code class="western">Delivery improved by 40%.</code></font></font></pre>
+</div>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">Requires
+strongest verification.</font></p>
+<hr/>
+
+<h2 class="western" style="line-height: 115%; margin-top: 0.17in"><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">Framework
+Claim</font></font></h2>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">Example:</font></p>
+<div id="Section12" dir="ltr"><pre class="western" style="line-height: 115%; margin-top: 0.17in; margin-bottom: 0.08in"><a name="code-block-viewer Copy 11"></a><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><code class="western">The Player Trap occurs when...</code></font></font></pre>
+</div>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">Does
+not require external evidence.</font></p>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">Requires
+framework ownership attribution.</font></p>
+<hr/>
+
+<h2 class="western" style="line-height: 115%; margin-top: 0.17in"><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">Opinion
+Claim</font></font></h2>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">Example:</font></p>
+<div id="Section13" dir="ltr"><pre class="western" style="line-height: 115%; margin-top: 0.17in; margin-bottom: 0.08in"><a name="code-block-viewer Copy 12"></a><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><code class="western">Most managers are promoted too early.</code></font></font></pre>
+</div>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">Does
+not require external evidence.</font></p>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">Must
+be clearly framed as opinion.</font></p>
+<hr/>
+
+<h1 class="western" style="line-height: 115%"><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">Architecture
+Decision 8 — Claim Ledger</font></font></h1>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">Task
+025 defines the Claim Ledger contract.</font></p>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">Task
+027 implements storage.</font></p>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">Storage
+decision:</font></p>
+<div id="Section14" dir="ltr"><pre class="western" style="line-height: 115%; margin-top: 0.17in; margin-bottom: 0.08in"><a name="code-block-viewer Copy 13"></a><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><code class="western">Payload Collection</code></font></font></pre>
+</div>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">Reason:</font></p>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">Claims
+must remain queryable.</font></p>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">Future
+queries:</font></p>
+<ul>
+	<li><p class="western" style="margin-top: 0.17in; margin-bottom: 0in">
+	<font face="Arial, sans-serif">which pages use this claim? </font>
+	</p></li>
+	<li><p class="western" style="margin-top: 0.17in; margin-bottom: 0in">
+	<font face="Arial, sans-serif">which claim lost evidence? </font>
+	</p></li>
+	<li><p class="western" style="margin-top: 0.17in; margin-bottom: 0.2in">
+	<font face="Arial, sans-serif">which claim appears across the site? </font>
+	</p></li>
+</ul>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">require
+first-class storage.</font></p>
+<hr/>
+
+<h1 class="western" style="line-height: 115%"><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">Architecture
+Decision 9 — Recommendation Pages</font></font></h1>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">Recommendation
+pages must never be published automatically.</font></p>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">Task
+029 is revised:</font></p>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">Old:</font></p>
+<div id="Section15" dir="ltr"><pre class="western" style="line-height: 115%; margin-top: 0.17in; margin-bottom: 0.08in"><a name="code-block-viewer Copy 14"></a><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><code class="western">Create recommendation pages</code></font></font></pre>
+</div>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">New:</font></p>
+<div id="Section16" dir="ltr"><pre class="western" style="line-height: 115%; margin-top: 0.17in; margin-bottom: 0.08in"><a name="code-block-viewer Copy 15"></a><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt"><code class="western">Generate review-ready recommendation page drafts</code></font></font></pre>
+</div>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">Human
+approval remains mandatory.</font></p>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">This
+aligns with the governance model. </font>
+</p>
+<hr/>
+
+<h1 class="western" style="line-height: 115%"><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">Revised
+Immediate Tasks</font></font></h1>
+<h2 class="western" style="line-height: 115%; margin-top: 0.17in"><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">Task
+025 — Agent Factory Contracts</font></font></h2>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">Deliver:</font></p>
+<ul>
+	<li><p class="western" style="margin-top: 0.17in; margin-bottom: 0in">
+	<font face="Arial, sans-serif">16 agent contracts </font>
+	</p></li>
+	<li><p class="western" style="margin-top: 0.17in; margin-bottom: 0in">
+	<font face="Arial, sans-serif">Zod schemas </font>
+	</p></li>
+	<li><p class="western" style="margin-top: 0.17in; margin-bottom: 0in">
+	<font face="Arial, sans-serif">Prompt shells </font>
+	</p></li>
+	<li><p class="western" style="margin-top: 0.17in; margin-bottom: 0in">
+	<font face="Arial, sans-serif">Approved Insight contract </font>
+	</p></li>
+	<li><p class="western" style="margin-top: 0.17in; margin-bottom: 0in">
+	<font face="Arial, sans-serif">Claim taxonomy </font>
+	</p></li>
+	<li><p class="western" style="margin-top: 0.17in; margin-bottom: 0in">
+	<font face="Arial, sans-serif">Claim Ledger contract </font>
+	</p></li>
+	<li><p class="western" style="margin-top: 0.17in; margin-bottom: 0in">
+	<font face="Arial, sans-serif">Provider abstraction </font>
+	</p></li>
+	<li><p class="western" style="margin-top: 0.17in; margin-bottom: 0in">
+	<font face="Arial, sans-serif">Prompt versioning model </font>
+	</p></li>
+	<li><p class="western" style="margin-top: 0.17in; margin-bottom: 0.2in">
+	<font face="Arial, sans-serif">AGENT_FACTORY.md </font>
+	</p></li>
+</ul>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">No
+runtime generation.</font></p>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">No
+publishing.</font></p>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">No
+provider execution.</font></p>
+<hr/>
+
+<h2 class="western" style="line-height: 115%; margin-top: 0.17in"><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">Task
+026 — LangGraph Orchestrator</font></font></h2>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">Deliver:</font></p>
+<ul>
+	<li><p class="western" style="margin-top: 0.17in; margin-bottom: 0in">
+	<font face="Arial, sans-serif">workflow runtime </font>
+	</p></li>
+	<li><p class="western" style="margin-top: 0.17in; margin-bottom: 0in">
+	<font face="Arial, sans-serif">state machine </font>
+	</p></li>
+	<li><p class="western" style="margin-top: 0.17in; margin-bottom: 0in">
+	<font face="Arial, sans-serif">retries </font>
+	</p></li>
+	<li><p class="western" style="margin-top: 0.17in; margin-bottom: 0in">
+	<font face="Arial, sans-serif">human handoff </font>
+	</p></li>
+	<li><p class="western" style="margin-top: 0.17in; margin-bottom: 0.2in">
+	<font face="Arial, sans-serif">run logging </font>
+	</p></li>
+</ul>
+<hr/>
+
+<h2 class="western" style="line-height: 115%; margin-top: 0.17in"><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">Task
+027 — Claim Ledger and Source Verification</font></font></h2>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">Deliver:</font></p>
+<ul>
+	<li><p class="western" style="margin-top: 0.17in; margin-bottom: 0in">
+	<font face="Arial, sans-serif">Payload Claim Ledger collection </font>
+	</p></li>
+	<li><p class="western" style="margin-top: 0.17in; margin-bottom: 0in">
+	<font face="Arial, sans-serif">source verification workflow </font>
+	</p></li>
+	<li><p class="western" style="margin-top: 0.17in; margin-bottom: 0.2in">
+	<font face="Arial, sans-serif">claim classification </font>
+	</p></li>
+</ul>
+<hr/>
+
+<h2 class="western" style="line-height: 115%; margin-top: 0.17in"><font face="Arial, sans-serif"><font size="3" style="font-size: 12pt">Task
+028 — First Knowledge Asset</font></font></h2>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">Deliver:</font></p>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">Generate
+one review-ready knowledge asset from one approved insight through
+the full pipeline.</font></p>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">Not
+publication.</font></p>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">Not
+auto-release.</font></p>
+<p class="western" style="margin-top: 0.17in; margin-bottom: 0.08in"><font face="Arial, sans-serif">Review-ready
+only.</font></p>
+<p class="western" align="left" style="margin-top: 0.17in; margin-bottom: 0.08in">
+<br/>
+<br/>
+
+</p>
+</body>
+</html>

@@ -2,7 +2,7 @@
 title: Coach for VP Engineering Candidates
 slug: coach-for-vp-engineering-candidates
 schemaType: Article
-status: draft
+status: review
 author: Itay Foyerstein
 entityTags:
   - itay_foyerstein

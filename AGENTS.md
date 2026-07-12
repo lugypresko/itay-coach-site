@@ -112,6 +112,27 @@ Content generation has an additional hard gate:
 2. If no fresh approved insight exists, agents may only monitor, flag gaps, and prepare source requests.
 3. External research may support Itay's insight, but it may not replace it.
 
+Factory execution autonomy:
+
+1. When a task completes and its verification output exposes a deterministic next step, Codex may create, claim, and execute the next task without asking if all of the following remain true:
+   - no governed contract changes
+   - no `DATA_CONTRACTS` changes
+   - no `AGENTS.md` or security-rule changes
+   - no Payload schema migrations
+   - no publishing
+   - no provider calls
+   - no runtime agents
+   - no external private source access
+   - no autonomous business decision
+   - no human approval boundary crossed
+2. Allowed continuation examples include:
+   - ApprovedInsight -> KnowledgeAsset
+   - KnowledgeAsset -> PublicSurfaceMapping
+   - PublicSurfaceMapping -> review-ready page drafts
+   - review-ready page drafts -> publish-readiness review
+   - publish-readiness review -> human approval checklist
+3. If the next step crosses a governance boundary, Codex must stop and ask.
+
 ## Stack Direction
 
 - Next.js 15 App Router

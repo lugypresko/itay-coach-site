@@ -4,7 +4,7 @@ import type {
   InsightExtractionClaim,
 } from "../ai/agents/insightExtractionContracts";
 
-export type AuthoritySeedContentCollection = "entity-pages" | "pillar-pages" | "frameworks" | "case-studies";
+export type AuthoritySeedContentCollection = "entity-pages" | "pillar-pages" | "cluster-pages" | "frameworks" | "case-studies";
 
 export interface AuthoritySeedFAQ {
   question: string;

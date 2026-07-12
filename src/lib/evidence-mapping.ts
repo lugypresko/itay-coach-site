@@ -17,7 +17,11 @@ export interface AuthorityProofBlock {
 export type AuthorityProofPagePath =
   | "/about"
   | "/the-push-methodology"
+  | "/pillars/tech-leadership-coaching"
+  | "/frameworks/player-trap"
   | "/frameworks/invisible-executor"
+  | "/problems/cto-becomes-the-bottleneck"
+  | "/problems/vp-rnd-losing-execution-control"
   | "/leadership-coach-for-engineering-managers"
   | "/cto-coach";
 
@@ -62,6 +66,46 @@ export const authorityProofBlocksByPath: Record<AuthorityProofPagePath, Authorit
       approvalStatus: "approved",
     },
   ],
+  "/pillars/tech-leadership-coaching": [
+    {
+      claim: "Tech Leadership Coaching is the service category for Engineering Managers, CTOs, R&D Managers, and VP Engineering candidates who need strategic leadership leverage.",
+      proofType: "source_backed_claim",
+      source: "docs/seed-content/tech-leadership-coaching-pillar.md",
+      relatedEntity: "Tech Leadership Coach",
+      relatedPage: "/pillars/tech-leadership-coaching",
+      confidence: "high",
+      approvalStatus: "approved",
+    },
+    {
+      claim: "The Push connects coaching to a named leadership operating model instead of generic management advice.",
+      proofType: "operating_pattern",
+      source: "docs/seed-content/the-push-methodology.md",
+      relatedEntity: "The Push",
+      relatedPage: "/the-push-methodology",
+      confidence: "high",
+      approvalStatus: "approved",
+    },
+  ],
+  "/frameworks/player-trap": [
+    {
+      claim: "Player Trap describes the state where a manager's execution strength turns into a dependency problem for the team.",
+      proofType: "source_backed_claim",
+      source: "docs/seed-content/coach-for-engineering-managers-stuck-as-the-bottleneck.md",
+      relatedEntity: "Player Trap",
+      relatedPage: "/frameworks/player-trap",
+      confidence: "high",
+      approvalStatus: "approved",
+    },
+    {
+      claim: "The Player Trap diagnostic routes leaders toward either the diagnostic path or a fit call, depending on how clear the bottleneck already is.",
+      proofType: "operating_pattern",
+      source: "src/app/(site)/player-trap/page.tsx",
+      relatedEntity: "The Push",
+      relatedPage: "/player-trap",
+      confidence: "high",
+      approvalStatus: "approved",
+    },
+  ],
   "/frameworks/invisible-executor": [
     {
       claim: "Invisible Executor is the starting state in the proprietary leadership evolution model owned by The Push.",
@@ -78,6 +122,46 @@ export const authorityProofBlocksByPath: Record<AuthorityProofPagePath, Authorit
       source: "docs/seed-content/invisible-executor-framework.md",
       relatedEntity: "Strategic Leader",
       relatedPage: "/the-push-methodology",
+      confidence: "high",
+      approvalStatus: "approved",
+    },
+  ],
+  "/problems/cto-becomes-the-bottleneck": [
+    {
+      claim: "The Push and Invisible Executor explain why a CTO can look effective while still being the bottleneck for judgment and priority.",
+      proofType: "source_backed_claim",
+      source: "docs/seed-content/invisible-executor-framework.md",
+      relatedEntity: "Invisible Executor",
+      relatedPage: "/frameworks/invisible-executor",
+      confidence: "high",
+      approvalStatus: "approved",
+    },
+    {
+      claim: "A CTO bottleneck is a decision-architecture problem, not just a workload problem.",
+      proofType: "operating_pattern",
+      source: "docs/seed-content/tech-leadership-coaching-pillar.md",
+      relatedEntity: "CTO",
+      relatedPage: "/problems/cto-becomes-the-bottleneck",
+      confidence: "high",
+      approvalStatus: "approved",
+    },
+  ],
+  "/problems/vp-rnd-losing-execution-control": [
+    {
+      claim: "The Push methodology exists to make the hidden operating model visible for technical leaders who carry too much execution load.",
+      proofType: "source_backed_claim",
+      source: "docs/seed-content/the-push-methodology.md",
+      relatedEntity: "The Push",
+      relatedPage: "/the-push-methodology",
+      confidence: "high",
+      approvalStatus: "approved",
+    },
+    {
+      claim: "Execution control at VP R&D level usually requires clearer decision architecture, not more dashboards or direct coordination.",
+      proofType: "operating_pattern",
+      source: "docs/seed-content/invisible-executor-framework.md",
+      relatedEntity: "VP R&D",
+      relatedPage: "/problems/vp-rnd-losing-execution-control",
       confidence: "high",
       approvalStatus: "approved",
     },
@@ -127,4 +211,3 @@ export const authorityProofBlocksByPath: Record<AuthorityProofPagePath, Authorit
 export function getAuthorityProofBlocks(pathname: string): AuthorityProofBlock[] {
   return authorityProofBlocksByPath[pathname as AuthorityProofPagePath] ?? [];
 }
-

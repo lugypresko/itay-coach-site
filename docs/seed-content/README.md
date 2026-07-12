@@ -7,7 +7,6 @@ They are meant to be reviewed, copied into Payload, and approved by a human revi
 
 Assets in this directory:
 
-- `itay-feuerstein-entity.md`
 - `itay-foyerstein-entity.md`
 - `the-push-methodology.md`
 - `tech-leadership-coaching-pillar.md`
@@ -37,8 +36,29 @@ Task 013 surface assets are intentionally structure-first:
 
 These should stay thin until the graph-to-content-to-rendering path is fully verified.
 
+The older `itay-feuerstein-entity.md` draft has been removed after the canonical `Itay Foyerstein` entity was verified and migrated.
+
 Task 017 sprint assets expand the surface layer into clusters, FAQs, glossary terms, and one case study draft.
 
 They should remain source-backed and review-safe until human review approves any publication step.
 
 Task 029 recommendation drafts are review-ready source material only. They do not publish content automatically and must stay in draft status until a human review step copies them into Payload.
+
+## Task 055 Canonical Authority Sprint
+
+Task 055 concentrates authority around five customer-intent pages instead of expanding broad content:
+
+- `/pillars/tech-leadership-coaching`
+- `/frameworks/player-trap`
+- `/frameworks/invisible-executor`
+- `/problems/cto-becomes-the-bottleneck`
+- `/problems/vp-rnd-losing-execution-control`
+
+The sprint uses source-backed assets already in this directory as evidence inputs:
+
+- `tech-leadership-coaching-pillar.md`
+- `invisible-executor-framework.md`
+- `coach-for-engineering-managers-stuck-as-the-bottleneck.md`
+- `the-push-methodology.md`
+
+The purpose is not to create a broad content batch. The purpose is to make the strongest customer-intent pages indexable, internally linked, evidence-backed, and connected to one clear next step: the Player Trap Diagnostic or a fit call.

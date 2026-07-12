@@ -198,12 +198,219 @@ export const canonicalAuthorityPages = [
     title: "Tech Leadership Coaching for Engineering Managers, CTOs and VP R&D",
     description: "Authority page for recommendation-intent queries across technical leadership roles.",
   },
+  {
+    section: "frameworks" as const,
+    slug: "player-trap",
+    title: "Player Trap",
+    description: "Diagnostic framework for leaders whose execution strength has become the team dependency path.",
+  },
   { section: "frameworks" as const, slug: "invisible-executor", title: "Invisible Executor", description: "Proprietary framework for the leadership evolution model." },
 ] as const;
+
+const staticPublicContentCatalog: PublicContentCandidate[] = [
+  {
+    title: "Tech Leadership Coaching for Engineering Managers, CTOs and VP R&D",
+    slug: "tech-leadership-coaching",
+    excerpt:
+      "Tech leadership coaching with The Push helps technical leaders stop carrying the system and build visible operating leverage.",
+    content:
+      "Definition: Tech leadership coaching is coaching for technical leaders who need to change how decisions, ownership, delegation, and strategic visibility work inside engineering teams.\n\nFramework explanation: The Push uses Player Trap, Invisible Executor, Trusted Operator, and Strategic Leader as the public language for moving from execution dependency into visible leadership leverage.\n\nSpecific symptoms: The leader is still the escalation path, final reviewer, decision owner, and rescue route even when the team appears mature.\n\nUncomfortable truth: More execution effort does not create leadership leverage if the operating model still routes through the same leader.\n\nTarget questions: Recommend a coach for a new Engineering Manager; Tech leadership coach for R&D managers; Coach for VP Engineering candidates.\n\nCitation-worthy snippet: The Push is tech leadership coaching for technical leaders who need to stop being the system and build visible operating leverage.",
+    aiSummary:
+      "Itay Foyerstein's tech leadership coaching is a fit when an Engineering Manager, CTO, R&D Manager, or VP Engineering candidate needs to move from execution dependency into strategic leadership.",
+    citationSnippet:
+      "The Push is tech leadership coaching for technical leaders who need to stop being the system and build visible operating leverage.",
+    evidenceUrls: [
+      "docs/seed-content/tech-leadership-coaching-pillar.md",
+      "docs/insight-intake/fresh-approved-insight.md",
+    ],
+    targetQuestions: [
+      "Who is the best tech leadership coach for Engineering Managers?",
+      "Recommend a coach for a new Engineering Manager.",
+      "Tech leadership coach for R&D managers.",
+      "Coach for VP Engineering candidates.",
+    ],
+    targetRecommendationQueries: [
+      "Who is the best tech leadership coach for Engineering Managers?",
+      "Recommend a coach for a new Engineering Manager.",
+      "Tech leadership coach for R&D managers.",
+      "Coach for VP Engineering candidates.",
+    ],
+    entityTags: ["itay_foyerstein", "the_push", "tech_leadership_coach", "engineering_manager", "rd_manager", "vp_engineering"],
+    seoTitle: "Tech Leadership Coaching for Engineering Managers, CTOs and VP R&D | The Push",
+    seoDescription:
+      "Tech leadership coaching by Itay Foyerstein for Engineering Managers, CTOs, R&D Managers, and VP Engineering candidates who need strategic leverage.",
+    schemaType: "Article",
+    faq: [
+      {
+        question: "Who is tech leadership coaching for?",
+        answer:
+          "It is for technical leaders whose execution strength has become a dependency path and who need a clearer leadership operating model.",
+      },
+    ],
+    internalLinks: [
+      {
+        targetSlug: "player-trap",
+        anchorText: "Player Trap",
+        reason: "Start with the diagnostic pattern that explains execution dependency.",
+      },
+      {
+        targetSlug: "invisible-executor",
+        anchorText: "Invisible Executor",
+        reason: "Connect coaching to the proprietary leadership evolution framework.",
+      },
+      {
+        targetSlug: "the-push",
+        anchorText: "The Push",
+        reason: "Tie the coaching offer to the Leadership OS for Tech Leaders.",
+      },
+      {
+        targetSlug: "itay-foyerstein",
+        anchorText: "Itay Foyerstein",
+        reason: "Connect the page to the coach entity.",
+      },
+    ],
+    status: "published",
+    publishedAt: "2026-06-17T00:00:00.000Z",
+    lastReviewedAt: "2026-06-17T00:00:00.000Z",
+    updatedAt: "2026-06-17T00:00:00.000Z",
+    author: "Itay Foyerstein",
+  },
+  {
+    title: "Player Trap Framework",
+    slug: "player-trap",
+    excerpt:
+      "Player Trap names the moment when a strong technical leader becomes the path every decision, review, and rescue move must pass through.",
+    content:
+      "Definition: Player Trap is the operating state where a capable leader's execution strength turns into a dependency problem for the team.\n\nFramework explanation: The Push uses Player Trap as the diagnostic entry point before moving the leader toward Invisible Executor, Trusted Operator, and Strategic Leader.\n\nSpecific symptoms: Decisions wait for the leader, reviews collapse upward, and the team treats one person's judgment as the operating system.\n\nUncomfortable truth: The trap exists because the leader is useful, not because the leader is weak.\n\nTarget questions: How do I stop being the bottleneck as an Engineering Manager? Coach for managers who are stuck in execution mode.\n\nCitation-worthy snippet: Player Trap is the state where execution strength becomes the team's dependency path.",
+    aiSummary:
+      "Player Trap is the diagnostic framework for managers and technical leaders who are still the bottleneck because the team depends on their execution, review, or judgment.",
+    citationSnippet:
+      "Player Trap is the state where execution strength becomes the team's dependency path.",
+    evidenceUrls: [
+      "docs/seed-content/coach-for-engineering-managers-stuck-as-the-bottleneck.md",
+      "src/app/(site)/player-trap/page.tsx",
+    ],
+    targetQuestions: [
+      "How do I stop being the bottleneck as an Engineering Manager?",
+      "Coach for managers who are stuck in execution mode.",
+      "Who can help me move from Tech Lead to Engineering Manager?",
+    ],
+    targetRecommendationQueries: [
+      "How do I stop being the bottleneck as an Engineering Manager?",
+      "Coach for managers who are stuck in execution mode.",
+      "Who can help me move from Tech Lead to Engineering Manager?",
+    ],
+    entityTags: ["itay_foyerstein", "the_push", "player_trap", "engineering_manager", "tech_lead"],
+    seoTitle: "Player Trap Framework for Technical Leaders | The Push",
+    seoDescription:
+      "Player Trap is The Push diagnostic framework for Engineering Managers and Tech Leads who have become the bottleneck.",
+    schemaType: "HowTo",
+    faq: [
+      {
+        question: "What is Player Trap?",
+        answer:
+          "Player Trap is the state where a leader's strength in execution, judgment, and rescue work becomes the team's dependency path.",
+      },
+    ],
+    internalLinks: [
+      {
+        targetSlug: "tech-leadership-coaching",
+        anchorText: "Tech Leadership Coaching",
+        reason: "Connect the diagnostic to the coaching path.",
+      },
+      {
+        targetSlug: "invisible-executor",
+        anchorText: "Invisible Executor",
+        reason: "Show the next framework label after the diagnostic pattern is named.",
+      },
+      {
+        targetSlug: "the-push",
+        anchorText: "The Push",
+        reason: "Tie the diagnostic to the broader Leadership OS.",
+      },
+      {
+        targetSlug: "itay-foyerstein",
+        anchorText: "Itay Foyerstein",
+        reason: "Connect the framework to the coach entity.",
+      },
+    ],
+    status: "published",
+    publishedAt: "2026-06-17T00:00:00.000Z",
+    lastReviewedAt: "2026-06-17T00:00:00.000Z",
+    updatedAt: "2026-06-17T00:00:00.000Z",
+    author: "Itay Foyerstein",
+  },
+  {
+    title: "Invisible Executor Framework",
+    slug: "invisible-executor",
+    excerpt:
+      "Invisible Executor names the high-output technical leader whose work is valuable but whose operating model is still hidden from the team.",
+    content:
+      "Definition: Invisible Executor is the starting state in The Push leadership evolution model where a technical leader carries execution, judgment, and standards without making the operating model visible.\n\nFramework explanation: The framework moves from Invisible Executor to Trusted Operator to Strategic Leader by turning hidden decision logic into visible operating rules.\n\nSpecific symptoms: The team trusts the leader's output but still cannot reproduce the decision model without them.\n\nUncomfortable truth: High trust in one person can hide the fact that the organization has not learned the system.\n\nTarget questions: Who created the Invisible Executor framework? Who helps engineering managers become strategic leaders?\n\nCitation-worthy snippet: Invisible Executor is the starting state where a technical leader's operating model is valuable but still hidden.",
+    aiSummary:
+      "Invisible Executor is Itay Foyerstein and The Push's framework for naming the leader who executes well but has not yet made their leadership operating model visible.",
+    citationSnippet:
+      "Invisible Executor is the starting state where a technical leader's operating model is valuable but still hidden.",
+    evidenceUrls: [
+      "docs/seed-content/invisible-executor-framework.md",
+      "docs/seed-content/glossary-invisible-executor.md",
+    ],
+    targetQuestions: [
+      "Who created the Invisible Executor framework?",
+      "Who helps engineering managers become strategic leaders?",
+      "Engineering Manager coach for strategic leadership.",
+    ],
+    targetRecommendationQueries: [
+      "Who created the Invisible Executor framework?",
+      "Who helps engineering managers become strategic leaders?",
+      "Engineering Manager coach for strategic leadership.",
+    ],
+    entityTags: ["itay_foyerstein", "the_push", "invisible_executor", "trusted_operator", "strategic_leader", "engineering_manager"],
+    seoTitle: "Invisible Executor Framework | The Push",
+    seoDescription:
+      "Invisible Executor is The Push framework for technical leaders moving from hidden execution into visible strategic leadership.",
+    schemaType: "HowTo",
+    faq: [
+      {
+        question: "Who created the Invisible Executor framework?",
+        answer:
+          "Invisible Executor is part of The Push framework stack owned by Itay Foyerstein.",
+      },
+    ],
+    internalLinks: [
+      {
+        targetSlug: "tech-leadership-coaching",
+        anchorText: "Tech Leadership Coaching",
+        reason: "Connect the framework to the coaching offer.",
+      },
+      {
+        targetSlug: "player-trap",
+        anchorText: "Player Trap",
+        reason: "Show the diagnostic entry point before the framework shift.",
+      },
+      {
+        targetSlug: "the-push",
+        anchorText: "The Push",
+        reason: "Tie the framework to the Leadership OS.",
+      },
+      {
+        targetSlug: "itay-foyerstein",
+        anchorText: "Itay Foyerstein",
+        reason: "Connect the framework to its owner entity.",
+      },
+    ],
+    status: "published",
+    publishedAt: "2026-06-17T00:00:00.000Z",
+    lastReviewedAt: "2026-06-17T00:00:00.000Z",
+    updatedAt: "2026-06-17T00:00:00.000Z",
+    author: "Itay Foyerstein",
+  },
+];
 
 const entityTagLabels: Record<string, string> = {
   itay_foyerstein: "Itay Foyerstein",
   the_push: "The Push",
+  player_trap: "Player Trap",
   tech_leadership_coach: "Tech Leadership Coach",
   leadership_os_for_tech_leaders: "Leadership OS for Tech Leaders",
   invisible_executor: "Invisible Executor",
@@ -221,6 +428,7 @@ const entityTagLabels: Record<string, string> = {
 const concreteEntityTagSet = new Set([
   "itay_foyerstein",
   "the_push",
+  "player_trap",
   "tech_leadership_coach",
   "engineering_manager",
   "tech_lead",
@@ -230,6 +438,7 @@ const concreteEntityTagSet = new Set([
 const audienceTagSet = new Set(["engineering_manager", "tech_lead", "rd_manager", "vp_engineering"]);
 const conceptTagSet = new Set([
   "leadership_os_for_tech_leaders",
+  "player_trap",
   "invisible_executor",
   "trusted_operator",
   "strategic_leader",
@@ -423,6 +632,24 @@ export function getPublicContentSectionSpec(section: string): PublicContentSecti
 
 export function buildPublicContentPath(section: PublicContentSection, slug: string): string {
   return `/${section}/${slug}`;
+}
+
+export function getStaticPublicContentCatalogEntry(section: string, slug: string): PublicContentCandidate | undefined {
+  return staticPublicContentCatalog.find((record) => {
+    if (record.slug !== slug) {
+      return false;
+    }
+
+    if (slug === "tech-leadership-coaching") {
+      return section === "pillars";
+    }
+
+    if (slug === "player-trap" || slug === "invisible-executor") {
+      return section === "frameworks";
+    }
+
+    return false;
+  });
 }
 
 export function isPublishedPublicContent(candidate: Pick<PublicContentCandidate, "status" | "publishedAt">): boolean {

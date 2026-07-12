@@ -1,3 +1,4 @@
+import React from "react";
 import Link from "next/link";
 
 import {
@@ -8,7 +9,9 @@ import {
   AuthorityRelatedAuthorityBlock,
   AuthorityReviewBlock,
 } from "@/components/authority-trust-blocks";
+import { TargetPageAnalytics, TargetTrackedLink } from "@/components/target-page-analytics";
 import { getAuthorityProofBlocks } from "@/lib/evidence-mapping";
+import { getProblemPagesForSurface } from "@/lib/problem-pages";
 import type { PublicContentPageModel } from "@/lib/public-content";
 import { buildPageJsonLd } from "@/lib/public-schema";
 
@@ -53,13 +56,48 @@ function splitContentBlocks(content: string) {
   return { structuredBlocks, narrativeBlocks };
 }
 
+function getPrimaryCta(page: PublicContentPageModel) {
+  if (page.pathname === "/frameworks/player-trap") {
+    return {
+      href: "/player-trap",
+      label: "Take the Player Trap Diagnostic",
+      ctaType: "diagnostic" as const,
+    };
+  }
+
+  return {
+    href: "/book-a-fit-call",
+    label: "Book a Fit Call",
+    ctaType: "fit_call" as const,
+  };
+}
+
+function hrefForInternalLink(targetSlug: string): string {
+  if (targetSlug === "tech-leadership-coaching") {
+    return "/pillars/tech-leadership-coaching";
+  }
+
+  if (targetSlug === "player-trap" || targetSlug === "invisible-executor") {
+    return `/frameworks/${targetSlug}`;
+  }
+
+  if (targetSlug === "the-push" || targetSlug === "itay-foyerstein") {
+    return targetSlug === "the-push" ? "/entities/the-push" : "/entities/itay-foyerstein";
+  }
+
+  return `/${targetSlug}`;
+}
+
 export function PublicContentPage({ page }: PublicContentPageProps) {
   const jsonLd = buildPageJsonLd(page);
   const { structuredBlocks, narrativeBlocks } = splitContentBlocks(page.record.content);
   const proofBlocks = getAuthorityProofBlocks(page.pathname);
+  const problemPages = getProblemPagesForSurface(page.pathname);
+  const primaryCta = getPrimaryCta(page);
 
   return (
     <main className="content-shell">
+      <TargetPageAnalytics path={page.pathname} slug={page.record.slug} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd, null, 2) }} />
 
       <header className="content-hero content-hero-split">
@@ -74,12 +112,15 @@ export function PublicContentPage({ page }: PublicContentPageProps) {
           <h1>{page.record.title}</h1>
           <p className="lede">{page.record.excerpt}</p>
           <div className="content-actions">
-            <Link className="primary-link" href="/book-a-fit-call">
-              Book a fit call
-            </Link>
-            <Link className="secondary-link" href="/player-trap">
-              Take the Player Trap test
-            </Link>
+            <TargetTrackedLink
+              className="primary-link"
+              href={primaryCta.href}
+              ctaType={primaryCta.ctaType}
+              path={page.pathname}
+              slug={page.record.slug}
+            >
+              {primaryCta.label}
+            </TargetTrackedLink>
           </div>
         </div>
 
@@ -111,7 +152,7 @@ export function PublicContentPage({ page }: PublicContentPageProps) {
       </header>
 
       <section className="content-panel content-panel-wide authority-trust-panel">
-        <h2>Authority signals</h2>
+        <h2>Evidence block</h2>
         {proofBlocks.length ? <AuthorityProofTrustBlock blocks={proofBlocks} /> : null}
         <div className="authority-trust-grid">
           <AuthorityEvidenceBlock trustSignals={page.trustSignals} />
@@ -119,6 +160,17 @@ export function PublicContentPage({ page }: PublicContentPageProps) {
           <AuthorityEntityContextBlock trustSignals={page.trustSignals} />
           <AuthorityRecommendationIntentBlock trustSignals={page.trustSignals} />
           <AuthorityRelatedAuthorityBlock trustSignals={page.trustSignals} />
+        </div>
+        <div className="content-actions">
+          <TargetTrackedLink
+            className="primary-link"
+            href={primaryCta.href}
+            ctaType={primaryCta.ctaType}
+            path={page.pathname}
+            slug={page.record.slug}
+          >
+            {primaryCta.label}
+          </TargetTrackedLink>
         </div>
       </section>
 
@@ -174,12 +226,26 @@ export function PublicContentPage({ page }: PublicContentPageProps) {
 
         {page.relatedLinks.length ? (
           <article className="content-panel content-panel-wide">
-            <h2>Internal links</h2>
+            <h2>Related pages</h2>
             <div className="link-list">
               {page.relatedLinks.map((link) => (
-                <div key={`${link.targetSlug}-${link.anchorText}`} className="link-item">
+                <Link key={`${link.targetSlug}-${link.anchorText}`} className="link-item" href={hrefForInternalLink(link.targetSlug)}>
                   <span>{link.anchorText}</span>
                   <small>{link.reason}</small>
+                </Link>
+              ))}
+            </div>
+          </article>
+        ) : null}
+
+        {problemPages.length ? (
+          <article className="content-panel content-panel-wide">
+            <h2>Related problem pages</h2>
+            <div className="link-list">
+              {problemPages.map((problemPage) => (
+                <div key={problemPage.slug} className="link-item">
+                  <Link href={`/problems/${problemPage.slug}`}>{problemPage.title}</Link>
+                  <small>{problemPage.painStatement}</small>
                 </div>
               ))}
             </div>

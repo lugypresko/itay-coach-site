@@ -2,7 +2,7 @@
 title: Advisor for Managing Up in Engineering Organizations
 slug: advisor-for-managing-up-in-engineering-organizations
 schemaType: Article
-status: draft
+status: review
 author: Itay Foyerstein
 entityTags:
   - itay_foyerstein

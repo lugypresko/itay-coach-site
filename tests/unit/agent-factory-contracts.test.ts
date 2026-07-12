@@ -3,9 +3,15 @@ import { describe, expect, it } from "vitest";
 import {
   agentRegistry,
   approvedInsightSchema,
+  contentWriterAgentInputSchema,
+  authorityOutcomeSchema,
+  chiefOfStaffInputSchema,
+  chiefOfStaffRecommendationSchema,
   claimLedgerEntrySchema,
   distributionAssetSchema,
   knowledgeAssetSchema,
+  pageBriefSchema,
+  mapPerformanceSignalsToAuthorityOutcome,
   performanceSignalSchema,
 } from "../../src/ai/agents";
 
@@ -69,6 +75,82 @@ describe("agent factory contracts", () => {
       knowledgeAssetSchema.safeParse({
         ...asset,
         reviewStatus: "published",
+      }).success,
+    ).toBe(false);
+  });
+
+  it("accepts a valid PageBrief contract and requires PageBrief input for ContentWriterAgent", () => {
+    const pageBrief = pageBriefSchema.parse({
+      id: "page-brief-1",
+      sourceInsightIds: ["insight-1", "insight-2"],
+      title: "Leadership Coaching for Tech Leaders",
+      canonicalPath: "/leadership-coaching-for-tech-leaders",
+      reviewStatus: "in_review",
+      marketContext: {
+        summary: "Tech leaders need coaching that understands engineering context.",
+        marketMap: ["technical leadership coaching", "engineering leadership support"],
+        trendList: ["AI increases review load"],
+        riskNotes: ["generic coaching language will not differentiate the page"],
+      },
+      audiencePain: {
+        summary: "The leader is still carrying too much execution load.",
+        painThemes: ["too many reviews", "too many decisions"],
+        workarounds: ["delegate more work", "add more process"],
+        triggerEvents: ["promotion pressure"],
+      },
+      searchIntent: {
+        summary: "The searcher wants a coach with technical context.",
+        intentClusters: ["leadership coaching", "tech leadership coaching"],
+        priorityQueries: ["Leadership coaching for tech leaders"],
+      },
+      topicClusterPosition: {
+        summary: "A recommendation-intent landing page in the leadership coaching cluster.",
+        pillar: "The Push",
+        cluster: "Leadership coaching for tech leaders",
+        clusterRole: "Primary recommendation page",
+        internalLinks: ["/about", "/the-push-methodology"],
+      },
+      uniqueAngle: "The Push makes the operating model visible.",
+      proofNeeded: ["Open with the pain", "Explain why Itay is relevant"],
+      pagePromise: "This page will help the reader decide the next step.",
+      contentPlan: [
+        {
+          sectionTitle: "Open with the pain",
+          purpose: "Start with the real leadership pressure.",
+          proofNeeded: ["Audience pain appears before methodology language."],
+        },
+      ],
+      cta: {
+        label: "Book a fit call",
+        href: "/book-a-fit-call",
+        rationale: "Move the reader to a direct conversation.",
+      },
+      author: "Itay Foyerstein",
+      reviewerNotes: "Review ready.",
+    });
+
+    expect(pageBrief.canonicalPath).toBe("/leadership-coaching-for-tech-leaders");
+
+    expect(
+      contentWriterAgentInputSchema.safeParse({
+        mission: "Write the page from PageBrief",
+        pageBriefId: "page-brief-1",
+        context: {},
+      }).success,
+    ).toBe(true);
+
+    expect(
+      contentWriterAgentInputSchema.safeParse({
+        mission: "Write the page from PageBrief",
+        pageBrief,
+        context: {},
+      }).success,
+    ).toBe(true);
+
+    expect(
+      contentWriterAgentInputSchema.safeParse({
+        mission: "Write the page from PageBrief",
+        context: {},
       }).success,
     ).toBe(false);
   });
@@ -226,5 +308,175 @@ describe("agent factory contracts", () => {
         value: 0,
       }).signalState,
     ).toBe("placeholder");
+  });
+
+  it("maps observed signals into an authority outcome with a next best action", () => {
+    const signals = [
+      performanceSignalSchema.parse({
+        id: "signal-3",
+        assetId: "knowledge-1",
+        signalType: "booked_call",
+        signalState: "observed",
+        observedAt: "2026-06-08T00:00:00.000Z",
+        source: "CRM",
+        value: 3,
+        unit: "count",
+      }),
+      performanceSignalSchema.parse({
+        id: "signal-4",
+        assetId: "knowledge-1",
+        signalType: "cta_click",
+        signalState: "observed",
+        observedAt: "2026-06-08T00:00:00.000Z",
+        source: "Analytics",
+        value: 8,
+        unit: "count",
+      }),
+    ];
+
+    const outcome = mapPerformanceSignalsToAuthorityOutcome({
+      id: "outcome-1",
+      focus: "lead_pipeline_quality",
+      title: "Lead pipeline quality is stable",
+      signals,
+      nextBestAction: "Keep publishing recommendation pages and keep the booking CTA above the fold.",
+    });
+
+    expect(outcome.status).toBe("healthy");
+    expect(outcome.signalIds).toEqual(["signal-3", "signal-4"]);
+    expect(outcome.nextBestAction).toContain("booking CTA");
+    expect(authorityOutcomeSchema.safeParse(outcome).success).toBe(true);
+  });
+
+  it("downgrades authority outcomes to watch or at risk when signals are incomplete or weak", () => {
+    const placeholderOutcome = mapPerformanceSignalsToAuthorityOutcome({
+      id: "outcome-2",
+      focus: "content_inventory_health",
+      title: "Content inventory is still being assembled",
+      signals: [
+        performanceSignalSchema.parse({
+          id: "signal-5",
+          assetId: "knowledge-1",
+          signalType: "query_visibility",
+          signalState: "placeholder",
+          observedAt: "2026-06-08T00:00:00.000Z",
+          source: "planned measurement",
+          value: 0,
+        }),
+      ],
+      nextBestAction: "Do not publish more content until the inventory map is complete.",
+    });
+
+    const weakOutcome = mapPerformanceSignalsToAuthorityOutcome({
+      id: "outcome-3",
+      focus: "player_trap_conversion",
+      title: "Player Trap conversion is weak",
+      signals: [
+        performanceSignalSchema.parse({
+          id: "signal-6",
+          assetId: "knowledge-1",
+          signalType: "booked_call",
+          signalState: "observed",
+          observedAt: "2026-06-08T00:00:00.000Z",
+          source: "CRM",
+          value: 0,
+          unit: "count",
+        }),
+      ],
+      nextBestAction: "Improve the report page before adding more content.",
+    });
+
+    expect(placeholderOutcome.status).toBe("watch");
+    expect(weakOutcome.status).toBe("at_risk");
+    expect(authorityOutcomeSchema.safeParse(placeholderOutcome).success).toBe(true);
+    expect(authorityOutcomeSchema.safeParse(weakOutcome).success).toBe(true);
+  });
+
+  it("validates Chief of Staff inputs and recommendations against the outcome-driven contract", () => {
+    const input = chiefOfStaffInputSchema.parse({
+      traffic: {
+        sessions: 1200,
+        users: 900,
+        topSource: "organic",
+        notes: "Authority pages are bringing qualified visits.",
+      },
+      leads: {
+        totalLeads: 42,
+        qualifiedLeads: 18,
+        bookedCalls: 6,
+        notes: "Lead quality is improving after the latest content release.",
+      },
+      contentInventory: {
+        totalAssets: 9,
+        reviewReadyAssets: 5,
+        publishedAssets: 3,
+        notes: "Inventory is still below the recommended coverage.",
+      },
+      publishedAssets: {
+        slugs: ["tech-leadership-coaching", "invisible-executor", "why-itay-foyerstein"],
+        notes: "The core recommendation pages are live.",
+      },
+      gsc: {
+        queriesTracked: 7,
+        impressions: 1800,
+        clicks: 92,
+        notes: "Target query coverage is growing.",
+      },
+      playerTrapFunnel: {
+        visits: 480,
+        completions: 126,
+        diagnosisCallRequests: 14,
+        bookedCalls: 6,
+        notes: "The funnel needs a stronger report-page conversion path.",
+      },
+      authorityOutcomes: [
+        mapPerformanceSignalsToAuthorityOutcome({
+          id: "outcome-4",
+          focus: "search_visibility_health",
+          title: "Search visibility is growing",
+          signals: [
+            performanceSignalSchema.parse({
+              id: "signal-7",
+              assetId: "knowledge-1",
+              signalType: "query_visibility",
+              signalState: "observed",
+              observedAt: "2026-06-08T00:00:00.000Z",
+              source: "GSC",
+              value: 4,
+              unit: "queries",
+            }),
+          ],
+          nextBestAction: "Repair visibility gaps on the remaining target queries.",
+        }),
+      ],
+      supportingSignals: [
+        performanceSignalSchema.parse({
+          id: "signal-8",
+          assetId: "knowledge-1",
+          signalType: "cta_click",
+          signalState: "observed",
+          observedAt: "2026-06-08T00:00:00.000Z",
+          source: "Analytics",
+          value: 12,
+          unit: "count",
+        }),
+      ],
+    });
+
+    const recommendation = chiefOfStaffRecommendationSchema.parse({
+      id: "cos-1",
+      generatedAt: "2026-06-08T00:00:00.000Z",
+      primaryOutcomeId: input.authorityOutcomes[0].id,
+      supportingOutcomeIds: [input.authorityOutcomes[0].id],
+      nextBestActionCategory: "repair_visibility_gap",
+      nextBestAction: "Repair visibility gaps on the remaining target queries.",
+      rationale: "Search visibility is improving, but the query set is not fully covered yet.",
+      humanOwnerSuggestion: "Visibility / SEO owner",
+      supportingSignalIds: ["signal-8"],
+    });
+
+    expect(input.authorityOutcomes[0].focus).toBe("search_visibility_health");
+    expect(recommendation.nextBestActionCategory).toBe("repair_visibility_gap");
+    expect(recommendation.primaryOutcomeId).toBe("outcome-4");
   });
 });

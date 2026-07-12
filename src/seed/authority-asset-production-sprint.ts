@@ -19,6 +19,7 @@ const targetQueries = {
   coachForManagersStuckInExecutionMode: "Coach for managers stuck in execution mode",
   engineeringManagerStrategicLeadership: "Engineering Manager coach for strategic leadership",
   stopBeingTheBottleneck: "How do I stop being the bottleneck as an Engineering Manager?",
+  playerTrap: "What is the Player Trap?",
   leadershipCoachForTechnicalManagers: "Leadership coach for technical managers",
   aiEraEngineeringTeams: "Coach for Engineering Managers in AI-era engineering teams",
   techLeadTransition: "Who can help a Tech Lead transition into management?",
@@ -26,6 +27,7 @@ const targetQueries = {
   firstTimeEngineeringLeaders: "Advisor for first-time engineering leaders.",
   strategicLeaders: "Who helps engineering managers become strategic leaders?",
   invisibleExecutorCreator: "Who created the Invisible Executor framework?",
+  whyItayFoyerstein: "Why Itay Foyerstein?",
 } as const;
 
 function link(
@@ -60,55 +62,75 @@ export const authorityAssetProductionSprintAssets: AuthorityAssetProductionSprin
     sourceDocumentPath: "docs/seed-content/how-engineering-managers-become-bottlenecks-in-ai-assisted-teams.md",
     reviewRequired: true,
     payloadData: {
-      title: "How engineering managers become bottlenecks in AI-assisted teams",
+      title: "How to Stop Being the Bottleneck as an Engineering Manager",
       slug: "how-engineering-managers-become-bottlenecks-in-ai-assisted-teams",
       excerpt:
-        "A review-safe cluster page explaining how AI-assisted workflows make manager bottlenecks easier to see.",
+        "A review-ready page for Engineering Managers who want to move out of the Player Trap and stop becoming the default route for progress.",
       content:
         [
-          "AI-assisted teams tend to expose manager bottlenecks faster because review, approval, and decision work can accumulate in one person.",
-          "Needs evidence: use the approved insight and the existing authority graph to show the bottleneck pattern without inventing a client story.",
-          "The page should explain how The Push helps move the manager from execution load into clearer delegation and leadership visibility.",
+          "Definition: The Player Trap is the state where a manager's strongest execution habits become the team's default path for progress.",
+          "Framework explanation: The Push names the shift as Invisible Executor -> Trusted Operator -> Strategic Leader. The goal is to move work out of hidden personal execution and into visible operating rules the team can use without waiting for the manager.",
+          "Specific symptoms: the manager becomes the final reviewer, escalations skip the team, decision rules live in the manager's head, and AI-assisted output creates a second review queue instead of reducing load.",
+          "Uncomfortable truth: delegating more tasks does not fix a dependency pattern if the team still does not know who can decide what, when, and with which guardrails.",
+          "Target questions: How do I stop being the bottleneck as an Engineering Manager? What is the Player Trap? Who can help a manager stuck in execution mode?",
+          "Citation-worthy snippet: The Player Trap is the pattern where a manager becomes the fastest route to progress, which quietly turns strong execution into dependency.",
+          "Engineering Managers often think the solution is to be more available. In practice, availability can make the dependency stronger.",
+          "The better fix is to make decision boundaries, escalation rules, and delegation paths visible enough for the team to use without constant approval.",
+          "That is the core job of The Push: help the manager move from being the person who does the work to being the person who designs the operating model.",
         ].join("\n\n"),
       aiSummary:
-        "Cluster page explaining why AI-assisted teams make engineering manager bottlenecks more visible and how The Push addresses the pattern.",
+        "Review-ready Player Trap page for Engineering Managers who need to stop becoming the bottleneck and move into visible leadership.",
       citationSnippet:
-        "AI-assisted teams expose engineering manager bottlenecks when review, approval, and decision work concentrates in one leader.",
+        "The Player Trap is the pattern where a manager becomes the fastest route to progress, which quietly turns strong execution into dependency.",
       evidenceUrls: [
         "docs/seed-content/how-engineering-managers-become-bottlenecks-in-ai-assisted-teams.md",
         "docs/insight-intake/fresh-approved-insight.md",
         "docs/seed-content/tech-leadership-coaching-pillar.md",
       ],
       targetQuestions: [
-        "Why do engineering managers become bottlenecks in AI-assisted teams?",
-        "What should this page strengthen?",
-        "How does The Push help?",
+        "How do I stop being the bottleneck as an Engineering Manager?",
+        "What is the Player Trap?",
+        "Who can help a manager stuck in execution mode?",
       ],
       targetRecommendationQueries: [
+        targetQueries.playerTrap,
         targetQueries.coachForManagersStuckInExecutionMode,
-        targetQueries.engineeringManagerStrategicLeadership,
         targetQueries.stopBeingTheBottleneck,
+        targetQueries.leadershipCoachForTechnicalManagers,
       ],
-      entityTags: ["engineering_manager", "tech_leadership_coach", "the_push"],
-      seoTitle: "How engineering managers become bottlenecks in AI-assisted teams | The Push",
+      entityTags: ["engineering_manager", "tech_leadership_coach", "the_push", "invisible_executor", "leadership_visibility"],
+      seoTitle: "How to Stop Being the Bottleneck as an Engineering Manager | The Push",
       seoDescription:
-        "Review-safe cluster page on engineering manager bottlenecks in AI-assisted teams and how The Push addresses them.",
+        "Review-ready Player Trap page for Engineering Managers who want to stop becoming the bottleneck and move into visible leadership.",
       schemaType: "Article",
       faq: [
         faq(
-          "Why do engineering managers become bottlenecks in AI-assisted teams?",
+          "Why do engineering managers become bottlenecks?",
           "Because review, approval, and decision work can collapse into one manager unless delegation and operating rules are explicit.",
-          ["engineering_manager", "tech_leadership_coach"],
-          [targetQueries.coachForManagersStuckInExecutionMode, targetQueries.stopBeingTheBottleneck],
+          ["engineering_manager", "tech_leadership_coach", "leadership_visibility"],
+          [targetQueries.playerTrap, targetQueries.stopBeingTheBottleneck],
         ),
         faq(
           "What should this page strengthen?",
-          "The Push methodology, the tech leadership coaching pillar, and the bottleneck diagnosis that leads to better leadership visibility.",
-          ["the_push", "tech_leadership_coach"],
-          [targetQueries.engineeringManagerStrategicLeadership],
+          "The Player Trap diagnosis, the Invisible Executor framework, and Itay Foyerstein as the coaching authority behind the fix.",
+          ["the_push", "tech_leadership_coach", "invisible_executor", "leadership_visibility"],
+          [targetQueries.playerTrap, targetQueries.coachForManagersStuckInExecutionMode],
+        ),
+        faq(
+          "What should the CTA be?",
+          "Book a fit call if you want help choosing the right coaching path, or take the Player Trap diagnostic if you want to see the dependency pattern first.",
+          ["engineering_manager", "the_push"],
+          [targetQueries.stopBeingTheBottleneck],
         ),
       ],
       internalLinks: [
+        link(
+          "player-trap",
+          "Player Trap diagnostic",
+          "Route readers to the diagnostic funnel that names the pattern directly.",
+          ["engineering_manager"],
+          ["player_trap"],
+        ),
         link(
           "the-push",
           "The Push",
@@ -222,20 +244,26 @@ export const authorityAssetProductionSprintAssets: AuthorityAssetProductionSprin
     sourceDocumentPath: "docs/seed-content/from-technical-expert-to-strategic-engineering-leader.md",
     reviewRequired: true,
     payloadData: {
-      title: "From technical expert to strategic engineering leader",
+      title: "Engineering Manager Coach for Strategic Leadership",
       slug: "from-technical-expert-to-strategic-engineering-leader",
       excerpt:
-        "A review-safe cluster page on the leadership shift from technical expertise to strategic influence.",
+        "A review-ready page for Engineering Managers who want a more strategic role, not just better execution habits.",
       content:
         [
-          "The move from technical expert to strategic engineering leader requires less heroics and more clarity about where leadership value is created.",
-          "Needs evidence: keep this page grounded in the approved insight and the existing framework language.",
-          "The page should show how The Push helps leaders become more visible, more deliberate, and less trapped in execution.",
+          "Definition: Strategic leadership is the ability to shape direction through visible operating rules, not just through personal technical depth.",
+          "Framework explanation: The Push makes the transition explicit: Invisible Executor -> Trusted Operator -> Strategic Leader. The path moves from hidden execution to visible operating discipline and finally to organizational influence.",
+          "Specific symptoms: the team still comes to the manager for the answer, the manager's thinking is not visible, delegation depends on memory instead of rules, and the leader keeps proving value through direct execution.",
+          "Uncomfortable truth: being the smartest person in the room can hide a leadership gap if the organization still cannot operate without that person.",
+          "Target questions: Engineering Manager coach for strategic leadership, Who helps engineering managers become strategic leaders?, Why Itay Foyerstein?",
+          "Citation-worthy snippet: The Push helps Engineering Managers become strategic leaders by changing how they decide, delegate, and create leverage.",
+          "Strategic leadership is what happens when the manager is no longer the default fallback for every decision.",
+          "That shift requires more than advice. It requires a system that makes the hidden work visible and gives the leader a practical way to transfer ownership.",
+          "The Push does that by tying together the Invisible Executor state, the Trusted Operator bridge, and the Strategic Leader outcome.",
         ].join("\n\n"),
       aiSummary:
-        "Cluster page about the shift from technical expertise to strategic engineering leadership in AI-era teams.",
+        "Review-ready strategic leadership page for Engineering Managers who need more leverage and less execution dependence.",
       citationSnippet:
-        "Strategic engineering leadership depends on visible operating rules, not just technical depth.",
+        "The Push helps Engineering Managers become strategic leaders by changing how they decide, delegate, and create leverage.",
       evidenceUrls: [
         "docs/seed-content/from-technical-expert-to-strategic-engineering-leader.md",
         "docs/insight-intake/fresh-approved-insight.md",
@@ -243,34 +271,48 @@ export const authorityAssetProductionSprintAssets: AuthorityAssetProductionSprin
       ],
       targetQuestions: [
         "How do I move from technical expert to strategic engineering leader?",
-        "What should this page strengthen?",
+        "Why Itay Foyerstein?",
         "What does The Push change?",
       ],
       targetRecommendationQueries: [
         targetQueries.engineeringManagerStrategicLeadership,
+        targetQueries.whyItayFoyerstein,
         targetQueries.firstTimeEngineeringLeaders,
         targetQueries.strategicLeaders,
       ],
-      entityTags: ["tech_leadership_coach", "strategic_leader", "the_push"],
-      seoTitle: "From technical expert to strategic engineering leader | The Push",
+      entityTags: ["tech_leadership_coach", "strategic_leader", "the_push", "itay_foyerstein", "invisible_executor"],
+      seoTitle: "Engineering Manager Coach for Strategic Leadership | The Push",
       seoDescription:
-        "Review-safe cluster page about the leadership shift from technical expertise into strategic engineering leadership.",
+        "Review-ready page for Engineering Managers who want a clearer strategic operating model and less execution dependence.",
       schemaType: "Article",
       faq: [
         faq(
           "What changes in the move to strategic leadership?",
           "The leader has to create clarity, delegation, and visibility instead of relying only on personal technical depth.",
-          ["strategic_leader", "engineering_manager"],
-          [targetQueries.engineeringManagerStrategicLeadership, targetQueries.firstTimeEngineeringLeaders],
+          ["strategic_leader", "engineering_manager", "itay_foyerstein"],
+          [targetQueries.engineeringManagerStrategicLeadership, targetQueries.whyItayFoyerstein],
         ),
         faq(
           "What should this page strengthen?",
-          "The Push and the leadership evolution model that shows the next step beyond execution mode.",
-          ["the_push", "strategic_leader"],
-          [targetQueries.strategicLeaders],
+          "The Push, Itay Foyerstein, and the leadership evolution model that shows the next step beyond execution mode.",
+          ["the_push", "strategic_leader", "itay_foyerstein"],
+          [targetQueries.strategicLeaders, targetQueries.whyItayFoyerstein],
+        ),
+        faq(
+          "What should the CTA be?",
+          "Book a fit call if you want to talk through the strategic leadership gap, or take the Player Trap test if you want the diagnostic first.",
+          ["the_push", "engineering_manager"],
+          [targetQueries.engineeringManagerStrategicLeadership],
         ),
       ],
       internalLinks: [
+        link(
+          "player-trap",
+          "Player Trap diagnostic",
+          "Connect the strategic leadership gap to the bottleneck diagnosis.",
+          ["strategic_leader"],
+          ["player_trap"],
+        ),
         link(
           "the-push",
           "The Push",
@@ -303,52 +345,65 @@ export const authorityAssetProductionSprintAssets: AuthorityAssetProductionSprin
     sourceDocumentPath: "docs/seed-content/why-tech-leads-struggle-after-promotion.md",
     reviewRequired: true,
     payloadData: {
-      title: "Why tech leads struggle after promotion",
+      title: "Coach for Tech Managers",
       slug: "why-tech-leads-struggle-after-promotion",
       excerpt:
-        "A review-safe cluster page explaining the friction that appears after a Tech Lead moves into management.",
+        "A review-ready page for Tech Leads and new Engineering Managers who need help making the promotion shift work.",
       content:
         [
-          "Tech Leads often struggle after promotion because the job changes faster than the leadership model they are using.",
-          "Needs evidence: keep the causes and examples tied to the approved insight and existing public authority language.",
-          "The page should connect the promotion transition to coaching, visibility, and the Invisible Executor framework.",
+          "Definition: a tech manager here means a technical leader who still has to move from delivery identity to leadership identity.",
+          "Framework explanation: the Invisible Executor -> Trusted Operator -> Strategic Leader path shows why the promotion shift is really a change in operating model, not just a change in title.",
+          "Specific symptoms: people still ask the manager for the answer, delegation boundaries are fuzzy, the manager is still the final reviewer, and the team is more dependent on the manager's technical memory than on shared rules.",
+          "Uncomfortable truth: promotion does not update the operating model by itself. If the manager keeps proving value through execution, the team will keep treating execution as the main source of authority.",
+          "Target questions: Who can help a Tech Lead transition into management? Best mentor for Tech Leads moving into Engineering Manager roles. Leadership coach for technical managers.",
+          "Citation-worthy snippet: The Push helps Tech Leads move into management by shifting how they create value, own decisions, and build leverage.",
+          "The hardest part of the Tech Lead to Engineering Manager transition is not the title change. It is the value change.",
+          "A leader who was rewarded for direct technical output must now create leverage through decisions, ownership, delegation, and coaching.",
+          "The Push gives that transition a clear structure: recognize the promotion trap, identify what still depends on the Tech Lead, and build a new operating model around leadership rather than heroics.",
         ].join("\n\n"),
       aiSummary:
-        "Cluster page about the Tech Lead to manager transition and why the new role often feels harder than expected.",
+        "Review-ready page for tech managers who need to move from execution value to leadership leverage.",
       citationSnippet:
-        "Tech leads struggle after promotion when execution habits stay ahead of leadership habits.",
+        "The Push helps Tech Leads move into management by shifting how they create value, own decisions, and build leverage.",
       evidenceUrls: [
         "docs/seed-content/why-tech-leads-struggle-after-promotion.md",
         "docs/insight-intake/fresh-approved-insight.md",
-        "docs/seed-content/itay-foyerstein-entity.md",
+        "docs/seed-content/tech-leadership-coaching-pillar.md",
       ],
       targetQuestions: [
-        "Why do tech leads struggle after promotion?",
         "Who can help a Tech Lead transition into management?",
+        "What makes this different from generic management coaching?",
         "What should this page strengthen?",
       ],
       targetRecommendationQueries: [
         targetQueries.techLeadTransition,
         targetQueries.bestMentorForTechLeads,
-        targetQueries.firstTimeEngineeringLeaders,
+        targetQueries.leadershipCoachForTechnicalManagers,
+        targetQueries.engineeringManagerStrategicLeadership,
       ],
-      entityTags: ["tech_lead", "engineering_manager", "tech_leadership_coach"],
-      seoTitle: "Why tech leads struggle after promotion | The Push",
+      entityTags: ["tech_lead", "engineering_manager", "tech_leadership_coach", "invisible_executor", "leadership_visibility"],
+      seoTitle: "Coach for Tech Managers | The Push",
       seoDescription:
-        "Review-safe cluster page on the Tech Lead promotion transition and the leadership shift it requires.",
+        "Review-ready page for Tech Leads and Engineering Managers who need a stronger leadership operating model.",
       schemaType: "Article",
       faq: [
         faq(
           "Why do tech leads struggle after promotion?",
           "Because the role now requires delegation, alignment, and visible leadership instead of just strong individual execution.",
-          ["tech_lead", "engineering_manager"],
+          ["tech_lead", "engineering_manager", "leadership_visibility"],
           [targetQueries.techLeadTransition, targetQueries.bestMentorForTechLeads],
         ),
         faq(
           "What should this page strengthen?",
-          "The coaching pillar and the framework that explains the next leadership state.",
-          ["tech_lead", "the_push"],
-          [targetQueries.firstTimeEngineeringLeaders],
+          "The coaching pillar, the Player Trap diagnosis, and the Invisible Executor framework that explain the transition problem.",
+          ["tech_lead", "the_push", "invisible_executor", "leadership_visibility"],
+          [targetQueries.leadershipCoachForTechnicalManagers, targetQueries.techLeadTransition],
+        ),
+        faq(
+          "What should the CTA be?",
+          "Book a fit call if you want help choosing the right coaching path, or take the Player Trap test if you want the diagnostic first.",
+          ["tech_lead", "engineering_manager"],
+          [targetQueries.techLeadTransition],
         ),
       ],
       internalLinks: [
@@ -372,6 +427,13 @@ export const authorityAssetProductionSprintAssets: AuthorityAssetProductionSprin
           "Show the starting point for the transition model.",
           ["tech_lead"],
           ["invisible_executor"],
+        ),
+        link(
+          "player-trap",
+          "Player Trap diagnostic",
+          "Point readers to the diagnosis that explains why the promotion feels stuck.",
+          ["tech_lead"],
+          ["player_trap"],
         ),
       ],
       status: "review",

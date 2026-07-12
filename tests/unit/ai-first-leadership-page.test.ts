@@ -74,13 +74,15 @@ describe("AI-first leadership landing page", () => {
     const expectedSections = [
       "AI-first leadership for technical leaders",
       "Who this is for",
-      "Tech Leads who need to move from execution to leadership.",
+      "Tech Leads who keep getting pulled back into execution.",
       "What changes",
-      "Leadership visibility improves without turning the page into marketing.",
-      "How The Push works",
+      "Leadership visibility improves without turning the page into marketing language.",
+      "Background",
+      "Process",
+      "Player Trap",
       "Related authority",
       "Next step",
-      "Start with the scorecard if you want the shortest path to a recommendation-intent assessment.",
+      "Book a fit call if you want to clarify the leadership problem before choosing a path. Use the scorecard if you want a diagnostic branch first.",
     ];
 
     let previousIndex = -1;
@@ -97,9 +99,10 @@ describe("AI-first leadership landing page", () => {
     const page = AiFirstLeadershipPage();
     const hrefs = collectHrefs(page as ReactLikeNode);
 
+    expect(hrefs).toContain("/book-a-fit-call");
     expect(hrefs).toContain("/tech-leadership-visibility-scorecard");
     expect(hrefs).toContain("/frameworks/invisible-executor");
-    expect(hrefs).toContain("/invisible-executor-assessment");
+    expect(hrefs).not.toContain("/invisible-executor-assessment");
   });
 
   it("keeps mobile-safe landing structure hooks available", () => {

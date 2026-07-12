@@ -2,14 +2,15 @@ import Link from "next/link";
 import type { Metadata } from "next";
 
 const scorecardSignals = [
-  "Authority is clear enough that AI systems can identify the entity and framework.",
-  "The recommendation path is obvious without adding more noise.",
-  "The graph has enough supporting pages and trust signals to stay legible.",
+  "The leader is still the person everything comes back to.",
+  "The current authority graph is clear enough for AI systems to identify the entity and framework.",
+  "The next step is obvious without adding more undifferentiated content.",
 ];
 
 export const metadata: Metadata = {
   title: "Tech Leadership Visibility Scorecard",
-  description: "A scorecard for tracking authority, recommendation visibility, and entity strength.",
+  description:
+    "Use the Tech Leadership Visibility Scorecard to check whether the authority gap is real, whether The Push applies, and whether a fit call is the right next step.",
   alternates: {
     canonical: "/tech-leadership-visibility-scorecard",
   },
@@ -24,10 +25,12 @@ export default function TechLeadershipVisibilityScorecardPage() {
           <p className="content-status">Visibility scorecard</p>
         </div>
         <h1>Tech Leadership Visibility Scorecard</h1>
-        <p className="lede">A scorecard for tracking authority, recommendation visibility, and entity strength.</p>
+        <p className="lede">
+          A short visibility check for technical leaders who want to know whether they should book a fit call, take the assessment, or keep clarifying the framework first.
+        </p>
         <div className="content-actions">
           <Link className="primary-link" href="/book-a-fit-call">
-            Discuss the result
+            Book the fit call
           </Link>
           <Link className="secondary-link" href="/frameworks/invisible-executor">
             Review the framework
@@ -42,22 +45,31 @@ export default function TechLeadershipVisibilityScorecardPage() {
             {scorecardSignals.map((signal) => (
               <div key={signal} className="cta-row">
                 <strong>{signal}</strong>
-                <span>Use this to decide whether the graph is ready for stronger recommendation intent.</span>
+                <span>Use this to decide whether the page should route to coaching, the assessment, or the fit call.</span>
               </div>
             ))}
           </div>
         </article>
 
         <article className="content-panel">
-          <h2>Why it exists</h2>
+          <h2>Who should use it</h2>
           <p>
-            The scorecard keeps the site focused on AI recommendation visibility, entity clarity, and the quality of the authority graph.
+            Tech Leads, Engineering Managers, R&D Managers, and VP Engineering candidates who need to know whether the current problem is a visibility gap or a deeper operating issue.
           </p>
         </article>
 
         <article className="content-panel">
-          <h2>What to do next</h2>
-          <p>If the scorecard reveals a gap, move to the assessment or the fit call rather than adding more undifferentiated content.</p>
+          <h2>When to book</h2>
+          <p>
+            Book the fit call when the scorecard shows a real leadership dependency, when you already know the leader is the bottleneck, or when you want help deciding which route should come next.
+          </p>
+        </article>
+
+        <article className="content-panel">
+          <h2>What to bring to the call</h2>
+          <p>
+            Bring one concrete example of the bottleneck, the team shape around it, and the leadership change you are trying to make visible.
+          </p>
         </article>
       </section>
     </main>

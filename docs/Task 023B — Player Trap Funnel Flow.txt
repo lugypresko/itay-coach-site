@@ -1,0 +1,160 @@
+Task 023B — Player Trap Funnel Flow Upgrade
+
+Superseded by Task 023C.
+The verified production flow is the source of truth.
+
+Ignore the low-ticket book idea for now.
+
+Goal:
+Improve the Player Trap funnel as a diagnostic conversion flow before adding any paid offer.
+
+Scope:
+Only update the Player Trap funnel:
+- /player-trap
+- /player-trap-he
+- /player-trap/report/[token]
+- related client-side assessment flow
+- related CTA copy
+
+Do not update:
+- homepage
+- global navigation
+- pricing
+- book offer
+- paid checkout
+- unrelated authority pages
+
+Required changes:
+
+1. Add a self-identification step before the scored assessment.
+
+This step should not affect scoring.
+
+Purpose:
+Make the user emotionally recognize themselves before starting the test.
+
+Example question:
+
+Which of these feels most familiar?
+
+- The team waits for my approval too often.
+- I solve problems faster than the team can.
+- Escalations land on my desk too quickly.
+- I work harder as my scope grows.
+- I am valued, but not always seen as the next-level leader.
+
+Store the answer if convenient, but do not block the core flow if storage is not already supported.
+
+2. Keep the current 5-question scored assessment.
+
+Do not reveal score, tier, profile, or diagnosis before all 5 questions are completed.
+
+3. Keep lead capture locked until all 5 scored questions are answered.
+
+Required fields:
+- first name
+- email
+- content consent
+- cookies consent
+
+4. After form submit, add a short analysis/loading transition before redirecting to the report page.
+
+Copy examples:
+
+Analyzing your answers...
+Comparing against leadership patterns...
+Identifying your Player Trap profile...
+
+This should create perceived diagnostic value.
+Keep it fast and non-blocking.
+Do not delay more than necessary.
+
+5. Upgrade the report page structure.
+
+Current report page should be redesigned around this hierarchy:
+
+A. Your Player Trap Profile
+Show profile, score, and tier.
+
+B. What is probably happening today
+Mirror the user’s reality using profile-specific copy.
+
+C. The hidden cost of staying here
+Explain the cost in terms of:
+- dependency
+- decision bottlenecks
+- limited strategic perception
+- promotion ceiling
+- team autonomy
+
+D. Your next leadership move
+Show the next transition:
+Star Player → Captain
+Captain → System Builder
+System Builder → Pre-Promoted Leader
+
+E. CTA to Pre-Promoted Diagnosis Call
+
+6. Strengthen CTA wording.
+
+Primary CTA:
+Book a Pre-Promoted Diagnosis Call
+
+Supporting copy:
+This is not a generic coaching call.
+It is a focused diagnosis of where you are still carrying the system — and what needs to change next.
+
+7. Keep bilingual support.
+
+English:
+- /player-trap
+- English report content
+- LTR
+
+Hebrew:
+- /player-trap-he
+- Hebrew report content
+- RTL
+
+8. Preserve all existing working functionality.
+
+Do not break:
+- /api/player-trap/lead
+- reportToken generation
+- reportUrl
+- diagnosisCallUrl
+- Payload subscriber records
+- Resend email sending
+- UTM capture
+- consent validation
+- diagnosis call tracking
+
+9. Add lifecycle tracking if simple and safe.
+
+Recommended events:
+- self_identification_completed
+- assessment_completed
+- lead_submitted
+- report_viewed
+- diagnosis_call_requested
+
+If this requires risky schema changes, skip and document as follow-up.
+
+10. Definition of done:
+
+- User can complete English flow end-to-end.
+- User can complete Hebrew flow end-to-end.
+- Lead is saved in Payload.
+- Report page renders correct language.
+- CTA redirects with correct lang parameter.
+- Existing Resend flow still works.
+- No regression in current verified production behavior.
+
+Important:
+This task is about conversion psychology, not adding more features.
+
+Do not add the low-ticket book.
+Do not add payment.
+Do not change homepage.
+
+The funnel should feel like a serious diagnostic system, not a lead magnet.

@@ -4,6 +4,7 @@ import {
   agentFactoryAgentNameOptions,
   agentFactoryVersion,
   approvedInsightSchema,
+  contentWriterAgentInputSchema,
   claimLedgerEntrySchema,
   claimLedgerSchema,
   distributionAssetSchema,
@@ -57,11 +58,12 @@ const agentOutputSchema = z
 
 function createRegistryEntry(name: AgentFactoryAgentName): AgentRegistryEntry {
   const phase = agentPhaseMetadata[name];
+  const inputSchema = name === "ContentWriterAgent" ? contentWriterAgentInputSchema : agentInputSchema;
 
   return {
     name,
     version: agentFactoryVersion,
-    inputSchema: agentInputSchema,
+    inputSchema,
     outputSchema: agentOutputSchema,
     promptShell: agentPromptShells[name],
     phase: {

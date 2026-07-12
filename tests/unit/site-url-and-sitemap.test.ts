@@ -2,7 +2,9 @@ import { describe, expect, it, vi, afterEach } from "vitest";
 
 import robots from "../../src/app/robots";
 import sitemap from "../../src/app/sitemap";
+import { GET as getLlmsTxt } from "../../src/app/llms.txt/route";
 import { publicAuthorityAssetRoutes, getPublicAuthorityAssetPathnames } from "../../src/lib/public-authority-routes";
+import { getProblemPagePathnames } from "../../src/lib/problem-pages";
 import { getSiteUrl } from "../../src/lib/site-url";
 
 afterEach(() => {
@@ -50,6 +52,16 @@ describe("robots and sitemap", () => {
       expect.arrayContaining([
         "/",
         "/book-a-fit-call",
+        "/problems/cto-becomes-the-bottleneck",
+        "/problems/vp-rnd-losing-execution-control",
+        "/problems/engineering-managers-stuck-in-firefighting",
+        "/problems/senior-developer-still-acting-like-a-developer",
+        "/problems/ai-adoption-creates-more-work-not-leverage",
+        "/problems/product-engineering-misalignment",
+        "/problems/squads-depend-on-one-strong-manager",
+        "/problems/busy-execution-without-business-results",
+        "/problems/leadership-team-cannot-scale-decisions",
+        "/problems/good-managers-burning-out-quietly",
         "/ai-first-leadership",
         "/invisible-executor-assessment",
         "/tech-leadership-visibility-scorecard",
@@ -59,6 +71,7 @@ describe("robots and sitemap", () => {
         "/pillars",
         "/pillars/tech-leadership-coaching",
         "/frameworks",
+        "/frameworks/player-trap",
         "/frameworks/invisible-executor",
         "/clusters",
         "/clusters/how-engineering-managers-become-bottlenecks-in-ai-assisted-teams",
@@ -78,6 +91,7 @@ describe("robots and sitemap", () => {
 
     expect(sitemapPathnames).not.toContain("/case-studies/promoted-technical-manager-becomes-execution-bottleneck");
     expect(sitemapPathnames).not.toContain("/case-studies/case-study-new-engineering-manager");
+    expect(getProblemPagePathnames()).toHaveLength(10);
   });
 
   it("keeps the full task asset registry available for audit purposes", () => {
@@ -88,6 +102,7 @@ describe("robots and sitemap", () => {
         "/entities/itay-foyerstein",
         "/entities/the-push",
         "/pillars/tech-leadership-coaching",
+        "/frameworks/player-trap",
         "/frameworks/invisible-executor",
         "/clusters/how-engineering-managers-become-bottlenecks-in-ai-assisted-teams",
         "/clusters/how-to-lead-ai-generated-code-reviews-without-drowning",
@@ -103,5 +118,19 @@ describe("robots and sitemap", () => {
     );
 
     expect(publicAuthorityAssetRoutes.find((route) => route.slug === "promoted-technical-manager-becomes-execution-bottleneck")?.status).toBe("draft");
+  });
+
+  it("lists the canonical authority sprint targets in llms.txt", async () => {
+    vi.stubEnv("NODE_ENV", "production");
+
+    const response = await getLlmsTxt();
+    const body = await response.text();
+
+    expect(body).toContain("Canonical authority sprint targets:");
+    expect(body).toContain("https://itayfoyerstein.com/pillars/tech-leadership-coaching");
+    expect(body).toContain("https://itayfoyerstein.com/frameworks/player-trap");
+    expect(body).toContain("https://itayfoyerstein.com/frameworks/invisible-executor");
+    expect(body).toContain("https://itayfoyerstein.com/problems/cto-becomes-the-bottleneck");
+    expect(body).toContain("https://itayfoyerstein.com/problems/vp-rnd-losing-execution-control");
   });
 });

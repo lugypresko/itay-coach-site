@@ -40,10 +40,10 @@ describe("recommendation draft sprint", () => {
 
       expect(content).toContain(`# ${asset.title}`);
       expect(frontMatter).toContain(`slug: ${asset.slug}`);
-      expect(frontMatter).toContain("status: draft");
+      expect(frontMatter).toContain("status: review");
       expect(frontMatter).toContain("evidenceUrls:");
       expect(frontMatter).toContain("targetRecommendationQueries:");
-      expect(getFrontMatterValue(frontMatter, "status")).toBe("draft");
+      expect(getFrontMatterValue(frontMatter, "status")).toBe("review");
       expect(getFrontMatterValue(frontMatter, "schemaType")).not.toBe("");
       expect(asset.targetRecommendationQueries.length).toBeGreaterThan(0);
     }

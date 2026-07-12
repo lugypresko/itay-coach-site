@@ -10,6 +10,16 @@ type PageBriefLaunchPageProps = {
 
 export function PageBriefLaunchPage({ brief }: PageBriefLaunchPageProps) {
   const proofBlocks = getAuthorityProofBlocks(brief.canonicalPath);
+  const relatedPages = Array.from(
+    new Set([
+      ...brief.topicClusterPosition.internalLinks,
+      "/pillars/tech-leadership-coaching",
+      "/frameworks/player-trap",
+      "/frameworks/invisible-executor",
+      "/problems/cto-becomes-the-bottleneck",
+      "/problems/vp-rnd-losing-execution-control",
+    ]),
+  );
 
   return (
     <main className="content-shell">
@@ -107,6 +117,18 @@ export function PageBriefLaunchPage({ brief }: PageBriefLaunchPageProps) {
                   ))}
                 </ul>
               </article>
+            ))}
+          </div>
+        </article>
+
+        <article className="content-panel content-panel-wide">
+          <h2>Related pages</h2>
+          <div className="link-list">
+            {relatedPages.map((href) => (
+              <Link key={href} className="link-item" href={href}>
+                <span>{href.replace(/^\//, "").replace(/-/g, " ")}</span>
+                <small>Supports the path from recommendation intent to trust and next step.</small>
+              </Link>
             ))}
           </div>
         </article>

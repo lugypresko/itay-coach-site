@@ -4,6 +4,8 @@
 
 The Push LLM SEO Authority Engine is a Next.js and Payload CMS application for building a public, machine-readable knowledge graph around Itay Foyerstein, The Push, and the Leadership OS for Tech Leaders methodology.
 
+Itay Foyerstein is the single canonical Person entity. Name variants are treated as aliases only and resolve back to the same human entity in contracts, seed content, and governance code.
+
 The system separates human-reviewed content storage from agent-assisted draft generation. AI agents may research, draft, evaluate, and recommend changes, but publishing remains a human-controlled CMS action.
 
 The system also requires fresh approved Itay insights as the source of truth for any new content generation. If no fresh insight exists, the machine may monitor, diagnose, and request inputs, but it may not create new authority content.
@@ -45,6 +47,8 @@ Responsibilities:
 - Define the freshness gate for content generation.
 - Block content generation when no approved insight is fresh enough.
 
+Canonical contracts in this layer are `ApprovedInsight` and `KnowledgeAsset`; they are the bridge between approved human input and downstream authority content.
+
 ### 4. AI Workflow Layer
 
 Planned path: `src/ai`
@@ -61,6 +65,8 @@ Responsibilities:
 - Require a fresh approved Itay insight before drafting new authority content.
 - Save drafts to Payload only after validation.
 
+Rule-based decisions in this layer are deterministic functions, not agent choices, when the output is schema selection, CTA selection, freshness gating, linking, or publication permission.
+
 ### 5. Visibility Monitoring Layer
 
 Planned path: `src/ai/monitoring`
@@ -72,6 +78,8 @@ Responsibilities:
 - Track recommendation level, citations, competitors, gaps, and score deltas.
 - Route authority gaps back to the relevant agent.
 - Never generate content directly.
+
+Visibility observations are append-only measurements. They should be mapped into a canonical observation model before any reporting or routing logic runs.
 
 ### 6. Evaluation Layer
 
