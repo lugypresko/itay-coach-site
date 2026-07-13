@@ -76,7 +76,7 @@ export function buildPublicationDecision(
         : context.pathname
           ? new URL(context.pathname, context.origin).toString()
           : null;
-  const humanApproved = context.treatAsHumanApproved ?? record.humanApproved ?? lifecycleStatus === "published";
+  const humanApproved = context.treatAsHumanApproved ?? record.humanApproved ?? false;
   const publiclyAccessible = context.publiclyAccessible ?? lifecycleStatus !== "archived";
   const schemaEligible = context.schemaEligible ?? record.schemaEligible ?? hasRequiredPublicationShape(record);
   const draft = lifecycleStatus === "draft";
@@ -86,9 +86,9 @@ export function buildPublicationDecision(
   const computedLlmsTxtEligible = computedSitemapEligible && publiclyAccessible;
   const computedIndexable = published && humanApproved && Boolean(resolvedCanonicalUrl) && schemaEligible;
 
-  const sitemapEligible = context.sitemapEligible ?? record.sitemapEligible ?? computedSitemapEligible;
-  const llmsTxtEligible = context.llmsTxtEligible ?? record.llmsTxtEligible ?? computedLlmsTxtEligible;
-  const indexable = context.indexable ?? record.indexable ?? computedIndexable;
+  const sitemapEligible = computedSitemapEligible && (context.sitemapEligible ?? record.sitemapEligible ?? true);
+  const llmsTxtEligible = computedLlmsTxtEligible && (context.llmsTxtEligible ?? record.llmsTxtEligible ?? true);
+  const indexable = computedIndexable && (context.indexable ?? record.indexable ?? true);
 
   const reasonCodes: PublicationReasonCode[] = [];
 

@@ -5,4 +5,5 @@ export * from "./types";
 export * from "./canonical-entity";
 export * from "./authority-decisions";
 export * from "./publication-state";
+export * from "./reader-facing-artifact-governance";
 export * from "./page-brief-compliance";
