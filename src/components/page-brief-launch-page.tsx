@@ -1,10 +1,18 @@
 import type { PageBrief } from "@/ai/agents";
 
 export function PageBriefLaunchPage({ brief }: { brief: PageBrief }) {
+  // AUTHENTICATED INTERNAL PREVIEW ONLY: Blocked for all regular routes by the calling page guard.
+  if (process.env.NODE_ENV === "production") {
+    return null;
+  }
+
   return (
-    <main className="content-shell">
+    <main className="content-shell" style={{ border: "2px solid red", padding: "1rem" }}>
+      <div style={{ background: "red", color: "white", padding: "0.5rem", marginBottom: "2rem" }}>
+        INTERNAL BRIEF PREVIEW - DO NOT PUBLISH
+      </div>
       <header className="content-hero">
-        <p className="eyebrow">Work in progress: {brief.id}</p>
+        <p className="eyebrow">Brief ID: {brief.id}</p>
         <h1>{brief.title}</h1>
         <p className="lede">{brief.marketContext.summary}</p>
       </header>
@@ -13,30 +21,15 @@ export function PageBriefLaunchPage({ brief }: { brief: PageBrief }) {
         <article className="content-panel content-panel-wide">
           <h2>Audience Pain</h2>
           <p>{brief.audiencePain.summary}</p>
-          <ul className="content-list" style={{ marginTop: "1rem" }}>
-            {brief.audiencePain.painThemes.map((theme) => (
-              <li key={theme}>{theme}</li>
-            ))}
-          </ul>
         </article>
 
         {brief.contentPlan.map((section) => (
           <article className="content-panel" key={section.sectionTitle}>
-            <h2>{section.sectionTitle}</h2>
-            <p style={{ fontStyle: "italic", color: "var(--muted)" }}>Purpose: {section.purpose}</p>
-            <ul className="content-list" style={{ marginTop: "0.5rem" }}>
-              {section.proofNeeded.map((proof) => (
-                <li key={proof}>{proof}</li>
-              ))}
-            </ul>
+            <h2>Sub-section: {section.sectionTitle}</h2>
+            <p>Goal: {section.purpose}</p>
           </article>
         ))}
       </section>
-
-      <footer style={{ marginTop: "4rem", padding: "2rem", borderTop: "1px solid var(--border)", color: "var(--muted)" }}>
-        <p>Review Priority: {brief.reviewStatus}</p>
-        <p>Canonical Path: {brief.canonicalPath}</p>
-      </footer>
     </main>
   );
 }
