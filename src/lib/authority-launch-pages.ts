@@ -1991,9 +1991,7 @@ export function buildAuthorityLaunchMetadata(page: AuthorityLaunchPageConfig): M
   return {
     title: page.title,
     description: page.description,
-    alternates: {
-      canonical: page.canonicalPath,
-    },
+    robots: { index: false, follow: false },
   };
 }
 

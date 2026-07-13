@@ -1,6 +1,37 @@
 import type { CollectionConfig, Field } from "payload";
 
-import { contentCollectionStatusOptions } from "./content";
+import {
+  serializeProblemPagePublicationRevision,
+  serializeProblemPageRevisionContent,
+} from "../../ai/governance/publication-approval";
+import {
+  authenticatedContentWriteAccess,
+  contentCollectionStatusOptions,
+  createPublicationGovernanceHook,
+  humanApprovalField,
+} from "./content";
+
+const enforceProblemPagePublicationGovernance = createPublicationGovernanceHook({
+  approvalBoundFields: [
+    "slug",
+    "title",
+    "painStatement",
+    "dailyScenes",
+    "whatTheyTried",
+    "whyItFailed",
+    "diagnosis",
+    "evidenceBlock",
+    "primaryCTA",
+    "relatedFrameworks",
+    "relatedClusters",
+    "seoTitle",
+    "seoDescription",
+    "canonicalUrl",
+    "humanApproval",
+  ],
+  getReaderFacingContent: serializeProblemPageRevisionContent,
+  getPublicationRevision: serializeProblemPagePublicationRevision,
+});
 
 const arrayTextField = (name: string, required = false): Field => ({
   name,
@@ -70,10 +101,13 @@ export const ProblemPages: CollectionConfig = {
     useAsTitle: "title",
   },
   access: {
-    create: () => true,
+    create: authenticatedContentWriteAccess,
     read: () => true,
-    update: () => true,
+    update: authenticatedContentWriteAccess,
     delete: () => false,
+  },
+  hooks: {
+    beforeChange: [enforceProblemPagePublicationGovernance],
   },
   timestamps: true,
   fields: [
@@ -90,6 +124,9 @@ export const ProblemPages: CollectionConfig = {
     relatedLinkField("relatedClusters"),
     { name: "seoTitle", type: "text", required: true },
     { name: "seoDescription", type: "textarea", required: true },
+    { name: "canonicalUrl", type: "text" },
+    humanApprovalField,
+    { name: "publishedAt", type: "date", index: true },
     {
       name: "status",
       type: "select",
@@ -100,4 +137,3 @@ export const ProblemPages: CollectionConfig = {
     },
   ],
 };
-

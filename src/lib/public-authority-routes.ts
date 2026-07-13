@@ -1,6 +1,7 @@
 import type { PublicContentSection } from "./public-content";
 import { canonicalAuthorityPages, publicContentSectionSpecs } from "./public-content";
 import { getPublishedProblemPagePathnames } from "./problem-pages";
+import { fixedPublicationSurfaceRoutes } from "./publication-surface-projection";
 
 export type PublicAuthorityAssetStatus = "draft" | "review" | "published";
 
@@ -26,24 +27,7 @@ export const canonicalAuthoritySprintTargetPathnames = [
 ] as const;
 
 export const publicAuthorityLandingPathnames = [
-  "/",
-  "/about",
-  "/the-push-methodology",
-  "/faq",
-  "/contact",
-  "/engineering-manager-coach",
-  "/cto-coach",
-  "/leadership-coach-for-engineering-managers",
-  "/leadership-coaching-for-tech-leaders",
-  "/strategic-leadership",
-  "/why-engineering-managers-become-bottlenecks",
-  "/from-star-player-to-strategic-leader",
-  "/why-smart-managers-burn-out",
-  "/book-a-fit-call",
-  "/ai-first-leadership",
-  "/invisible-executor-assessment",
-  "/tech-leadership-visibility-scorecard",
-  ...getPublishedProblemPagePathnames(),
+  ...fixedPublicationSurfaceRoutes.map((route) => route.pathname),
 ] as const;
 
 export const publicAuthorityAssetRoutes: PublicAuthorityAssetRoute[] = [
@@ -242,6 +226,7 @@ export function getPublicAuthorityAssetPathnames(options?: { includeDrafts?: boo
 export function getPublicAuthoritySitemapPathnames(): string[] {
   return [
     ...publicAuthorityLandingPathnames,
+    ...getPublishedProblemPagePathnames(),
     ...getPublicAuthoritySectionPathnames(),
     ...getPublicAuthorityCanonicalPathnames(),
     ...getPublicAuthorityAssetPathnames(),

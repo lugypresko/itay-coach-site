@@ -159,3 +159,44 @@ Required before execution:
 - explicit confirmation whether the authorized execution includes publication of Draft 05 or deployment only.
 
 No deployment, publication, commit, push, or ProductionDirective run was performed by Task 069.
+
+## Authorized execution result — 2026-07-12
+
+- Commit: `c5ae82b` (`Approve Draft 05 and repair publication integrity`)
+- Branch pushed: `codex/push-code-to-github`
+- Git-triggered production deployment: `dpl_BBgJgh7CUyN7SZyrpg6YT5WFK6no`, created `2026-07-12T23:07:55+03:00`
+- Explicit production deployment: `dpl_2M9bH9Xh7K8GsY83oigSdsmJX5RA`, created `2026-07-12T23:09:23+03:00`
+- Explicit deployment status before rollback: `READY`
+- Payload record synchronized: collection `cluster-pages`, record `id=6`, Draft 05 only
+- Pre-publication Payload hash: `f95ab45388c077de87efc8228e9788bf4fa9cca1a146a7ec02233e5c1b818211`
+- Approved hash match: yes
+- Draft 05 publication transition attempted: `review → published`
+- Drafts 06/07 publication transition: none
+
+### Failed production recheck
+
+- Draft 05 URL: HTTP 200, `index, follow`, correct self-canonical, CTA present
+- Draft 05 in sitemap: no
+- Draft 05 in `llms.txt`: no
+- Publication surfaces: failed; Payload was published while discovery surfaces omitted the route
+- CTO Problem Page: HTTP 200 and self-canonical, but robots remained `noindex, nofollow`
+- Measurement window: not opened
+
+### Rollback
+
+- Payload Draft 05 rolled back: `published → review`
+- Direct Vercel rollback beyond the immediately previous deployment was blocked by the current plan (`402`), because the branch push and CLI deploy created two deployments of the same commit.
+- Previous stable deployment `dpl_Eu2LeCHGpb74XbmEME6B1He2iJiE` was restored by an authorized Vercel promote operation.
+- Production alias verification at `2026-07-12T23:21:56.5719871+03:00`: `https://itayfoyerstein.com` resolves to `dpl_Eu2LeCHGpb74XbmEME6B1He2iJiE`, status `READY`.
+- Post-rollback baseline: Draft 05 is again present in sitemap but absent from `llms.txt`; CTO is again `noindex, nofollow`.
+
+### Final execution state
+
+- Deployment rollout: rolled back
+- Draft 05 maturity: `human_approved`
+- Draft 05 Payload publication status: `review`
+- Publication: not completed
+- Production Observation: failed and rolled back
+- Measurement window: not opened
+- Blocking correction before another deployment attempt: make sitemap, `llms.txt`, route metadata, and Payload publication status consume the same live publication decision; verify the CTO record's live approval/status mapping.
+- No new content-production cycle was started.

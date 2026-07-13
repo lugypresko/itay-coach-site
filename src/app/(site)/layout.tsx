@@ -23,8 +23,8 @@ export const metadata: Metadata = {
     "Tech Leadership Coach for Engineering Managers, Tech Leads, R&D Managers, and VP Engineering candidates. The Push is the Leadership OS for Tech Leaders.",
   metadataBase: new URL(getSiteUrl()),
   robots: {
-    index: true,
-    follow: true,
+    index: false,
+    follow: false,
   },
 };
 

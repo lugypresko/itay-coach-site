@@ -1,8 +1,33 @@
 import { getServerPayload } from "./payload";
 import { buildPublicationDecision, type PublicationDecision, type PublicationSourceRecord } from "../ai/governance/publication-state";
+import {
+  serializeProblemPagePublicationRevision,
+  serializeProblemPageRevisionContent,
+  validatePublicationApproval,
+} from "../ai/governance/publication-approval";
 export { buildProblemPageJsonLd } from "./problem-page-schema";
 
-export type ProblemPageStatus = "draft" | "review" | "published";
+export type ProblemPageStatus = "draft" | "review" | "in_review" | "approved" | "published" | "archived";
+
+export interface ProblemPageHumanApproval {
+  approvalTimestamp: string;
+  approver: string;
+  contentRevisionHash: string;
+  publicationRevisionHash?: string;
+  supportingApprovedInsightIds: string[];
+  validationResult: {
+    deterministicHardGatesPassed: boolean;
+    semanticQualityPassed: boolean;
+    failureCodes: string[];
+  };
+  publicationScope: {
+    approvedCanonicalPaths: string[];
+    excludedDraftIds: string[];
+    deploymentAuthorized: boolean;
+    publicationAuthorized: boolean;
+  };
+  [key: string]: unknown;
+}
 
 export interface ProblemPageLink {
   label: string;
@@ -33,10 +58,15 @@ export interface ProblemPageRecord {
   seoTitle: string;
   seoDescription: string;
   status: ProblemPageStatus;
+  humanApproval?: ProblemPageHumanApproval;
   humanApproved?: boolean;
   canonicalUrl?: string | null;
   publishedAt?: string;
   updatedAt?: string;
+  indexable?: boolean;
+  sitemapEligible?: boolean;
+  llmsTxtEligible?: boolean;
+  schemaEligible?: boolean;
 }
 
 export interface ProblemPageModel {
@@ -44,6 +74,11 @@ export interface ProblemPageModel {
   pathname: string;
   canonicalUrl: string;
   publicationDecision: PublicationDecision;
+}
+
+interface ProblemPageLoaderOptions {
+  payload?: unknown;
+  allowStaticFallback?: boolean;
 }
 
 const problemPages = [
@@ -103,6 +138,7 @@ const problemPages = [
     seoTitle: "CTO Becomes the Bottleneck | The Push",
     seoDescription: "A problem page for CTOs who are still the default path for judgment, escalation, and progress.",
     status: "published" as const,
+    humanApproved: true,
   },
   {
     title: "VP R&D Losing Execution Control",
@@ -160,6 +196,7 @@ const problemPages = [
     seoTitle: "VP R&D Losing Execution Control | The Push",
     seoDescription: "A problem page for VP R&D leaders who need to move from direct execution control to strategic leverage.",
     status: "published" as const,
+    humanApproved: true,
   },
   {
     title: "Engineering Managers Stuck in Firefighting",
@@ -600,7 +637,7 @@ export function getProblemPagesForSurface(pathname: string): ProblemPageRecord[]
 }
 
 export function buildProblemPagePublicationDecision(
-  record: ProblemPageRecord & Partial<PublicationSourceRecord>,
+  record: ProblemPageRecord,
   context: {
     origin: string;
     pathname?: string;
@@ -614,12 +651,17 @@ export function buildProblemPagePublicationDecision(
   },
 ) {
   const pathname = context.pathname ?? `/problems/${record.slug}`;
-  const canonicalUrl = context.canonicalUrl !== undefined ? context.canonicalUrl : new URL(pathname, context.origin).toString();
+  const canonicalUrl =
+    context.canonicalUrl !== undefined
+      ? context.canonicalUrl
+      : record.canonicalUrl !== undefined
+        ? record.canonicalUrl
+        : new URL(pathname, context.origin).toString();
 
   return buildPublicationDecision(
     {
       slug: record.slug,
-      status: record.status,
+      status: toPublicationLifecycleStatus(record.status),
       title: record.title,
       seoTitle: record.seoTitle,
       seoDescription: record.seoDescription,
@@ -646,9 +688,15 @@ export function buildProblemPagePublicationDecision(
   );
 }
 
-export async function loadProblemPage(slug: string, origin: string): Promise<ProblemPageModel | null> {
+export async function loadProblemPage(
+  slug: string,
+  origin: string,
+  options: ProblemPageLoaderOptions = {},
+): Promise<ProblemPageModel | null> {
   try {
-    const payload = await getServerPayload();
+    const payload = (options.payload ?? (await getServerPayload())) as {
+      find(args: Record<string, unknown>): Promise<{ docs: unknown[] }>;
+    };
     const result = await payload.find({
       collection: "problem-pages",
       limit: 1,
@@ -661,23 +709,16 @@ export async function loadProblemPage(slug: string, origin: string): Promise<Pro
     } as never);
 
     const record = result.docs[0] as unknown as Record<string, unknown> | undefined;
-    const normalized = record ? normalizeProblemPageRecord(record) : undefined;
-
-    if (normalized) {
-      const publicationDecision = buildProblemPagePublicationDecision(normalized, {
-        origin,
-        pathname: `/problems/${normalized.slug}`,
-      });
-
-      return {
-        record: normalized,
-        pathname: `/problems/${normalized.slug}`,
-        canonicalUrl: new URL(`/problems/${normalized.slug}`, origin).toString(),
-        publicationDecision,
-      };
+    if (record) {
+      const { buildProblemPageSurfaceEntry } = await import("./publication-surface-projection");
+      return buildProblemPageSurfaceEntry({ record, origin })?.problemPage ?? null;
     }
   } catch {
     // Fall back to the static catalog below.
+  }
+
+  if (options.allowStaticFallback === false || (options.allowStaticFallback === undefined && process.env.NODE_ENV === "production")) {
+    return null;
   }
 
   const fallback = getProblemPageCatalogEntry(slug);
@@ -686,17 +727,8 @@ export async function loadProblemPage(slug: string, origin: string): Promise<Pro
     return null;
   }
 
-  const publicationDecision = buildProblemPagePublicationDecision(fallback, {
-    origin,
-    pathname: `/problems/${fallback.slug}`,
-  });
-
-  return {
-    record: fallback,
-    pathname: `/problems/${fallback.slug}`,
-    canonicalUrl: new URL(`/problems/${fallback.slug}`, origin).toString(),
-    publicationDecision,
-  };
+  const { buildProblemPageSurfaceEntry } = await import("./publication-surface-projection");
+  return buildProblemPageSurfaceEntry({ record: fallback, origin, trustStaticApproval: true })?.problemPage ?? null;
 }
 
 function toStringArray(value: unknown): string[] {
@@ -745,7 +777,111 @@ function normalizeProblemPageLink(value: unknown): ProblemPageLink[] {
   });
 }
 
-function normalizeProblemPageRecord(record: Record<string, unknown>): ProblemPageRecord | null {
+function normalizeProblemPageStatus(status: unknown): ProblemPageStatus {
+  return status === "review" ||
+    status === "in_review" ||
+    status === "approved" ||
+    status === "published" ||
+    status === "archived"
+    ? status
+    : "draft";
+}
+
+function toPublicationLifecycleStatus(status: ProblemPageStatus): PublicationSourceRecord["status"] {
+  return status === "in_review" || status === "approved" ? "review" : status;
+}
+
+function normalizeApprovalStringArray(value: unknown): string[] | null {
+  if (!Array.isArray(value)) {
+    return null;
+  }
+
+  const normalized = value.map((item) => {
+    if (typeof item === "string") {
+      return item.trim();
+    }
+
+    if (item && typeof item === "object" && typeof (item as Record<string, unknown>).value === "string") {
+      return ((item as Record<string, unknown>).value as string).trim();
+    }
+
+    return null;
+  });
+
+  return normalized.some((item) => item === null) ? null : normalized.filter((item): item is string => Boolean(item));
+}
+
+function normalizeProblemPageHumanApproval(value: unknown): ProblemPageHumanApproval | undefined {
+  if (!value || typeof value !== "object") {
+    return undefined;
+  }
+
+  const approval = value as Record<string, unknown>;
+  const validation = approval.validationResult;
+  const scope = approval.publicationScope;
+
+  if (!validation || typeof validation !== "object" || !scope || typeof scope !== "object") {
+    return undefined;
+  }
+
+  const validationRecord = validation as Record<string, unknown>;
+  const scopeRecord = scope as Record<string, unknown>;
+  const failureCodes = normalizeApprovalStringArray(validationRecord.failureCodes);
+  const approvedCanonicalPaths = normalizeApprovalStringArray(scopeRecord.approvedCanonicalPaths);
+  const excludedDraftIds = normalizeApprovalStringArray(scopeRecord.excludedDraftIds);
+  const approvalTimestamp = typeof approval.approvalTimestamp === "string" ? approval.approvalTimestamp.trim() : "";
+  const approver = typeof approval.approver === "string" ? approval.approver.trim() : "";
+  const contentRevisionHash = typeof approval.contentRevisionHash === "string" ? approval.contentRevisionHash.trim() : "";
+  const publicationRevisionHash =
+    typeof approval.publicationRevisionHash === "string" ? approval.publicationRevisionHash.trim() : "";
+  const supportingApprovedInsightIds =
+    approval.supportingApprovedInsightIds === undefined
+      ? []
+      : normalizeApprovalStringArray(approval.supportingApprovedInsightIds);
+
+  if (
+    !approvalTimestamp ||
+    Number.isNaN(Date.parse(approvalTimestamp)) ||
+    !approver ||
+    !/^[a-f0-9]{64}$/i.test(contentRevisionHash) ||
+    (publicationRevisionHash !== "" && !/^[a-f0-9]{64}$/i.test(publicationRevisionHash)) ||
+    failureCodes === null ||
+    approvedCanonicalPaths === null ||
+    excludedDraftIds === null ||
+    supportingApprovedInsightIds === null ||
+    typeof validationRecord.deterministicHardGatesPassed !== "boolean" ||
+    typeof validationRecord.semanticQualityPassed !== "boolean" ||
+    typeof scopeRecord.deploymentAuthorized !== "boolean" ||
+    typeof scopeRecord.publicationAuthorized !== "boolean"
+  ) {
+    return undefined;
+  }
+
+  return {
+    ...approval,
+    approvalTimestamp,
+    approver,
+    contentRevisionHash,
+    publicationRevisionHash: publicationRevisionHash || undefined,
+    supportingApprovedInsightIds,
+    validationResult: {
+      deterministicHardGatesPassed: validationRecord.deterministicHardGatesPassed,
+      semanticQualityPassed: validationRecord.semanticQualityPassed,
+      failureCodes,
+    },
+    publicationScope: {
+      approvedCanonicalPaths,
+      excludedDraftIds,
+      deploymentAuthorized: scopeRecord.deploymentAuthorized,
+      publicationAuthorized: scopeRecord.publicationAuthorized,
+    },
+  };
+}
+
+export function normalizeProblemPageRecord(
+  record: Record<string, unknown>,
+  canonicalOrigin = "https://itayfoyerstein.com",
+): ProblemPageRecord | null {
   const title = typeof record.title === "string" ? record.title.trim() : "";
   const slug = typeof record.slug === "string" ? record.slug.trim() : "";
   const painStatement = typeof record.painStatement === "string" ? record.painStatement.trim() : "";
@@ -754,6 +890,7 @@ function normalizeProblemPageRecord(record: Record<string, unknown>): ProblemPag
   const seoTitle = typeof record.seoTitle === "string" ? record.seoTitle.trim() : title;
   const seoDescription = typeof record.seoDescription === "string" ? record.seoDescription.trim() : painStatement;
   const status = typeof record.status === "string" ? record.status : "draft";
+  const humanApproval = normalizeProblemPageHumanApproval(record.humanApproval);
 
   if (!title || !slug || !painStatement || !whyItFailed || !diagnosis) {
     return null;
@@ -762,7 +899,7 @@ function normalizeProblemPageRecord(record: Record<string, unknown>): ProblemPag
   const evidenceBlockRaw = record.evidenceBlock && typeof record.evidenceBlock === "object" ? (record.evidenceBlock as Record<string, unknown>) : {};
   const primaryCtaRaw = record.primaryCTA && typeof record.primaryCTA === "object" ? (record.primaryCTA as Record<string, unknown>) : {};
 
-  return {
+  const normalizedRecord: ProblemPageRecord = {
     title,
     slug,
     painStatement,
@@ -790,7 +927,27 @@ function normalizeProblemPageRecord(record: Record<string, unknown>): ProblemPag
     relatedClusters: normalizeProblemPageLink(record.relatedClusters),
     seoTitle,
     seoDescription,
-    status: status === "review" || status === "published" ? status : "draft",
+    status: normalizeProblemPageStatus(status),
+    humanApproval,
+    humanApproved: false,
+    canonicalUrl:
+      typeof record.canonicalUrl === "string" ? record.canonicalUrl.trim() : record.canonicalUrl === null ? null : undefined,
+    publishedAt: typeof record.publishedAt === "string" ? record.publishedAt : undefined,
     updatedAt: typeof record.updatedAt === "string" ? record.updatedAt : undefined,
+    indexable: typeof record.indexable === "boolean" ? record.indexable : undefined,
+    sitemapEligible: typeof record.sitemapEligible === "boolean" ? record.sitemapEligible : undefined,
+    llmsTxtEligible: typeof record.llmsTxtEligible === "boolean" ? record.llmsTxtEligible : undefined,
+    schemaEligible: typeof record.schemaEligible === "boolean" ? record.schemaEligible : undefined,
   };
+  const humanApproved = validatePublicationApproval({
+    approval: humanApproval,
+    title,
+    content: serializeProblemPageRevisionContent(normalizedRecord as unknown as Record<string, unknown>),
+    canonicalUrl: normalizedRecord.canonicalUrl,
+    canonicalOrigin,
+    slug,
+    publicationRevision: serializeProblemPagePublicationRevision(normalizedRecord as unknown as Record<string, unknown>),
+  }).valid;
+
+  return { ...normalizedRecord, humanApproved };
 }

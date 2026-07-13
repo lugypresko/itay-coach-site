@@ -18,6 +18,7 @@
     "seed:knowledge-asset-public-surface-mapping": "tsx src/seed/run-knowledge-asset-public-surface-mapping.ts",
     "seed:review-ready-public-surface-batch": "tsx src/seed/run-review-ready-public-surface-batch.ts",
     "seed:problem-pages": "tsx src/seed/run-problem-pages-seed.ts",
+    "run:production-directive": "tsx src/seed/run-production-directive.ts",
     "verify:authority-graph": "tsx src/seed/verify-minimum-authority-graph.ts",
     "verify:authority-asset-sprint": "tsx src/seed/verify-authority-asset-production-sprint.ts",
     "verify:authority-baseline": "tsx src/seed/verify-authority-baseline.ts",

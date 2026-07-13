@@ -1,3 +1,6 @@
+import { buildPublicationDecision, type PublicationDecision, type PublicationLifecycleStatus } from "../ai/governance/publication-state";
+import { serializeAuthorityPublicationRevision, validatePublicationApproval } from "../ai/governance/publication-approval";
+
 export type PublicContentSection =
   | "entities"
   | "pillars"
@@ -8,6 +11,28 @@ export type PublicContentSection =
   | "glossary";
 
 export type SchemaType = "Person" | "Organization" | "Brand" | "Article" | "FAQPage" | "HowTo" | "BreadcrumbList" | "ItemList";
+
+export type PublicContentStatus = "draft" | "review" | "in_review" | "approved" | "published" | "archived";
+
+export interface PublicContentHumanApproval {
+  approvalTimestamp: string;
+  approver: string;
+  contentRevisionHash: string;
+  publicationRevisionHash?: string;
+  supportingApprovedInsightIds: string[];
+  validationResult: {
+    deterministicHardGatesPassed: boolean;
+    semanticQualityPassed: boolean;
+    failureCodes: string[];
+  };
+  publicationScope: {
+    approvedCanonicalPaths: string[];
+    excludedDraftIds: string[];
+    deploymentAuthorized: boolean;
+    publicationAuthorized: boolean;
+  };
+  [key: string]: unknown;
+}
 
 export interface PublicContentSectionSpec {
   section: PublicContentSection;
@@ -49,11 +74,18 @@ export interface NormalizedPublicContentRecord {
   schemaType: SchemaType;
   faq: NormalizedFaq[];
   internalLinks: NormalizedInternalLink[];
-  status: string;
+  status: PublicContentStatus;
   publishedAt?: string;
   lastReviewedAt?: string;
   updatedAt?: string;
   author: string;
+  humanApproval?: PublicContentHumanApproval;
+  humanApproved?: boolean;
+  canonicalUrl?: string | null;
+  indexable?: boolean;
+  sitemapEligible?: boolean;
+  llmsTxtEligible?: boolean;
+  schemaEligible?: boolean;
 }
 
 export interface PublicAuthorityEvidenceSignals {
@@ -105,6 +137,7 @@ export interface PublicContentPageModel {
   keyTakeaways: string[];
   relatedLinks: NormalizedInternalLink[];
   trustSignals: PublicAuthorityTrustSignals;
+  publicationDecision: PublicationDecision;
 }
 
 export interface PublicContentCandidate {
@@ -128,6 +161,13 @@ export interface PublicContentCandidate {
   lastReviewedAt?: string | Date | null;
   updatedAt?: string | Date | null;
   author?: string;
+  humanApproval?: unknown;
+  humanApproved?: boolean;
+  canonicalUrl?: string | null;
+  indexable?: boolean;
+  sitemapEligible?: boolean;
+  llmsTxtEligible?: boolean;
+  schemaEligible?: boolean;
 }
 
 export const publicContentSectionSpecs: PublicContentSectionSpec[] = [
@@ -281,7 +321,7 @@ const staticPublicContentCatalog: PublicContentCandidate[] = [
     excerpt:
       "Player Trap names the moment when a strong technical leader becomes the path every decision, review, and rescue move must pass through.",
     content:
-      "Definition: Player Trap is the operating state where a capable leader's execution strength turns into a dependency problem for the team.\n\nFramework explanation: The Push uses Player Trap as the diagnostic entry point before moving the leader toward Invisible Executor, Trusted Operator, and Strategic Leader.\n\nSpecific symptoms: Decisions wait for the leader, reviews collapse upward, and the team treats one person's judgment as the operating system.\n\nUncomfortable truth: The trap exists because the leader is useful, not because the leader is weak.\n\nTarget questions: How do I stop being the bottleneck as an Engineering Manager? Coach for managers who are stuck in execution mode.\n\nCitation-worthy snippet: Player Trap is the state where execution strength becomes the team's dependency path.",
+      "Definition: Player Trap is the operating state where a capable leader's execution strength turns into a dependency problem for the team.\n\nFramework explanation: The Push uses Player Trap as the diagnostic entry point before moving the leader toward Invisible Executor, Trusted Operator, and Strategic Leader.\n\n## Manager identity shift\nThe Player Trap is framed around the shift from being useful through answers to being useful through stronger operating systems.\n\nSpecific symptoms: Decisions wait for the leader, reviews collapse upward, and the team treats one person's judgment as the operating system.\n\nUncomfortable truth: The trap exists because the leader is useful, not because the leader is weak.\n\nTarget questions: How do I stop being the bottleneck as an Engineering Manager? Coach for managers who are stuck in execution mode.\n\nCitation-worthy snippet: Player Trap is the state where execution strength becomes the team's dependency path.",
     aiSummary:
       "Player Trap is the diagnostic framework for managers and technical leaders who are still the bottleneck because the team depends on their execution, review, or judgment.",
     citationSnippet:
@@ -657,14 +697,123 @@ export function isPublishedPublicContent(candidate: Pick<PublicContentCandidate,
 }
 
 export function isRenderablePublicContent(candidate: Pick<PublicContentCandidate, "status" | "publishedAt">): boolean {
-  return candidate.status === "published" || candidate.status === "review";
+  return (
+    candidate.status === "published" ||
+    candidate.status === "review" ||
+    candidate.status === "in_review" ||
+    candidate.status === "approved"
+  );
 }
 
-export function normalizePublicContentRecord(candidate: PublicContentCandidate): NormalizedPublicContentRecord {
-  const title = typeof candidate.title === "string" ? candidate.title.trim() : "";
-  const slug = typeof candidate.slug === "string" ? candidate.slug.trim() : "";
+function normalizePublicContentStatus(status: unknown): PublicContentStatus {
+  return status === "review" ||
+    status === "in_review" ||
+    status === "approved" ||
+    status === "published" ||
+    status === "archived"
+    ? status
+    : "draft";
+}
+
+function normalizeApprovalStringArray(value: unknown): string[] | null {
+  if (!Array.isArray(value)) {
+    return null;
+  }
+
+  const normalized = value.map((item) => {
+    if (typeof item === "string") {
+      return item.trim();
+    }
+
+    if (item && typeof item === "object" && typeof (item as Record<string, unknown>).value === "string") {
+      return ((item as Record<string, unknown>).value as string).trim();
+    }
+
+    return null;
+  });
+
+  return normalized.some((item) => item === null) ? null : normalized.filter((item): item is string => Boolean(item));
+}
+
+function normalizePublicContentHumanApproval(value: unknown): PublicContentHumanApproval | undefined {
+  if (!value || typeof value !== "object") {
+    return undefined;
+  }
+
+  const approval = value as Record<string, unknown>;
+  const validation = approval.validationResult;
+  const scope = approval.publicationScope;
+
+  if (!validation || typeof validation !== "object" || !scope || typeof scope !== "object") {
+    return undefined;
+  }
+
+  const validationRecord = validation as Record<string, unknown>;
+  const scopeRecord = scope as Record<string, unknown>;
+  const failureCodes = normalizeApprovalStringArray(validationRecord.failureCodes);
+  const approvedCanonicalPaths = normalizeApprovalStringArray(scopeRecord.approvedCanonicalPaths);
+  const excludedDraftIds = normalizeApprovalStringArray(scopeRecord.excludedDraftIds);
+  const approvalTimestamp = typeof approval.approvalTimestamp === "string" ? approval.approvalTimestamp.trim() : "";
+  const approver = typeof approval.approver === "string" ? approval.approver.trim() : "";
+  const contentRevisionHash = typeof approval.contentRevisionHash === "string" ? approval.contentRevisionHash.trim() : "";
+  const publicationRevisionHash =
+    typeof approval.publicationRevisionHash === "string" ? approval.publicationRevisionHash.trim() : "";
+  const supportingApprovedInsightIds =
+    approval.supportingApprovedInsightIds === undefined
+      ? []
+      : normalizeApprovalStringArray(approval.supportingApprovedInsightIds);
+
+  if (
+    !approvalTimestamp ||
+    Number.isNaN(Date.parse(approvalTimestamp)) ||
+    !approver ||
+    !/^[a-f0-9]{64}$/i.test(contentRevisionHash) ||
+    (publicationRevisionHash !== "" && !/^[a-f0-9]{64}$/i.test(publicationRevisionHash)) ||
+    failureCodes === null ||
+    approvedCanonicalPaths === null ||
+    excludedDraftIds === null ||
+    supportingApprovedInsightIds === null ||
+    typeof validationRecord.deterministicHardGatesPassed !== "boolean" ||
+    typeof validationRecord.semanticQualityPassed !== "boolean" ||
+    typeof scopeRecord.deploymentAuthorized !== "boolean" ||
+    typeof scopeRecord.publicationAuthorized !== "boolean"
+  ) {
+    return undefined;
+  }
 
   return {
+    ...approval,
+    approvalTimestamp,
+    approver,
+    contentRevisionHash,
+    publicationRevisionHash: publicationRevisionHash || undefined,
+    supportingApprovedInsightIds,
+    validationResult: {
+      deterministicHardGatesPassed: validationRecord.deterministicHardGatesPassed,
+      semanticQualityPassed: validationRecord.semanticQualityPassed,
+      failureCodes,
+    },
+    publicationScope: {
+      approvedCanonicalPaths,
+      excludedDraftIds,
+      deploymentAuthorized: scopeRecord.deploymentAuthorized,
+      publicationAuthorized: scopeRecord.publicationAuthorized,
+    },
+  };
+}
+
+function toPublicationLifecycleStatus(status: PublicContentStatus): PublicationLifecycleStatus {
+  return status === "in_review" || status === "approved" ? "review" : status;
+}
+
+export function normalizePublicContentRecord(
+  candidate: PublicContentCandidate,
+  canonicalOrigin = "https://itayfoyerstein.com",
+): NormalizedPublicContentRecord {
+  const title = typeof candidate.title === "string" ? candidate.title.trim() : "";
+  const slug = typeof candidate.slug === "string" ? candidate.slug.trim() : "";
+  const humanApproval = normalizePublicContentHumanApproval(candidate.humanApproval);
+  const normalizedRecord: NormalizedPublicContentRecord = {
     title,
     slug,
     excerpt: typeof candidate.excerpt === "string" ? candidate.excerpt.trim() : "",
@@ -680,12 +829,31 @@ export function normalizePublicContentRecord(candidate: PublicContentCandidate):
     schemaType: candidate.schemaType ?? "Article",
     faq: toFaqEntries(candidate.faq),
     internalLinks: toInternalLinks(candidate.internalLinks),
-    status: typeof candidate.status === "string" ? candidate.status : "draft",
+    status: normalizePublicContentStatus(candidate.status),
     publishedAt: candidate.publishedAt ? new Date(candidate.publishedAt).toISOString() : undefined,
     lastReviewedAt: candidate.lastReviewedAt ? new Date(candidate.lastReviewedAt).toISOString() : undefined,
     updatedAt: candidate.updatedAt ? new Date(candidate.updatedAt).toISOString() : undefined,
     author: typeof candidate.author === "string" && candidate.author.trim() ? candidate.author.trim() : "Itay Foyerstein",
+    humanApproval,
+    humanApproved: false,
+    canonicalUrl:
+      typeof candidate.canonicalUrl === "string" ? candidate.canonicalUrl.trim() : candidate.canonicalUrl === null ? null : undefined,
+    indexable: typeof candidate.indexable === "boolean" ? candidate.indexable : undefined,
+    sitemapEligible: typeof candidate.sitemapEligible === "boolean" ? candidate.sitemapEligible : undefined,
+    llmsTxtEligible: typeof candidate.llmsTxtEligible === "boolean" ? candidate.llmsTxtEligible : undefined,
+    schemaEligible: typeof candidate.schemaEligible === "boolean" ? candidate.schemaEligible : undefined,
   };
+  const humanApproved = validatePublicationApproval({
+    approval: humanApproval,
+    title,
+    content: normalizedRecord.content,
+    canonicalUrl: normalizedRecord.canonicalUrl,
+    canonicalOrigin,
+    slug,
+    publicationRevision: serializeAuthorityPublicationRevision(normalizedRecord as unknown as Record<string, unknown>),
+  }).valid;
+
+  return { ...normalizedRecord, humanApproved };
 }
 
 export function buildPublicContentPageModel(input: {
@@ -693,17 +861,32 @@ export function buildPublicContentPageModel(input: {
   record: PublicContentCandidate;
   origin: string;
 }): PublicContentPageModel {
-  const normalizedRecord = normalizePublicContentRecord(input.record);
+  const normalizedRecord = normalizePublicContentRecord(input.record, input.origin);
   const pathname = buildPublicContentPath(input.spec.section, normalizedRecord.slug);
+  const canonicalUrl =
+    normalizedRecord.canonicalUrl !== undefined
+      ? normalizedRecord.canonicalUrl
+      : new URL(pathname, input.origin).toString();
+  const lifecycleStatus = toPublicationLifecycleStatus(normalizedRecord.status);
+  const publicationDecision = buildPublicationDecision(
+    {
+      ...normalizedRecord,
+      status: lifecycleStatus,
+      painStatement: normalizedRecord.excerpt || normalizedRecord.content,
+      canonicalUrl,
+    },
+    { origin: input.origin, pathname },
+  );
 
   return {
     spec: input.spec,
     record: normalizedRecord,
     pathname,
-    canonicalUrl: new URL(pathname, input.origin).toString(),
+    canonicalUrl: publicationDecision.canonicalUrl ?? new URL(pathname, input.origin).toString(),
     shortAnswer: normalizedRecord.aiSummary || normalizedRecord.excerpt || normalizedRecord.content,
     keyTakeaways: normalizedRecord.targetQuestions.slice(0, 4),
     relatedLinks: normalizedRecord.internalLinks.slice(0, 6),
     trustSignals: buildAuthorityTrustSignals(normalizedRecord),
+    publicationDecision,
   };
 }

@@ -4,6 +4,11 @@ import type {
   Field,
 } from "payload";
 
+import {
+  serializeAuthorityPublicationRevision,
+  validatePublicationApproval,
+} from "../../ai/governance/publication-approval";
+
 export const contentStatusOptions = [
   "draft",
   "review",
@@ -68,6 +73,8 @@ export const itayInsightStatusOptions = ["draft", "approved", "archived"] as con
 
 export const contentCollectionStatusOptions = contentStatusOptions;
 
+export const authenticatedContentWriteAccess = ({ req }: { req: { user?: unknown } }): boolean => Boolean(req.user);
+
 const arrayTextField = (name: string, required = false): Field => ({
   name,
   type: "array",
@@ -117,24 +124,134 @@ const internalLinksField: Field = {
   ],
 };
 
-const preventAgentPublishing: CollectionBeforeChangeHook = async ({ data, originalDoc, req }) => {
-  const currentStatus = typeof data?.status === "string" ? data.status : undefined;
-  const previousStatus = typeof originalDoc?.status === "string" ? originalDoc.status : undefined;
-  const role = typeof req.user === "object" && req.user !== null ? (req.user as { role?: string }).role : undefined;
-
-  if (role === "agent" && currentStatus === "published" && previousStatus !== "published") {
-    throw new Error("Agent users cannot publish content.");
-  }
-
-  if (currentStatus === "published" && !data.publishedAt) {
-    return {
-      ...data,
-      publishedAt: new Date().toISOString(),
-    };
-  }
-
-  return data;
+export const humanApprovalField: Field = {
+  name: "humanApproval",
+  type: "group",
+  fields: [
+    { name: "approvalTimestamp", type: "date" },
+    { name: "approver", type: "text" },
+    { name: "approverLimitation", type: "textarea" },
+    { name: "contentRevisionHash", type: "text" },
+    { name: "publicationRevisionHash", type: "text" },
+    { name: "supportingApprovedInsightIds", type: "json" },
+    {
+      name: "validationResult",
+      type: "group",
+      fields: [
+        { name: "deterministicHardGatesPassed", type: "checkbox" },
+        { name: "semanticQualityPassed", type: "checkbox" },
+        { name: "failureCodes", type: "json" },
+      ],
+    },
+    {
+      name: "publicationScope",
+      type: "group",
+      fields: [
+        { name: "approvedCanonicalPaths", type: "json" },
+        { name: "excludedDraftIds", type: "json" },
+        { name: "deploymentAuthorized", type: "checkbox" },
+        { name: "publicationAuthorized", type: "checkbox" },
+      ],
+    },
+  ],
 };
+
+type PublicationGovernanceHookOptions = {
+  approvalBoundFields: readonly string[];
+  getReaderFacingContent: (record: Record<string, unknown>) => string;
+  getPublicationRevision: (record: Record<string, unknown>) => string;
+};
+
+export function createPublicationGovernanceHook({
+  approvalBoundFields,
+  getReaderFacingContent,
+  getPublicationRevision,
+}: PublicationGovernanceHookOptions): CollectionBeforeChangeHook {
+  return async ({ data, originalDoc, req }) => {
+    const currentRecord = { ...(originalDoc ?? {}), ...(data ?? {}) } as Record<string, unknown>;
+    const currentStatus = typeof currentRecord.status === "string" ? currentRecord.status : undefined;
+    const previousStatus = typeof originalDoc?.status === "string" ? originalDoc.status : undefined;
+    const role = typeof req.user === "object" && req.user !== null ? (req.user as { role?: string }).role : undefined;
+    const isPublishing = currentStatus === "published" && previousStatus !== "published";
+    const isLeavingPublished = previousStatus === "published" && currentStatus !== "published";
+    const isApproving = currentStatus === "approved" && previousStatus !== "approved";
+    const humanApprovalMutated = Object.prototype.hasOwnProperty.call(data, "humanApproval");
+    const boundContentChanged =
+      previousStatus === "published" &&
+      approvalBoundFields.some(
+        (field) => Object.prototype.hasOwnProperty.call(data, field) && data[field] !== originalDoc?.[field],
+      );
+
+    const isAuthenticatedHuman = role === "admin" || role === "editor" || role === "human";
+    const approvalGovernedChange =
+      isPublishing || isLeavingPublished || isApproving || humanApprovalMutated || boundContentChanged;
+
+    if (role === "agent" && isPublishing) {
+      throw new Error("Agent users cannot publish content.");
+    }
+
+    if (role === "agent" && boundContentChanged) {
+      throw new Error("Agent users cannot publish or change approval-bound published content.");
+    }
+
+    if (approvalGovernedChange && !isAuthenticatedHuman) {
+      throw new Error("An authenticated human role is required for approval-governed changes.");
+    }
+
+    if (isPublishing || boundContentChanged) {
+      const approval = validatePublicationApproval({
+        approval: currentRecord.humanApproval,
+        title: currentRecord.title,
+        content: getReaderFacingContent(currentRecord),
+        canonicalUrl: currentRecord.canonicalUrl,
+        slug: currentRecord.slug,
+        publicationRevision: getPublicationRevision(currentRecord),
+      });
+
+      if (!approval.valid) {
+        throw new Error(
+          isPublishing
+            ? "A valid human approval is required before publication."
+            : "A valid human approval is required before changing approved published content.",
+        );
+      }
+    }
+
+    if (isPublishing && !currentRecord.publishedAt) {
+      return {
+        ...data,
+        publishedAt: new Date().toISOString(),
+      };
+    }
+
+    return data;
+  };
+}
+
+export const enforcePublicationGovernance = createPublicationGovernanceHook({
+  approvalBoundFields: [
+    "slug",
+    "title",
+    "excerpt",
+    "content",
+    "aiSummary",
+    "citationSnippet",
+    "evidenceUrls",
+    "targetQuestions",
+    "targetRecommendationQueries",
+    "entityTags",
+    "seoTitle",
+    "seoDescription",
+    "schemaType",
+    "faq",
+    "internalLinks",
+    "author",
+    "canonicalUrl",
+    "humanApproval",
+  ],
+  getReaderFacingContent: (record) => (typeof record.content === "string" ? record.content : ""),
+  getPublicationRevision: serializeAuthorityPublicationRevision,
+});
 
 type AuthorityContentCollectionArgs = {
   slug: string;
@@ -162,13 +279,13 @@ export function buildAuthorityContentCollection({
       useAsTitle: "title",
     },
     access: {
-      create: () => true,
+      create: authenticatedContentWriteAccess,
       read: () => true,
-      update: () => true,
+      update: authenticatedContentWriteAccess,
       delete: () => false,
     },
     hooks: {
-      beforeChange: [preventAgentPublishing],
+      beforeChange: [enforcePublicationGovernance],
     },
     timestamps: true,
     fields: [
@@ -184,6 +301,8 @@ export function buildAuthorityContentCollection({
       entityTagArrayField("entityTags"),
       { name: "seoTitle", type: "text", required: true },
       { name: "seoDescription", type: "textarea", required: true },
+      { name: "canonicalUrl", type: "text" },
+      humanApprovalField,
       {
         name: "schemaType",
         type: "select",

@@ -112,24 +112,29 @@ export function buildBreadcrumbJsonLd(page: PublicContentPageModel) {
 }
 
 export function buildPageJsonLd(page: PublicContentPageModel) {
-  const schemaType = page.record.schemaType;
-  const pieces: Array<Record<string, unknown>> = [buildBreadcrumbJsonLd(page)];
+  if (!page.publicationDecision.schemaEligible || !page.publicationDecision.canonicalUrl) {
+    return [];
+  }
+
+  const schemaPage = { ...page, canonicalUrl: page.publicationDecision.canonicalUrl };
+  const schemaType = schemaPage.record.schemaType;
+  const pieces: Array<Record<string, unknown>> = [buildBreadcrumbJsonLd(schemaPage)];
 
   if (schemaType === "Person") {
-    pieces.unshift(buildPersonJsonLd(page));
+    pieces.unshift(buildPersonJsonLd(schemaPage));
   } else if (schemaType === "Organization" || schemaType === "Brand") {
-    pieces.unshift(buildOrganizationJsonLd(page));
+    pieces.unshift(buildOrganizationJsonLd(schemaPage));
   } else if (schemaType === "FAQPage") {
-    const faqJsonLd = buildFaqJsonLd(page);
+    const faqJsonLd = buildFaqJsonLd(schemaPage);
     if (faqJsonLd) {
       pieces.unshift(faqJsonLd);
     }
-    pieces.unshift(buildArticleJsonLd(page));
+    pieces.unshift(buildArticleJsonLd(schemaPage));
   } else if (schemaType === "HowTo") {
-    pieces.unshift(buildHowToJsonLd(page));
-    pieces.unshift(buildArticleJsonLd(page));
+    pieces.unshift(buildHowToJsonLd(schemaPage));
+    pieces.unshift(buildArticleJsonLd(schemaPage));
   } else {
-    pieces.unshift(buildArticleJsonLd(page));
+    pieces.unshift(buildArticleJsonLd(schemaPage));
   }
 
   return pieces;

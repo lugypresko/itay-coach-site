@@ -15,6 +15,7 @@ import {
   getPublicContentSectionSpec,
   getStaticPublicContentCatalogEntry,
 } from "../../src/lib/public-content";
+import { toReaderFacingPublicContentPage } from "../../src/lib/reader-facing-publication";
 import { buildPageJsonLd } from "../../src/lib/public-schema";
 import { getAuthorityProofBlocks } from "../../src/lib/evidence-mapping";
 import {
@@ -79,7 +80,7 @@ describe("canonical authority sprint", () => {
     }
   });
 
-  it("renders public target pages with one primary CTA, evidence, related links, and breadcrumb schema", () => {
+  it("renders public target pages with reader-facing content, one CTA, related links, and breadcrumb schema", () => {
     for (const pathname of ["/pillars/tech-leadership-coaching", "/frameworks/player-trap", "/frameworks/invisible-executor"]) {
       const [, section, slug] = pathname.split("/");
       const spec = getPublicContentSectionSpec(section);
@@ -92,13 +93,17 @@ describe("canonical authority sprint", () => {
         record: record!,
         origin: "https://itayfoyerstein.com",
       });
-      const html = renderToStaticMarkup(createElement(PublicContentPage, { page }));
+      const publicPage = toReaderFacingPublicContentPage(page);
+      const html = renderToStaticMarkup(createElement(PublicContentPage, { page: publicPage }));
       const jsonLd = buildPageJsonLd(page);
 
       expect(page.canonicalUrl, pathname).toBe(`https://itayfoyerstein.com${pathname}`);
-      expect(html, pathname).toContain("Evidence block");
+      expect(html, pathname).not.toContain("Evidence block");
+      expect(html, pathname).not.toContain("Content status");
+      expect(html, pathname).not.toContain("Not reviewed yet");
+      expect(html, pathname).not.toContain("docs/seed-content");
       expect(html, pathname).toContain("Related pages");
-      expect(html.match(/class="primary-link"/g)?.length ?? 0, pathname).toBe(2);
+      expect(html.match(/class="primary-link"/g)?.length ?? 0, pathname).toBe(1);
       expect(html, pathname).not.toContain("secondary-link");
       expect(jsonLd.some((piece) => piece["@type"] === "BreadcrumbList"), pathname).toBe(true);
       expect(getAuthorityProofBlocks(pathname).length, pathname).toBeGreaterThan(0);

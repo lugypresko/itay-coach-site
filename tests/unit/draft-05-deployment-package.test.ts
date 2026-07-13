@@ -1,5 +1,11 @@
 import { describe, expect, it, vi } from "vitest";
 
+vi.mock("../../src/lib/payload", () => ({
+  getServerPayload: async () => {
+    throw new Error("Payload unavailable in deployment-package unit test");
+  },
+}));
+
 import sitemap from "../../src/app/sitemap";
 import { GET as getLlmsTxt } from "../../src/app/llms.txt/route";
 import { buildProblemPagePublicationDecision, getProblemPageCatalogEntry } from "../../src/lib/problem-pages";
@@ -16,8 +22,9 @@ const canonicalPath = "/clusters/coach-for-engineering-managers-stuck-as-the-bot
 
 describe("Draft 05 authorized deployment package", () => {
   it("keeps the human-approved non-published asset consistent across sitemap and llms.txt", async () => {
-    vi.stubEnv("NODE_ENV", "production");
-    const sitemapPathnames = sitemap().map((entry) => new URL(entry.url).pathname);
+    vi.stubEnv("NODE_ENV", "test");
+    vi.stubEnv("SITE_URL", "https://itayfoyerstein.com");
+    const sitemapPathnames = (await sitemap()).map((entry) => new URL(entry.url).pathname);
     const llmsBody = await (await getLlmsTxt()).text();
 
     expect(sitemapPathnames.includes(canonicalPath)).toBe(llmsBody.includes(`https://itayfoyerstein.com${canonicalPath}`));
