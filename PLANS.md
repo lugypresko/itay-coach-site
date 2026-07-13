@@ -3721,6 +3721,7 @@ Verification notes:
 - `npm test -- tests/unit/page-brief-compliance.test.ts tests/unit/content-quality-gate.test.ts tests/unit/content-draft-workflow.test.ts tests/unit/production-directive.test.ts tests/unit/review-ready-public-surface-batch.test.ts`: passed, 5 files / 24 tests.
 - `npm test`: passed, 36 files / 153 tests.
 - `npm run typecheck`: passed.
+- `npm run build`: passed; existing lint warnings and the existing Payload/Vercel media-storage warning remain.
 - `git diff --check`: passed with existing LF-to-CRLF warnings only.
 - Decision appended as `DEC-20260712-07` in the append-only `decisions.md`.
 - No deployment, publication, commit, or push was performed.
@@ -3762,3 +3763,180 @@ Verification notes:
 - `npm run typecheck`: passed.
 - `git diff --check`: passed with LF-to-CRLF warnings only.
 - Deployment, publication, commit, push, and ProductionDirective execution were not performed.
+
+### Task 070 - Authorized Draft 05 Deployment Attempt and Rollback
+
+State: `completed`
+Lane: `deployment`, `publication`, `production-observation`
+Owner: Codex
+
+Goal:
+Execute the authorized Task 069 deployment package, publish only Draft 05 after hash verification, run the production recheck, and rollback on any stop condition.
+
+Execution result:
+- Committed the reviewed scope as `c5ae82b` and pushed `codex/push-code-to-github`.
+- Recorded Vercel deployments `dpl_BBgJgh7CUyN7SZyrpg6YT5WFK6no` (Git-triggered) and `dpl_2M9bH9Xh7K8GsY83oigSdsmJX5RA` (explicit production deploy).
+- Synchronized only Payload `cluster-pages` record `id=6` for `authority-draft-approved-insight-player-trap-05`.
+- Recomputed the live Payload revision hash before publication; it matched `f95ab45388c077de87efc8228e9788bf4fa9cca1a146a7ec02233e5c1b818211`.
+- Transitioned only Draft 05 from `review` to `published`; Drafts 06/07 were not changed or published.
+- Production recheck failed: the Draft 05 route was HTTP 200, index/follow, self-canonical, and contained its CTA, but the published route was absent from sitemap and `llms.txt`; the CTO Problem Page still emitted `noindex, nofollow`.
+- Triggered rollback immediately. Draft 05 returned to Payload status `review`.
+- Direct deep rollback was unavailable on the current Vercel plan after two same-commit deployments; promoted prior stable deployment `dpl_Eu2LeCHGpb74XbmEME6B1He2iJiE` instead.
+- Verified `https://itayfoyerstein.com` resolves to the prior stable deployment after rollback.
+- Measurement window was not opened because production verification did not pass.
+- No ProductionDirective or new content cycle was started.
+
+Final state:
+- Implementation commit/push: completed
+- Production rollout: rolled back
+- Draft 05 human approval: preserved
+- Draft 05 publication: not completed; Payload status `review`
+- Publication State Integrity: unresolved in production
+- Blocking next action: repair shared live publication-state consumption across route metadata, sitemap, and `llms.txt`, and verify the live CTO human-approval/status mapping before any redeployment.
+
+### Task 071 - Shared Publication Projection Repair
+
+State: `completed`
+Lane: `publication-integrity`
+Owner: Codex
+
+Goal:
+Restore the invariant `one normalized Payload record -> one publication decision -> all rendering and discovery surfaces` after the Task 070 production rollback.
+
+Scope:
+- Add regression coverage proving page metadata, sitemap, and `llms.txt` consume the same normalized publication projection.
+- Preserve governance-critical Problem Page fields during Payload normalization.
+- Replace static/hard-coded publication eligibility decisions with the shared projection at the existing publication boundary.
+- Verify Draft 05, the CTO Problem Page, drafts, sitemap, and `llms.txt` locally before any redeployment.
+
+Out of scope:
+- No new content, URL, ProductionDirective, `DATA_CONTRACTS`/operating contract, deployment, publication, commit, or push. The explicitly approved Payload schema addition is limited to publication source facts.
+
+Implementation result:
+- Added a revision-bound Payload human-approval/canonical source envelope and an additive nullable migration; the migration was generated but not applied.
+- Removed implicit approval from `published` status and made lifecycle/approval/canonical/schema requirements dominate surface overrides.
+- Added shared per-record projection builders consumed by page loaders, sitemap, and `llms.txt`.
+- Production governed reads fail closed without Payload; static fallback is explicit local/test behavior only.
+- Added bounded pagination, parallel reads, duplicate-path rejection, canonical-null handling, and revision-bound published-edit protection.
+- Preserved the Task 069 Draft 05 SHA-256: `f95ab45388c077de87efc8228e9788bf4fa9cca1a146a7ec02233e5c1b818211`.
+
+Verification notes:
+- Final full local suite: `43` files / `258` tests passed.
+- Focused normalization review: `68/68` passed.
+- Payload governance review: `27/27` passed.
+- Projection final review: approved after the test-only source bypass was removed.
+- `npm run typecheck`: passed.
+- `npm run build`: passed; existing lint warnings and the existing Payload/Vercel media-storage warning remain.
+- `git diff --check`: passed with existing LF-to-CRLF warnings only.
+- Migration execution, deployment, publication, commit, and push were not performed.
+
+Pending human action:
+- Review and authorize the additive Payload migration and deployment in a separate task.
+- After deployment, run a Production Observation and open a measurement window only if publication integrity passes.
+
+Final review correction:
+- Completed: publication writes require authentication; approval-governed actions and every transition into or out of `published` require an authenticated `admin`, `editor`, or `human` role.
+- Completed: `publicationRevisionHash` binds all publication-affecting generic authority and Problem Page fields, while the existing Draft 05 content hash remains unchanged.
+- Final independent review: approved. Focused lifecycle review passed `65/65` tests.
+- Existing Draft 05 content approval remains preserved, but deployment/publication stays blocked until a human explicitly approves the complete publication fingerprint.
+- Existing published governed records require an evidence-backed rollout inventory; no approval or fingerprint may be backfilled automatically.
+
+Project discovery Definition of Done:
+- One canonical authority asset returns HTTP 200.
+- Robots metadata is `index, follow`.
+- Canonical metadata is valid and approved.
+- The URL appears in sitemap and `llms.txt`.
+- Google Search Console recognizes the URL.
+- The URL progresses from discovered/crawled to indexed.
+- The indexed URL receives impressions for relevant queries, even if clicks remain zero.
+- Primary milestone: `One correctly published canonical authority asset indexed and receiving relevant impressions.`
+- This milestone cannot be satisfied by local verification or deployment alone; it requires a dated post-deployment observation and GSC evidence.
+
+### Task 072 - Reader-Facing Publication Boundary
+
+State: `completed`
+Lane: `publication-integrity`, `frontend-governance`
+Owner: Codex
+
+Goal:
+Ensure public authority pages render only reader-facing content while CMS, review, evidence-source, approval, and audit metadata remain outside the public frontend.
+
+Scope:
+- Add regression coverage for Draft 05 and shared authority/problem rendering boundaries.
+- Remove public rendering of lifecycle status, review timestamps, internal source paths, approval state, confidence labels, and other operational metadata.
+- Prevent administrative FAQ entries from rendering as reader-facing FAQ.
+- Preserve the underlying CMS/audit records and publication-state decision inputs.
+- Keep current non-public assets non-indexable and outside discovery surfaces.
+
+Out of scope:
+- No copy rewrite, new content, new URL, ProductionDirective, deployment, publication, commit, or push.
+
+Implementation result:
+- Added explicit reader-facing DTOs for generic authority pages and Problem Pages.
+- Route components now project full CMS/publication models before passing data to public renderers.
+- Removed public rendering of status, review timestamps, source paths, evidence/debug blocks, confidence and approval labels, trust-signal diagnostics, system FAQ prompts, and editorial link rationale.
+- Preserved the complete Payload, validation, approval, evidence, and publication-decision models for CMS/admin/audit use.
+- Kept review assets governed by the existing publication decision; Draft 05 remains non-public and `noindex, nofollow` until a separately authorized publication transition.
+- FAQ schema now fails closed at the reader-facing projection until the CMS distinguishes explicitly reader-facing FAQs from system/editorial prompts.
+
+Verification notes:
+- Regression test proved the pre-fix boundary failed because reader-facing projectors did not exist.
+- Reader-facing boundary suite: `2/2` passed.
+- Focused publication/frontend suite: `4` files / `12` tests passed.
+- Full suite: `44` files / `260` tests passed.
+- `npm run typecheck`: passed.
+- `npm run build`: passed; existing migration/seed lint warnings and the existing Payload media-storage warning remain.
+- No copy, content status, Payload data, migration state, deployment, publication, commit, or push was changed.
+
+### Task 073 - Immutable Reader-Facing Artifact Publication Boundary
+
+State: `completed`
+Lane: `publication-integrity`, `content-governance`, `frontend-governance`
+Owner: Codex
+
+Goal:
+Make one immutable `ReaderFacingPageArtifact` the exact object bound to validation, semantic review, human approval, publication state, hashing, and every public discovery surface.
+
+Approved scope:
+- Add the approved logical artifact, validation, semantic-review, human-approval, provenance, and publication-record contracts.
+- Persist versioned reader-facing artifacts in Payload through an additive schema/migration.
+- Make production routes fail closed unless an approved artifact, matching approval, matching publication record, and published decision agree on the same hash.
+- Remove unsafe legacy records from production routes and discovery surfaces without deleting history or backfilling approval.
+- Generate one replacement Draft 05 artifact for authenticated/local human preview only.
+
+Out of scope:
+- No automatic approval, publication, deployment, commit, push, legacy approval transfer, or additional content batch.
+
+Implementation result:
+- Added the strict public-only `ReaderFacingPageArtifact` contract, canonical serialization, SHA-256 hash, safe internal-path validation, and immutable approved public fields.
+- Added strict runtime contracts for deterministic validation, internal-language validation, semantic review, human approval, provenance, and publication records; every record is bound to artifact ID, version, and hash.
+- Added a private `reader-facing-page-artifacts` Payload collection and additive migration `20260713_091235_task073_reader_facing_page_artifacts`; the migration was generated but not executed.
+- Added a fail-closed shared artifact projection used by generic authority routes, Problem Page routes, metadata, structured data, sitemap, and `llms.txt`.
+- Removed runtime discovery eligibility from synthetic fixed/legacy records. Payload unavailability now produces an empty governed projection.
+- Quarantined legacy PageBrief and authority-launch rendering behind 404; history remains in repository/Payload inputs and no legacy approval was transferred.
+- Added one replacement Draft 05 artifact version for local human preview only. It uses the existing canonical path and PageBrief and introduces no new URL.
+
+Draft 05 replacement state:
+- artifact ID: `authority-draft-approved-insight-player-trap-05`
+- artifact version: `2`
+- artifact hash: `f06d5cf04e27f07b38246445b031bf4637c4def6884bef3feabe8ce054571687`
+- lifecycle: `draft`
+- deterministic validation: passed
+- internal-language validation: passed
+- semantic review: passed and hash-bound
+- human approval: absent
+- publication record: absent
+- public/sitemap/`llms.txt`: excluded
+- local-only preview: `/preview/artifacts/authority-draft-approved-insight-player-trap-05`
+
+Verification notes:
+- Full suite: `49` files / `301` tests passed.
+- `npm run typecheck`: passed.
+- `npm run build`: passed; only existing migration lint warnings and the existing Vercel media-storage warning remain.
+- `git diff --check`: passed with line-ending warnings only.
+- Local preview returned HTTP 200 and used the same artifact renderer as the future public projection.
+
+Pending human action:
+- Review Draft 05 artifact version 2 and approve or request revisions against hash `f06d5cf04e27f07b38246445b031bf4637c4def6884bef3feabe8ce054571687`.
+- Separately authorize migration execution, deployment, and publication record creation only after artifact approval.
+- No prior approval is valid for the new artifact hash; no content is currently authorized for publication by Task 073.

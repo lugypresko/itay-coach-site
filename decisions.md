@@ -142,3 +142,51 @@ This file is the project’s single append-only decision record. New decisions a
 - Rejected alternatives: Implement a broad heuristic content-quality engine; allow metadata or average scoring to compensate for malformed links, CTA, evidence, or canonical ownership; treat an Evidence heading or repeated claim as proof; retain a generic success reason.
 - Consequences: The exact rejected Task 066 draft remains a regression baseline. Drafts without a complete semantic evaluation cannot become `review_ready`; failed dimensions must explain the problem and recommended revision. Human approval remains mandatory before publication.
 - Supersedes: The broad deterministic-quality scope proposed in the original Task 067 plan and any interpretation of `DEC-20260712-06` that assigns subjective editorial judgment to deterministic code.
+
+## DEC-20260713-01 — Publication approval facts are persisted; publication surfaces are derived
+
+- Date: `2026-07-13`
+- Status: `approved`
+- Scope: Payload authority collections, Problem Pages, publication approval, canonical ownership, page metadata, sitemap, `llms.txt`, and publication-integrity validation.
+- Decision: Persist the minimum governance-critical source facts in Payload: lifecycle status, publication timestamp, canonical URL, and a revision-bound human-approval envelope. Derive indexability, sitemap eligibility, `llms.txt` eligibility, canonical output, and schema eligibility through the existing deterministic `PublicationDecision`. Page loaders, sitemap, and `llms.txt` must use the same per-record publication projection builders. Governed production assets fail closed when Payload is unavailable; repository fallback content is local/test evidence only.
+- Context: `TASK_070` in `PLANS.md`; `TASK_071_SHARED_PUBLICATION_PROJECTION_REPAIR.md`; `docs/plans/2026-07-13-shared-publication-projection-repair.md`; `TASK_069_DRAFT_05_HUMAN_APPROVAL_AND_DEPLOYMENT_PACKAGE.md`.
+- Rationale: Task 070 proved that live Payload rendering, a static sitemap registry, and hard-coded/catalog-derived `llms.txt` routes could disagree. Persisting derived surface flags would create more mutable copies. A revision-bound approval envelope plus one deterministic projection preserves human approval and canonical ownership while preventing surface drift.
+- Rejected alternatives: Continue using static registries as production publication truth; infer human approval from `status=published`; persist independently mutable index/sitemap/`llms.txt` booleans; allow production static fallback; introduce a router, orchestration framework, or new persisted execution contract.
+- Consequences: Publishing and approval-bound edits require a matching human-approved content hash, canonical origin/path, supporting Approved Insights, passed validation, and explicit deployment/publication scope. Agent users cannot publish or mutate approval-bound fields on published records. The additive Payload migration must be reviewed and run by an authorized human deployment; until then production behavior is unchanged.
+- Supersedes: Any implementation interpretation of the shared publication decision that allows separate production read models or treats `published` status alone as proof of human approval.
+
+## DEC-20260713-02 — Discovery requires verified indexing and relevant impressions
+
+- Date: `2026-07-13`
+- Status: `approved`
+- Scope: Authority Engine Definition of Done, publication verification, Google Search Console observation, measurement windows, and discovery milestones.
+- Decision: An authority asset is considered discovered only when the same canonical URL returns HTTP 200, emits `index, follow`, has a valid canonical, appears in sitemap and `llms.txt`, is recognized by Google Search Console, progresses from discovered/crawled to indexed, and receives impressions for relevant queries. The primary milestone is: one correctly published canonical authority asset indexed and receiving relevant impressions.
+- Context: User-defined Definition of Done on `2026-07-13`; `TASK_071_SHARED_PUBLICATION_PROJECTION_REPAIR.md`; `TASK_070` in `PLANS.md`; `TASK_058_PRODUCTION_OBSERVATION.md`.
+- Rationale: Local correctness and production publication integrity establish eligibility for discovery, but they do not prove that Google indexed the asset or that relevant demand surfaces it. Relevant impressions are the first observable evidence that the authority asset participates in discovery.
+- Rejected alternatives: Declare discovery after deployment; declare discovery from HTTP/indexability alone; treat sitemap or `llms.txt` inclusion as indexing proof; treat irrelevant impressions, traffic volume, or clicks as the initial milestone.
+- Consequences: Local Task 071 completion cannot satisfy the project Definition of Done. After an authorized deployment and publication, the measurement window remains open until GSC recognizes and indexes the canonical URL and relevant impressions are observed, or a dated wait/block decision is recorded. Evidence must identify the URL, query relevance, observation timestamp, environment, source freshness, confidence, and limitations.
+- Supersedes: Any earlier shorthand that equates a correctly deployed/indexable production page with achieved discovery.
+
+## DEC-20260713-03 — Public frontend receives reader-facing content only
+
+- Date: `2026-07-13`
+- Status: `approved`
+- Scope: Public authority-page rendering, Problem Page rendering, CMS records, review metadata, evidence sources, approval state, and audit data.
+- Decision: Public page components receive an explicit reader-facing projection only. Lifecycle status, review timestamps, human-approval envelopes, publication decisions, internal evidence paths, confidence and approval labels, editorial rationale, system FAQ prompts, and other operational metadata remain in Payload, admin, validation, or audit layers and are not passed to public page components.
+- Context: User governance correction on `2026-07-13`; Task 072 in `PLANS.md`; `src/lib/reader-facing-publication.ts`; `tests/unit/reader-facing-publication-boundary.test.ts`.
+- Rationale: Task 071 unified publication eligibility but the renderer still consumed the complete CMS model, causing valid reader-facing prose to appear inside an Authority Engine debug view and exposing internal governance metadata publicly.
+- Rejected alternatives: Hide individual debug labels with CSS; maintain a denylist only in JSX; rewrite the article while keeping the full CMS model at the frontend boundary; delete governance metadata from Payload.
+- Consequences: Public renderers use narrow DTOs and fail closed for system FAQ schema. CMS and audit data remain available internally. Reader-facing copy can evolve independently, but no operational field may re-enter the public renderer without an explicit public contract and regression coverage.
+- Supersedes: The prior rendering pattern in which `PublicContentPage` and `ProblemPage` accepted complete normalized CMS/publication models.
+
+## DEC-20260713-04 — One immutable reader-facing artifact owns publication identity
+
+- Date: `2026-07-13`
+- Status: `approved`
+- Scope: PageBrief output, public content generation, deterministic validation, internal-language validation, semantic review, human approval, hashing, Payload publication records, rendering, metadata, structured data, sitemap, and `llms.txt`.
+- Decision: Introduce a versioned `ReaderFacingPageArtifact` containing only an explicit allowlist of public fields. Canonical serialization produces an immutable artifact hash from those public fields only. Deterministic validation, internal-language validation, semantic review, and human approval must each reference the exact artifact hash. A public route exists only when an approved artifact, matching human approval, matching publication record, and `PublicationDecision=published` agree on artifact ID, version, and hash. All public surfaces derive from that same artifact.
+- Context: User-approved Authority Engine publication-boundary design on `2026-07-13`; Task 073 in `PLANS.md`; `DEC-20260713-01`; `DEC-20260713-03`.
+- Rationale: Removing operational metadata at render time prevents leakage but does not prove that the rendered page is the object a human reviewed. Publication identity must belong to one immutable public artifact shared by review, approval, hashing, publication, and rendering.
+- Rejected alternatives: Bind approval to a broad CMS record; construct the public object only during frontend rendering; use an adapter between workflow output and a late DTO; transfer legacy approval automatically; leave drafts accessible with `noindex` as the default production behavior.
+- Consequences: Draft/review artifacts return 404 on production routes unless exposed through a separate authenticated or local preview. Legacy records retain history but have no public existence until a new artifact passes review and approval. Any public-field change creates a new artifact version/hash and invalidates prior validation, semantic review, approval, and publication linkage. Draft 05 replacement returns to human review and remains non-public.
+- Supersedes: Any interpretation of `DEC-20260713-03` in which a late frontend DTO is sufficient to establish approval or publication identity.
