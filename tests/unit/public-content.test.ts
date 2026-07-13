@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   buildPublicContentPageModel,
   getPublicContentSectionSpec,
+  getStaticPublicContentCatalogEntry,
   isPublishedPublicContent,
   normalizePublicContentRecord,
 } from "../../src/lib/public-content";
@@ -183,6 +184,15 @@ describe("public content helpers", () => {
     expect(page.trustSignals.relatedAuthority.relatedConcepts).toContain("Player Trap");
     expect(page.trustSignals.entityContext.relatedEntities).toContain("The Push");
     expect(page.trustSignals.review.status).toBe("review");
+  });
+
+  it("keeps the Player Trap framework centered on the manager identity shift", () => {
+    const record = getStaticPublicContentCatalogEntry("frameworks", "player-trap");
+
+    expect(record).toBeTruthy();
+    expect(record?.content).toContain("## Manager identity shift");
+    expect(record?.content).toContain("being useful through answers");
+    expect(record?.content).toContain("stronger operating systems");
   });
 
   it("maps proof-backed trust blocks to the target customer-path routes", () => {

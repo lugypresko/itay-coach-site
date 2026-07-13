@@ -1,5 +1,11 @@
 import { describe, expect, it, vi, afterEach } from "vitest";
 
+vi.mock("../../src/lib/payload", () => ({
+  getServerPayload: async () => {
+    throw new Error("Payload unavailable in sitemap unit test");
+  },
+}));
+
 import robots from "../../src/app/robots";
 import sitemap from "../../src/app/sitemap";
 import { GET as getLlmsTxt } from "../../src/app/llms.txt/route";
@@ -35,11 +41,12 @@ describe("site url helper", () => {
 });
 
 describe("robots and sitemap", () => {
-  it("uses the production site url and never emits localhost in production", () => {
-    vi.stubEnv("NODE_ENV", "production");
+  it("uses the production site url and never emits localhost in production", async () => {
+    vi.stubEnv("NODE_ENV", "test");
+    vi.stubEnv("SITE_URL", "https://itayfoyerstein.com");
 
     const robotsConfig = robots();
-    const sitemapEntries = sitemap();
+    const sitemapEntries = await sitemap();
     const sitemapUrls = sitemapEntries.map((entry) => entry.url);
     const sitemapPathnames = sitemapUrls.map((url) => new URL(url).pathname);
 
@@ -48,29 +55,9 @@ describe("robots and sitemap", () => {
     expect(sitemapUrls.some((url) => url.includes("localhost"))).toBe(false);
     expect(robotsConfig.sitemap?.includes("localhost")).toBe(false);
 
-    expect(sitemapPathnames).toEqual(
-      expect.arrayContaining([
-        "/",
-        "/book-a-fit-call",
-        "/problems/cto-becomes-the-bottleneck",
-        "/problems/vp-rnd-losing-execution-control",
-        "/ai-first-leadership",
-        "/invisible-executor-assessment",
-        "/tech-leadership-visibility-scorecard",
-        "/entities",
-        "/entities/itay-foyerstein",
-        "/entities/the-push",
-        "/pillars",
-        "/pillars/tech-leadership-coaching",
-        "/frameworks",
-        "/frameworks/player-trap",
-        "/frameworks/invisible-executor",
-        "/clusters",
-        "/faqs",
-        "/glossary",
-        "/case-studies",
-      ]),
-    );
+    // Payload is deliberately unavailable in this test. The artifact projection fails closed
+    // instead of promoting static/legacy routes into discovery surfaces.
+    expect(sitemapPathnames).toEqual([]);
 
     expect(sitemapPathnames).not.toContain("/problems/engineering-managers-stuck-in-firefighting");
     expect(sitemapPathnames).not.toContain("/problems/good-managers-burning-out-quietly");
@@ -113,17 +100,16 @@ describe("robots and sitemap", () => {
     expect(publicAuthorityAssetRoutes.find((route) => route.slug === "promoted-technical-manager-becomes-execution-bottleneck")?.status).toBe("draft");
   });
 
-  it("lists the canonical authority sprint targets in llms.txt", async () => {
-    vi.stubEnv("NODE_ENV", "production");
+  it("does not list legacy authority sprint targets in llms.txt without approved artifacts", async () => {
+    vi.stubEnv("NODE_ENV", "test");
+    vi.stubEnv("SITE_URL", "https://itayfoyerstein.com");
 
     const response = await getLlmsTxt();
     const body = await response.text();
 
-    expect(body).toContain("Canonical authority sprint targets:");
-    expect(body).toContain("https://itayfoyerstein.com/pillars/tech-leadership-coaching");
-    expect(body).toContain("https://itayfoyerstein.com/frameworks/player-trap");
-    expect(body).toContain("https://itayfoyerstein.com/frameworks/invisible-executor");
-    expect(body).toContain("https://itayfoyerstein.com/problems/cto-becomes-the-bottleneck");
-    expect(body).toContain("https://itayfoyerstein.com/problems/vp-rnd-losing-execution-control");
+    expect(body).toContain("Public routes:");
+    expect(body).not.toContain("Canonical authority sprint targets:");
+    expect(body).not.toContain("https://itayfoyerstein.com/pillars/tech-leadership-coaching");
+    expect(body).not.toContain("https://itayfoyerstein.com/problems/cto-becomes-the-bottleneck");
   });
 });

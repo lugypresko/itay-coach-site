@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { createHash } from "node:crypto";
 
+import { createContentRevisionHash } from "../../src/ai/governance/content-revision-hash";
 import { getPublicAuthorityAssetPathnames } from "../../src/lib/public-authority-routes";
 import { reviewReadyPublicSurfaceBatchAssets } from "../../src/seed/review-ready-public-surface-batch";
 
@@ -39,12 +39,11 @@ describe("review-ready public surface batch", () => {
     );
     const approval = approvedAsset?.humanApproval;
     const canonicalPath = "/clusters/coach-for-engineering-managers-stuck-as-the-bottleneck";
-    const revision = JSON.stringify({
-      title: approvedAsset?.payloadData.title,
+    const revisionHash = createContentRevisionHash({
+      title: approvedAsset?.payloadData.title ?? "",
       canonicalPath,
-      content: approvedAsset?.payloadData.content.replace(/\r\n/g, "\n").trim(),
+      content: approvedAsset?.payloadData.content ?? "",
     });
-    const revisionHash = createHash("sha256").update(revision, "utf8").digest("hex");
 
     expect(approval).toMatchObject({
       draftId: "authority-draft-approved-insight-player-trap-05",
