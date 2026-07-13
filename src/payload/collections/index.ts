@@ -19,6 +19,7 @@ export * from "./FAQs";
 export * from "./GlossaryTerms";
 export * from "./LeadMagnets";
 export * from "./ProblemPages";
+export * from "./ReaderFacingPageArtifacts";
 export * from "./ResearchSources";
 export * from "./InternalLinks";
 export * from "./ContentJobs";
