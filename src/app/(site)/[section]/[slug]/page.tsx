@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import { PublicContentPage } from "@/components/public-content-page";
-import { loadPublishedPublicContent } from "@/lib/public-content-loader";
+import { ReaderFacingArtifactPage } from "@/components/reader-facing-artifact-page";
 import { getPublicContentSectionSpec } from "@/lib/public-content";
+import { loadReaderFacingArtifactPublicProjection } from "@/lib/reader-facing-artifact-public-projection";
 import { getSiteUrl } from "@/lib/site-url";
 
 type ContentPageProps = {
@@ -25,25 +25,21 @@ export async function generateMetadata({ params }: ContentPageProps): Promise<Me
     return {};
   }
 
-  const page = await loadPublishedPublicContent(spec.section, slug, getOrigin());
-  if (!page) {
+  const pathname = `/${spec.section}/${slug}`;
+  const artifact = (await loadReaderFacingArtifactPublicProjection()).byPathname.get(pathname);
+  if (!artifact) {
     return {};
   }
 
   return {
-    title: page.record.seoTitle || page.record.title,
-    description: page.record.seoDescription || page.record.excerpt,
-    alternates: {
-      canonical: page.canonicalUrl,
-    },
-    robots: {
-      index: true,
-      follow: true,
-    },
+    title: artifact.seo.title,
+    description: artifact.seo.description,
+    alternates: { canonical: new URL(artifact.canonicalPath, getOrigin()).toString() },
+    robots: { index: true, follow: true },
     openGraph: {
-      title: page.record.seoTitle || page.record.title,
-      description: page.record.seoDescription || page.record.excerpt,
-      url: page.canonicalUrl,
+      title: artifact.seo.title,
+      description: artifact.seo.description,
+      url: new URL(artifact.canonicalPath, getOrigin()).toString(),
       type: "article",
     },
   };
@@ -57,11 +53,11 @@ export default async function ContentPage({ params }: ContentPageProps) {
     notFound();
   }
 
-  const page = await loadPublishedPublicContent(spec.section, slug, getOrigin());
+  const artifact = (await loadReaderFacingArtifactPublicProjection()).byPathname.get(`/${spec.section}/${slug}`);
 
-  if (!page) {
+  if (!artifact) {
     notFound();
   }
 
-  return <PublicContentPage page={page} />;
+  return <ReaderFacingArtifactPage artifact={artifact} />;
 }

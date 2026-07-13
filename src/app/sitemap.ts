@@ -1,12 +1,13 @@
 import type { MetadataRoute } from "next";
 
-import { getPublicAuthoritySitemapPathnames } from "@/lib/public-authority-routes";
+import { loadReaderFacingArtifactPublicProjection } from "@/lib/reader-facing-artifact-public-projection";
 import { getSiteUrl } from "@/lib/site-url";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const origin = getSiteUrl();
+  const projection = await loadReaderFacingArtifactPublicProjection();
 
-  return getPublicAuthoritySitemapPathnames().map((pathname) => ({
+  return projection.sitemapPathnames.map((pathname) => ({
     url: new URL(pathname, origin).toString(),
     lastModified: new Date(),
   }));

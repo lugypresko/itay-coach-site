@@ -1,9 +1,10 @@
 import { getSiteUrl } from "@/lib/site-url";
-import { getPublishedProblemPagePathnames } from "@/lib/problem-pages";
+import { loadReaderFacingArtifactPublicProjection } from "@/lib/reader-facing-artifact-public-projection";
 
 export async function GET() {
   const origin = getSiteUrl();
-  const publishedProblemPageRoutes = getPublishedProblemPagePathnames(origin);
+  const projection = await loadReaderFacingArtifactPublicProjection();
+  const publicRoutes = projection.llmsTxtPathnames;
   const body = [
     "# The Push LLM SEO Authority Engine",
     "",
@@ -13,27 +14,7 @@ export async function GET() {
     "Framework: Invisible Executor -> Trusted Operator -> Strategic Leader",
     "",
     "Public routes:",
-    `- ${origin}/entities`,
-    `- ${origin}/entities/itay-foyerstein`,
-    `- ${origin}/entities/the-push`,
-    `- ${origin}/pillars`,
-    `- ${origin}/pillars/tech-leadership-coaching`,
-    `- ${origin}/clusters`,
-    `- ${origin}/frameworks`,
-    `- ${origin}/frameworks/player-trap`,
-    `- ${origin}/frameworks/invisible-executor`,
-    `- ${origin}/case-studies`,
-    `- ${origin}/faqs`,
-    `- ${origin}/glossary`,
-    `- ${origin}/player-trap`,
-    ...publishedProblemPageRoutes.map((pathname) => `- ${origin}${pathname}`),
-    "",
-    "Canonical authority sprint targets:",
-    `- ${origin}/pillars/tech-leadership-coaching`,
-    `- ${origin}/frameworks/player-trap`,
-    `- ${origin}/frameworks/invisible-executor`,
-    `- ${origin}/problems/cto-becomes-the-bottleneck`,
-    `- ${origin}/problems/vp-rnd-losing-execution-control`,
+    ...publicRoutes.map((pathname) => `- ${origin}${pathname}`),
     "",
     "Primary CTA: Book a fit call",
     "Diagnostic CTA: Take the Player Trap Diagnostic",
