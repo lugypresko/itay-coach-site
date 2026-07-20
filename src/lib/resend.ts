@@ -18,6 +18,10 @@ function normalizeRecipients(to: string | string[]): string[] {
 
 export async function sendResendEmail(input: ResendEmailInput): Promise<ResendEmailResult> {
   const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey && process.env.NODE_ENV === "production") {
+    throw new Error("RESEND_API_KEY is required in production.");
+  }
+
   const dryRun = !apiKey || process.env.RESEND_DRY_RUN === "true";
 
   if (dryRun) {

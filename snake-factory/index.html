@@ -1,0 +1,102 @@
+﻿<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Snake Factory</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="backdrop"></div>
+    <main class="shell">
+      <section class="hero">
+        <div>
+          <p class="eyebrow">Local OMP demo</p>
+          <h1>Snake Factory</h1>
+          <p class="lede">A deterministic Snake build with live monitoring, structured agent logs, and JSONL telemetry you can inspect locally.</p>
+        </div>
+        <div class="hero-metrics">
+          <div class="metric">
+            <span>Seed</span>
+            <strong id="seed-display">1357</strong>
+          </div>
+          <div class="metric">
+            <span>Status</span>
+            <strong id="status-chip" data-status="ready">READY</strong>
+          </div>
+          <div class="metric">
+            <span>Score</span>
+            <strong id="score">0</strong>
+          </div>
+          <div class="metric">
+            <span>Tick</span>
+            <strong id="tick">0</strong>
+          </div>
+          <div class="metric">
+            <span>Length</span>
+            <strong id="length">3</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="layout">
+        <div class="stage">
+          <div class="board-frame">
+            <canvas id="board" width="480" height="480" aria-label="Snake board"></canvas>
+          </div>
+
+          <div class="controls">
+            <label>
+              Seed
+              <input id="seed" type="number" min="1" step="1" value="1357" />
+            </label>
+            <label>
+              Speed
+              <select id="speed">
+                <option value="280">Slow</option>
+                <option value="240" selected>Normal</option>
+                <option value="180">Fast</option>
+              </select>
+            </label>
+            <div class="button-row">
+              <button id="start" type="button">Start</button>
+              <button id="pause" type="button" disabled>Pause</button>
+              <button id="restart" type="button">Restart</button>
+            </div>
+          </div>
+
+          <div class="status-strip">
+            <div>
+              <span>Run health</span>
+              <strong id="health-text">Ready to start.</strong>
+            </div>
+            <div>
+              <span>Telemetry</span>
+              <strong id="log-meta">0 events captured</strong>
+            </div>
+          </div>
+        </div>
+
+        <aside class="sidebar">
+          <section class="panel">
+            <div class="panel-head">
+              <h2>Agents</h2>
+              <p>Each agent emits explicit, structured telemetry.</p>
+            </div>
+            <div id="agent-grid" class="agent-grid"></div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-head">
+              <h2>Live log</h2>
+              <p>Most recent agent events from the local JSONL stream.</p>
+            </div>
+            <ol id="log-list" class="log-list"></ol>
+          </section>
+        </aside>
+      </section>
+    </main>
+
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

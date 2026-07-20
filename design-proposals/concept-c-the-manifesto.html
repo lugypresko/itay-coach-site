@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Concept C — The Manifesto · Itay Foyerstein</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Instrument+Serif:ital@0;1&family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --lime:#D8F000;
+    --char:#191913;
+    --cream:#F6F3E9;
+    --white:#FFFFFF;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--cream);color:var(--char);
+    font-family:'Archivo',sans-serif;font-size:17px;line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    padding-bottom:76px; /* room for sticky bar */
+  }
+  .anton{font-family:'Anton',sans-serif;font-weight:400;}
+  .serif-i{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;}
+
+  /* sticker */
+  .sticker{
+    display:inline-block;background:var(--char);color:var(--lime);
+    font-family:'Archivo',sans-serif;font-weight:700;font-size:12px;
+    letter-spacing:.14em;text-transform:uppercase;
+    padding:8px 16px;transform:rotate(-2deg);
+    box-shadow:4px 4px 0 rgba(25,25,19,.18);
+  }
+  .sticker.lime{background:var(--lime);color:var(--char);}
+
+  /* header */
+  header{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:22px 5vw;
+  }
+  .brand{font-family:'Anton',sans-serif;font-size:22px;letter-spacing:.02em;text-transform:uppercase;}
+  .brand span{color:transparent;-webkit-text-stroke:1.2px var(--char);}
+  .book{
+    font-weight:700;font-size:13px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--cream);background:var(--char);text-decoration:none;padding:12px 22px;
+    transition:all .15s;
+  }
+  .book:hover{background:#000;transform:translateY(-2px);}
+
+  /* hero */
+  .hero{padding:60px 5vw 90px;position:relative;overflow:hidden;}
+  .hero .sticker{margin-bottom:28px;}
+  h1{
+    font-family:'Anton',sans-serif;text-transform:uppercase;
+    font-size:clamp(52px,9.5vw,150px);line-height:.95;letter-spacing:.005em;
+  }
+  h1 .outline{color:transparent;-webkit-text-stroke:2px var(--char);}
+  h1 .block{
+    background:var(--char);color:var(--lime);padding:0 18px;display:inline-block;
+    transform:rotate(-1deg);
+  }
+  .hero-sub{
+    margin-top:44px;max-width:56ch;font-size:20px;line-height:1.5;font-weight:500;
+  }
+  .hero-sub em{font-family:'Instrument Serif',serif;font-size:22px;}
+  .hero-cta{margin-top:40px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;}
+  .btn-big{
+    font-family:'Anton',sans-serif;text-transform:uppercase;font-size:19px;letter-spacing:.03em;
+    background:var(--lime);color:var(--char);text-decoration:none;padding:20px 38px;
+    box-shadow:6px 6px 0 var(--char);transition:all .12s;
+  }
+  .btn-big:hover{transform:translate(3px,3px);box-shadow:2px 2px 0 var(--char);}
+  .link-plain{font-weight:700;font-size:14px;letter-spacing:.08em;text-transform:uppercase;color:var(--char);}
+
+  /* torn divider */
+  .torn{
+    height:26px;background:var(--char);
+    clip-path:polygon(0 55%,3% 20%,7% 60%,12% 25%,17% 65%,22% 30%,27% 70%,32% 25%,38% 60%,43% 20%,48% 65%,53% 30%,58% 68%,63% 22%,68% 58%,73% 28%,78% 62%,83% 20%,88% 60%,93% 30%,97% 58%,100% 25%,100% 100%,0 100%);
+  }
+  .torn.flip{transform:scaleY(-1);}
+
+  /* dark section: the trap */
+  .dark{background:var(--char);color:var(--cream);padding:100px 5vw;}
+  .dark h2{
+    font-family:'Anton',sans-serif;text-transform:uppercase;
+    font-size:clamp(38px,6vw,88px);line-height:1;margin-bottom:60px;max-width:16ch;
+  }
+  .dark h2 .lime{color:var(--lime);}
+  .checks{display:flex;flex-direction:column;gap:0;border-top:2px solid var(--cream);}
+  .check{
+    display:flex;align-items:center;gap:26px;padding:26px 6px;
+    border-bottom:2px solid var(--cream);font-size:clamp(18px,2.4vw,26px);font-weight:600;
+    transition:background .15s,padding-left .2s;cursor:pointer;
+  }
+  .check:hover{background:rgba(216,240,0,.08);padding-left:20px;}
+  .box{
+    min-width:30px;height:30px;border:2px solid var(--lime);display:grid;place-items:center;
+    font-family:'Anton',sans-serif;color:var(--lime);font-size:18px;
+  }
+  .trap-score{margin-top:54px;font-size:19px;line-height:1.6;max-width:56ch;color:#C9C7B8;}
+  .trap-score b{color:var(--lime);}
+
+  /* manifesto posters */
+  .posters{padding:100px 5vw;background:var(--lime);}
+  .poster{
+    font-family:'Anton',sans-serif;text-transform:uppercase;
+    font-size:clamp(34px,5.5vw,76px);line-height:1.02;color:var(--char);
+    padding:34px 0;border-bottom:3px solid var(--char);
+  }
+  .poster:last-child{border-bottom:none;}
+  .poster .neg{color:transparent;-webkit-text-stroke:2px var(--char);}
+
+  /* method cards */
+  .method{padding:100px 5vw;background:var(--cream);}
+  .method h2{
+    font-family:'Anton',sans-serif;text-transform:uppercase;font-size:clamp(36px,5vw,72px);
+    line-height:1;margin-bottom:14px;
+  }
+  .method .sub{font-family:'Instrument Serif',serif;font-style:italic;font-size:24px;margin-bottom:56px;color:#44443A;}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:18px;}
+  .card{
+    background:var(--white);border:2px solid var(--char);padding:28px 24px;
+    box-shadow:7px 7px 0 var(--char);transition:transform .15s, box-shadow .15s;
+  }
+  .card:hover{transform:translate(-3px,-3px);box-shadow:11px 11px 0 var(--char);}
+  .card .num{font-family:'Anton',sans-serif;font-size:44px;color:var(--lime);-webkit-text-stroke:1.5px var(--char);}
+  .card h3{font-family:'Anton',sans-serif;text-transform:uppercase;font-size:20px;margin:16px 0 10px;line-height:1.15;}
+  .card p{font-size:14.5px;line-height:1.55;color:#44443A;}
+
+  /* proof strip */
+  .proof{
+    background:var(--char);color:var(--cream);padding:44px 5vw;
+    display:flex;flex-wrap:wrap;gap:38px;align-items:center;justify-content:space-between;
+  }
+  .proof .item{font-family:'Anton',sans-serif;font-size:26px;text-transform:uppercase;}
+  .proof .item small{display:block;font-family:'Archivo',sans-serif;font-size:12px;font-weight:600;letter-spacing:.14em;color:#8B8A7A;margin-top:6px;}
+  .proof .lime{color:var(--lime);}
+
+  /* final */
+  .final{padding:110px 5vw;text-align:center;background:var(--cream);}
+  .final h2{
+    font-family:'Anton',sans-serif;text-transform:uppercase;
+    font-size:clamp(44px,7.5vw,110px);line-height:.95;
+  }
+  .final h2 .block{background:var(--char);color:var(--lime);padding:0 22px;display:inline-block;transform:rotate(-1deg);}
+  .final p{margin:34px auto 0;max-width:52ch;font-size:19px;color:#44443A;}
+  .final .btn-big{margin-top:44px;display:inline-block;font-size:23px;}
+
+  /* sticky bar */
+  .sticky{
+    position:fixed;left:0;right:0;bottom:0;z-index:40;
+    background:var(--char);color:var(--cream);
+    display:flex;align-items:center;justify-content:space-between;gap:16px;
+    padding:14px 5vw;box-shadow:0 -6px 24px rgba(0,0,0,.25);
+  }
+  .sticky .msg{font-size:14px;font-weight:600;letter-spacing:.02em;}
+  .sticky .msg span{color:var(--lime);}
+  .sticky .go{
+    font-family:'Anton',sans-serif;text-transform:uppercase;font-size:16px;letter-spacing:.04em;
+    background:var(--lime);color:var(--char);text-decoration:none;padding:12px 26px;white-space:nowrap;
+    transition:background .15s;
+  }
+  .sticky .go:hover{background:#fff;}
+
+  @media(max-width:760px){
+    .sticky .msg{display:none;}
+    .sticky{justify-content:center;}
+    .proof{flex-direction:column;align-items:flex-start;gap:22px;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">THE<span>PUSH</span></div>
+  <a class="book" href="#book">Book a Fit Call</a>
+</header>
+
+<div class="hero">
+  <span class="sticker">For Engineering Managers · CTOs · VP R&amp;D</span>
+  <h1>
+    You’re the best<br>
+    <span class="outline">player</span> on the team.<br>
+    <span class="block">That’s the trap.</span>
+  </h1>
+  <p class="hero-sub">
+    You were promoted for solving hard problems fast. Now the organization needs you to
+    <em>build a team that decides without you</em> — and nobody handed you the manual.
+    <strong>The Push is that manual, applied.</strong>
+  </p>
+  <div class="hero-cta">
+    <a class="btn-big" href="#book">Take the Player Trap Test</a>
+    <a class="link-plain" href="#method">Or read the methodology ↓</a>
+  </div>
+</div>
+
+<div class="torn"></div>
+
+<section class="dark">
+  <span class="sticker lime">The Player Trap Test — 60 seconds</span>
+  <h2>Five signs <span class="lime">you became the system</span></h2>
+  <div class="checks">
+    <div class="check"><span class="box">1</span>Decisions you delegated still come back to you for “a quick look.”</div>
+    <div class="check"><span class="box">2</span>Your team is capable — but waits for approval before acting.</div>
+    <div class="check"><span class="box">3</span>You’re in every escalation, and your strategic work slips every week.</div>
+    <div class="check"><span class="box">4</span>AI made everyone faster — and made <em>your</em> review load heavier.</div>
+    <div class="check"><span class="box">5</span>If you took two weeks off, execution would quietly stall.</div>
+  </div>
+  <p class="trap-score">
+    Checked 3 or more? <b>You’re not failing as a leader — you’re succeeding in the wrong role.</b>
+    Hard work does not scale. The operating model has to change.
+  </p>
+</section>
+
+<section class="posters">
+  <div class="poster">Hard work <span class="neg">does not scale.</span></div>
+  <div class="poster">Speed is cheap. <span class="neg">Direction is everything.</span></div>
+  <div class="poster">Stop rescuing. <span class="neg">Start building capacity.</span></div>
+  <div class="poster">A strategy that changes nothing <span class="neg">is a document.</span></div>
+</section>
+
+<section class="method" id="method">
+  <h2>The Push Methodology</h2>
+  <p class="sub">Five stages, inside your real work — not in a workshop.</p>
+  <div class="cards">
+    <div class="card"><div class="num">01</div><h3>Diagnose the Dependency</h3><p>Find where you became the default route for progress. Make it visible, without blame.</p></div>
+    <div class="card"><div class="num">02</div><h3>Expose the Invisible Executor</h3><p>Map the hidden work no role description contains — so it can finally be transferred.</p></div>
+    <div class="card"><div class="num">03</div><h3>Clarify Decision Rights</h3><p>What the team decides alone, what needs consultation, what truly escalates.</p></div>
+    <div class="card"><div class="num">04</div><h3>Transfer Judgment</h3><p>Principles, trade-offs, and feedback loops — not just more tasks pushed down.</p></div>
+    <div class="card"><div class="num">05</div><h3>Build Strategic Capacity</h3><p>Reclaim time for direction, org design, and the decisions only you should make.</p></div>
+  </div>
+</section>
+
+<div class="proof">
+  <div class="item"><span class="lime">25+</span> years<small>In tech, product &amp; delivery</small></div>
+  <div class="item">ServiceNow<small>Teams worked with</small></div>
+  <div class="item">Amdocs · EY<small>Teams worked with</small></div>
+  <div class="item">888 · Claroty<small>Teams worked with</small></div>
+  <div class="item"><span class="lime">50–250</span><small>Typical org size (B2B SaaS)</small></div>
+</div>
+
+<section class="final" id="book">
+  <h2>Stop being<br><span class="block">the system.</span></h2>
+  <p>A fit call is a short working conversation: where the bottleneck is, what keeps returning to you, and whether The Push is the right intervention. No pitch.</p>
+  <a class="btn-big" href="#">Book a Fit Call →</a>
+</section>
+
+<div class="sticky">
+  <div class="msg">Still carrying the team? <span>The first step is a 20-minute fit call.</span></div>
+  <a class="go" href="#book">Book a Fit Call</a>
+</div>
+
+</body>
+</html>

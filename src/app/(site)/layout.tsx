@@ -9,6 +9,7 @@ import "../../styles/base.css";
 import "../../styles/typography.css";
 import "../../styles/layout.css";
 import "../../styles/components.css";
+import "../../styles/campaign-concepts.css";
 
 type SiteLayoutProps = {
   children: ReactNode;
@@ -22,10 +23,6 @@ export const metadata: Metadata = {
   description:
     "Tech Leadership Coach for Engineering Managers, Tech Leads, R&D Managers, and VP Engineering candidates. The Push is the Leadership OS for Tech Leaders.",
   metadataBase: new URL(getSiteUrl()),
-  robots: {
-    index: false,
-    follow: false,
-  },
 };
 
 export default function SiteLayout({ children }: SiteLayoutProps) {

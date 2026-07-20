@@ -1,6 +1,8 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 
+import { LeadQualificationForm } from "@/components/lead-qualification-form";
+
 const engagementPaths = [
   {
     title: "One leader",
@@ -49,6 +51,8 @@ export default function BookAFitCallPage() {
           </Link>
         </div>
       </header>
+
+      <LeadQualificationForm />
 
       <section className="content-grid">
         <article className="content-panel content-panel-wide">

@@ -151,6 +151,14 @@ export default async function PlayerTrapReportPage({ params }: PlayerTrapReportP
             </Link>
           </div>
 
+          <div className="content-actions">
+            <Link className="secondary-link" href="/book-a-fit-call?source=assessment">
+              Review your result with Itay
+            </Link>
+            <Link className="secondary-link" href="/for-organizations?source=assessment">
+              Discuss the findings for your organization
+            </Link>
+          </div>
           <div className="report-meta">
             <p className="authority-summary">{labels.reportRequested}: {formatDate(record.reportRequestedAt)}</p>
             <p className="authority-summary">{labels.leadEmail}: {record.email}</p>

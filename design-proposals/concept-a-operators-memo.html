@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Concept A — The Operator's Memo · Itay Foyerstein</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,500;0,6..72,700;0,6..72,900;1,6..72,400;1,6..72,700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F4F0E6;
+    --ink:#1C1B17;
+    --ink-soft:#4B4A42;
+    --rule:#D8D2C0;
+    --lime:#D8F000;
+    --lime-dim:#EAF79A;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Newsreader',Georgia,serif;
+    font-weight:400;
+    -webkit-font-smoothing:antialiased;
+  }
+  .mono{font-family:'IBM Plex Mono',monospace;}
+
+  /* ---------- top bar ---------- */
+  header{
+    display:flex;justify-content:space-between;align-items:baseline;
+    padding:28px 5vw;border-bottom:1px solid var(--ink);
+  }
+  .brand{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;}
+  nav a{
+    font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--ink);text-decoration:none;margin-left:34px;
+    border-bottom:1px solid transparent;padding-bottom:2px;transition:border-color .2s;
+  }
+  nav a:hover{border-bottom:1px solid var(--ink);}
+  nav a.cta{background:var(--ink);color:var(--paper);padding:8px 16px;border-bottom:none;}
+  nav a.cta:hover{background:#000;}
+
+  /* ---------- hero ---------- */
+  .hero{padding:110px 5vw 90px;border-bottom:1px solid var(--ink);position:relative;}
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.22em;
+    text-transform:uppercase;color:var(--ink-soft);margin-bottom:44px;
+    display:flex;align-items:center;gap:14px;
+  }
+  .eyebrow::before{content:"";width:44px;height:1px;background:var(--ink);}
+  h1{
+    font-size:clamp(46px,7.2vw,112px);
+    line-height:.98;font-weight:900;letter-spacing:-.02em;
+    max-width:16ch;
+  }
+  h1 em{font-style:italic;font-weight:700;}
+  h1 .hl{
+    background:linear-gradient(transparent 62%, var(--lime) 62%, var(--lime) 94%, transparent 94%);
+  }
+  .hero-sub{
+    margin-top:52px;max-width:52ch;font-size:20px;line-height:1.55;color:var(--ink-soft);
+  }
+  .hero-sub strong{color:var(--ink);font-weight:700;}
+  .hero-actions{margin-top:48px;display:flex;gap:22px;align-items:center;flex-wrap:wrap;}
+  .btn{
+    font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:.1em;text-transform:uppercase;
+    text-decoration:none;padding:16px 30px;font-weight:600;transition:transform .15s, background .2s;
+  }
+  .btn-primary{background:var(--ink);color:var(--lime);}
+  .btn-primary:hover{background:#000;transform:translateY(-2px);}
+  .btn-ghost{color:var(--ink);border:1px solid var(--ink);}
+  .btn-ghost:hover{background:var(--ink);color:var(--paper);}
+  .hero-index{
+    position:absolute;top:110px;right:5vw;text-align:right;
+    font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;
+    color:var(--ink-soft);text-transform:uppercase;line-height:2.1;
+  }
+
+  /* ---------- marquee ---------- */
+  .strip{
+    border-bottom:1px solid var(--ink);overflow:hidden;white-space:nowrap;
+    padding:14px 0;background:var(--lime);
+  }
+  .strip-inner{display:inline-block;animation:scroll 26s linear infinite;}
+  .strip span{
+    font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;
+    letter-spacing:.18em;text-transform:uppercase;margin:0 28px;color:var(--ink);
+  }
+  @keyframes scroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+
+  /* ---------- sections ---------- */
+  section{padding:90px 5vw;border-bottom:1px solid var(--rule);}
+  .sec-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:60px;}
+  .sec-num{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.2em;color:var(--ink-soft);}
+  h2{font-size:clamp(34px,4.4vw,64px);font-weight:900;line-height:1.02;letter-spacing:-.015em;max-width:20ch;}
+  h2 em{font-style:italic;font-weight:700;}
+
+  /* problem list */
+  .problems{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--ink);}
+  .problem{
+    padding:36px 34px;border-right:1px solid var(--ink);border-bottom:1px solid var(--ink);
+    transition:background .2s;position:relative;
+  }
+  .problem:nth-child(2n){border-right:none;}
+  .problem:nth-last-child(-n+2){border-bottom:none;}
+  .problem:hover{background:var(--lime-dim);}
+  .problem .idx{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.16em;color:var(--ink-soft);display:block;margin-bottom:16px;}
+  .problem p{font-size:19px;line-height:1.45;font-weight:500;}
+
+  /* methodology */
+  .stages{display:flex;flex-direction:column;}
+  .stage{
+    display:grid;grid-template-columns:110px 1fr 1.2fr;gap:40px;align-items:baseline;
+    padding:38px 0;border-bottom:1px solid var(--rule);
+  }
+  .stage:last-child{border-bottom:none;}
+  .stage .n{
+    font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;letter-spacing:.1em;color:var(--ink-soft);
+  }
+  .stage h3{font-size:30px;font-weight:900;letter-spacing:-.01em;}
+  .stage h3 em{font-style:italic;font-weight:700;}
+  .stage p{font-size:17px;line-height:1.55;color:var(--ink-soft);}
+
+  /* shift table */
+  .shift{border:1px solid var(--ink);}
+  .shift-row{
+    display:grid;grid-template-columns:1fr 60px 1fr;align-items:center;
+    padding:22px 34px;border-bottom:1px solid var(--ink);
+  }
+  .shift-row:last-child{border-bottom:none;}
+  .shift-row.header{
+    background:var(--ink);color:var(--paper);
+    font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+  }
+  .shift-row .from{font-size:20px;font-weight:500;color:var(--ink-soft);}
+  .shift-row .to{font-size:20px;font-weight:900;}
+  .shift-row .arrow{text-align:center;font-size:22px;}
+  .shift-row:hover .to{background:var(--lime);}
+
+  /* about */
+  .about-grid{display:grid;grid-template-columns:1fr 1fr;gap:70px;align-items:start;}
+  .about-grid .lede{font-size:26px;line-height:1.4;font-weight:500;}
+  .about-grid .lede em{font-style:italic;}
+  .about-facts{font-family:'IBM Plex Mono',monospace;font-size:14px;line-height:2.2;color:var(--ink-soft);}
+  .about-facts b{color:var(--ink);font-weight:600;}
+  .logos{margin-top:34px;font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft);}
+  .logos span{margin-right:26px;border-bottom:1px solid var(--rule);padding-bottom:3px;}
+
+  /* final cta */
+  .final{background:var(--ink);color:var(--paper);border-bottom:none;padding:110px 5vw;text-align:left;}
+  .final .eyebrow{color:var(--lime);}
+  .final .eyebrow::before{background:var(--lime);}
+  .final h2{color:var(--paper);max-width:18ch;}
+  .final h2 .hl{background:linear-gradient(transparent 62%, rgba(216,240,0,.28) 62%, rgba(216,240,0,.28) 94%, transparent 94%);}
+  .final p{margin-top:34px;max-width:50ch;font-size:19px;line-height:1.55;color:#B9B7AA;}
+  .final .btn-primary{background:var(--lime);color:var(--ink);margin-top:46px;display:inline-block;}
+  .final .btn-primary:hover{background:#fff;}
+
+  footer{
+    display:flex;justify-content:space-between;padding:26px 5vw;
+    font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--ink-soft);
+  }
+
+  @media(max-width:860px){
+    .problems{grid-template-columns:1fr;}
+    .problem{border-right:none;}
+    .stage{grid-template-columns:1fr;gap:10px;}
+    .about-grid{grid-template-columns:1fr;gap:40px;}
+    .hero-index{display:none;}
+    nav a:not(.cta){display:none;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">Itay Foyerstein</div>
+  <nav>
+    <a href="#problem">The Problem</a>
+    <a href="#method">The Push</a>
+    <a href="#about">About</a>
+    <a href="#fit" class="cta">Book a Fit Call</a>
+  </nav>
+</header>
+
+<div class="hero">
+  <div class="eyebrow">For technical leaders who became the bottleneck</div>
+  <h1>You are still the person everyone <em>trusts most</em>. That is exactly why the organization <span class="hl">cannot scale</span>.</h1>
+  <p class="hero-sub">
+    Your calendar is full of escalation meetings. Your Slack is full of “quick questions.”
+    Your roadmap still changes every week. <strong>The problem is not your team.</strong>
+    The problem is an operating model that routes every decision through you.
+  </p>
+  <div class="hero-actions">
+    <a href="#fit" class="btn btn-primary">Book a Fit Call</a>
+    <a href="#method" class="btn btn-ghost">Read The Methodology</a>
+  </div>
+  <div class="hero-index">
+    Doc. 001<br>Operating Memo<br>Est. Reading 4 min
+  </div>
+</div>
+
+<div class="strip">
+  <div class="strip-inner">
+    <span>Hard work does not scale</span><span>·</span><span>Speed is cheap, direction is everything</span><span>·</span><span>Stop being the system</span><span>·</span><span>Strategy is only real when execution changes</span><span>·</span>
+    <span>Hard work does not scale</span><span>·</span><span>Speed is cheap, direction is everything</span><span>·</span><span>Stop being the system</span><span>·</span><span>Strategy is only real when execution changes</span><span>·</span>
+  </div>
+</div>
+
+<section id="problem">
+  <div class="sec-head">
+    <h2>Does this <em>sound familiar?</em></h2>
+    <div class="sec-num">01 / DIAGNOSIS</div>
+  </div>
+  <div class="problems">
+    <div class="problem"><span class="idx">CASE / A</span><p>Decisions keep returning to you — even after you delegated them.</p></div>
+    <div class="problem"><span class="idx">CASE / B</span><p>Your team waits for approval instead of taking ownership.</p></div>
+    <div class="problem"><span class="idx">CASE / C</span><p>AI increased output — and somehow increased your review load too.</p></div>
+    <div class="problem"><span class="idx">CASE / D</span><p>Strategic work is permanently postponed by this week’s escalation.</p></div>
+  </div>
+</section>
+
+<section id="method">
+  <div class="sec-head">
+    <h2>The Push: <em>stop being the system.</em></h2>
+    <div class="sec-num">02 / METHODOLOGY</div>
+  </div>
+  <div class="stages">
+    <div class="stage">
+      <div class="n">STAGE 01</div>
+      <h3>Diagnose the <em>dependency</em></h3>
+      <p>Identify where you have become the default route for progress — the Player Trap. Make the dependency visible, without blame.</p>
+    </div>
+    <div class="stage">
+      <div class="n">STAGE 02</div>
+      <h3>Expose the <em>Invisible Executor</em></h3>
+      <p>Map the hidden work that appears in no role description: connecting, reviewing, translating, calming. Invisible work cannot be transferred until it is explicit.</p>
+    </div>
+    <div class="stage">
+      <div class="n">STAGE 03</div>
+      <h3>Clarify <em>decision rights</em></h3>
+      <p>Separate what the team decides alone, what requires consultation, what escalates, and what needs principles instead of supervision.</p>
+    </div>
+    <div class="stage">
+      <div class="n">STAGE 04</div>
+      <h3>Transfer <em>judgment</em>, not tasks</h3>
+      <p>Build decision capacity through clear principles, visible trade-offs, and feedback on judgment. Move from being the answer to improving how answers are produced.</p>
+    </div>
+    <div class="stage">
+      <div class="n">STAGE 05</div>
+      <h3>Build <em>strategic capacity</em></h3>
+      <p>Reclaim time for direction, organization design, architecture, and the decisions only you should make. Not more delegation — a stronger operating system.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head">
+    <h2>The <em>shift</em></h2>
+    <div class="sec-num">03 / OUTCOME</div>
+  </div>
+  <div class="shift">
+    <div class="shift-row header"><div>FROM</div><div></div><div>TO</div></div>
+    <div class="shift-row"><div class="from">Answering every question</div><div class="arrow">→</div><div class="to">Improving how decisions are made</div></div>
+    <div class="shift-row"><div class="from">Solving every problem</div><div class="arrow">→</div><div class="to">Building problem-solving capacity</div></div>
+    <div class="shift-row"><div class="from">Reviewing everything</div><div class="arrow">→</div><div class="to">Defining where judgment is required</div></div>
+    <div class="shift-row"><div class="from">Carrying execution</div><div class="arrow">→</div><div class="to">Designing the system</div></div>
+    <div class="shift-row"><div class="from">Being indispensable</div><div class="arrow">→</div><div class="to">A team that operates without rescue</div></div>
+  </div>
+</section>
+
+<section id="about">
+  <div class="sec-head">
+    <h2>25 years inside <em>real</em> technology organizations.</h2>
+    <div class="sec-num">04 / ABOUT ITAY</div>
+  </div>
+  <div class="about-grid">
+    <p class="lede">
+      This is not a motivational workshop or a generic management course.
+      It is <em>practical work</em> inside real situations — planning, reviews, escalations,
+      stakeholder pressure, delivery problems — changing how work, judgment,
+      and ownership move through the organization.
+    </p>
+    <div>
+      <div class="about-facts">
+        <b>BACKGROUND</b> — Product &amp; engineering operations, Agile/DevOps transformation, leadership coaching, organizational operating models.<br>
+        <b>CLIENTS INCLUDE TEAMS FROM</b> — complex SaaS and enterprise software, 50–250 employees, under growth and execution pressure.
+      </div>
+      <div class="logos">
+        <span>ServiceNow</span><span>Amdocs</span><span>EY</span><span>888</span><span>Claroty</span><span>Paragon</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="final" id="fit">
+  <div class="eyebrow">Start with a conversation</div>
+  <h2>A fit call is a <em>working session</em>, <span class="hl">not a pitch</span>.</h2>
+  <p>We map where the bottleneck is, what keeps returning to you, and whether The Push is the right intervention. If it isn’t, you’ll leave with a clear diagnosis anyway.</p>
+  <a href="#" class="btn btn-primary">Book a Fit Call →</a>
+</section>
+
+<footer>
+  <span>© 2026 Itay Foyerstein</span>
+  <span>Concept A — The Operator’s Memo</span>
+</footer>
+
+</body>
+</html>

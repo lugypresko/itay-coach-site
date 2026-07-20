@@ -34,6 +34,11 @@ describe("public content loader fallback", () => {
 
   it("fails closed in production when live Payload is unavailable", async () => {
     vi.stubEnv("NODE_ENV", "production");
+    vi.doMock("../../src/lib/payload", () => ({
+      getServerPayload: async () => {
+        throw new Error("Payload unavailable");
+      },
+    }));
     const { loadPublishedPublicContent } = await import("../../src/lib/public-content-loader");
 
     await expect(

@@ -3,18 +3,19 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 afterEach(() => {
   vi.resetModules();
   vi.unstubAllEnvs();
-  vi.doUnmock("../../src/lib/reader-facing-artifact-public-projection");
+  vi.doUnmock("../../src/lib/public-content-loader");
+  vi.doUnmock("../../src/lib/problem-pages");
+  vi.doUnmock("../../src/lib/reader-facing-publication");
 });
 
 describe("governed public page metadata", () => {
-  it("derives indexable robots and canonical metadata only from the public artifact projection", async () => {
+  it("derives indexable robots and canonical metadata from the public content loader", async () => {
     vi.stubEnv("SITE_URL", "https://itayfoyerstein.com");
-    vi.doMock("../../src/lib/reader-facing-artifact-public-projection", () => ({
-      loadReaderFacingArtifactPublicProjection: async () => ({
-        byPathname: new Map([["/clusters/review-asset", {
-          canonicalPath: "/clusters/review-asset",
-          seo: { title: "Review asset", description: "Review copy" },
-        }]]),
+    vi.doMock("../../src/lib/public-content-loader", () => ({
+      loadPublishedPublicContent: async () => ({
+        canonicalUrl: "https://itayfoyerstein.com/clusters/review-asset",
+        publicationDecision: { indexable: true },
+        record: { seoTitle: "Review asset", seoDescription: "Review copy" },
       }),
     }));
 
@@ -27,9 +28,9 @@ describe("governed public page metadata", () => {
     expect(metadata.alternates?.canonical).toBe("https://itayfoyerstein.com/clusters/review-asset");
   });
 
-  it("emits no route metadata when the artifact is absent from the fail-closed projection", async () => {
-    vi.doMock("../../src/lib/reader-facing-artifact-public-projection", () => ({
-      loadReaderFacingArtifactPublicProjection: async () => ({ byPathname: new Map() }),
+  it("emits no route metadata when the public content loader returns no page", async () => {
+    vi.doMock("../../src/lib/public-content-loader", () => ({
+      loadPublishedPublicContent: async () => null,
     }));
 
     const { generateMetadata } = await import("../../src/app/(site)/[section]/[slug]/page");

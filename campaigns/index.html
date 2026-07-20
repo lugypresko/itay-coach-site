@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Campaign Landing Pages — itayfoyerstein.com</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Courier New',monospace;background:#F6F3E9;color:#191913;padding:56px 5vw;}
+  h1{font-size:30px;margin-bottom:6px;}
+  .sub{color:#555;font-size:14px;margin-bottom:40px;max-width:70ch;line-height:1.6;}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:18px;max-width:1200px;}
+  .card{background:#fff;border:2px solid #191913;padding:24px;transition:all .15s;}
+  .card:hover{background:#D8F000;transform:translate(-3px,-3px);box-shadow:6px 6px 0 #191913;}
+  .card h2{font-size:19px;margin-bottom:4px;}
+  .card .file{font-size:12px;color:#666;margin-bottom:14px;}
+  .card .angle{font-size:13.5px;line-height:1.55;margin-bottom:14px;}
+  .card .angle b{display:block;font-size:11px;letter-spacing:.12em;margin-bottom:3px;}
+  .card a{font-size:13px;font-weight:700;color:#191913;}
+  .card .utm{display:block;margin-top:12px;font-size:11px;color:#555;word-break:break-all;background:rgba(0,0,0,.05);padding:8px;}
+  .note{margin-top:40px;max-width:80ch;font-size:13px;line-height:1.7;color:#444;border-top:1px solid #ccc;padding-top:20px;}
+  code{background:#e8e4d6;padding:1px 6px;}
+</style>
+</head>
+<body>
+  <h1>Campaign Landing Pages</h1>
+  <p class="sub">5 conversion-ready landing pages, each a different creative angle on the same offer: a 20-minute fit call. All share <code>lp-shared.js</code> — UTM capture, booking-link tagging, and an analytics hook (GA4/Pixel stubs included).</p>
+
+  <div class="grid">
+    <div class="card">
+      <h2>1 · The Operator's Memo</h2>
+      <div class="file">lp-operators-memo.html</div>
+      <div class="angle"><b>ANGLE</b>Quiet authority. Editorial memo for executives who distrust marketing.</div>
+      <div class="angle"><b>CHANNEL</b>LinkedIn thought-leader ads → CTO / VP R&D lookalikes.</div>
+      <a href="lp-operators-memo.html">Open LP →</a>
+      <span class="utm">?utm_source=linkedin&utm_medium=paid&utm_campaign=operators-memo</span>
+    </div>
+
+    <div class="card">
+      <h2>2 · Leadership OS Console</h2>
+      <div class="file">lp-leadership-os.html</div>
+      <div class="angle"><b>ANGLE</b>Diagnostic/system. "Run an audit on your org" — speaks engineer to engineer.</div>
+      <div class="angle"><b>CHANNEL</b>Dev-adjacent placements, newsletters, X/Twitter, HN-adjacent audiences.</div>
+      <a href="lp-leadership-os.html">Open LP →</a>
+      <span class="utm">?utm_source=newsletter&utm_medium=sponsorship&utm_campaign=leadership-os</span>
+    </div>
+
+    <div class="card">
+      <h2>3 · The Manifesto (Player Trap)</h2>
+      <div class="file">lp-manifesto.html</div>
+      <div class="angle"><b>ANGLE</b>Confrontational. Player Trap Test as the hook — highest-contrast, mobile-first, sticky CTA.</div>
+      <div class="angle"><b>CHANNEL</b>Paid social (Meta/LinkedIn feed), retargeting. Broadest reach.</div>
+      <a href="lp-manifesto.html">Open LP →</a>
+      <span class="utm">?utm_source=meta&utm_medium=paid&utm_campaign=player-trap</span>
+    </div>
+
+    <div class="card">
+      <h2>4 · The Blueprint</h2>
+      <div class="file">lp-blueprint.html</div>
+      <div class="angle"><b>ANGLE</b>Method/schematic. "Your org runs on a design nobody drew" — for systems thinkers.</div>
+      <div class="angle"><b>CHANNEL</b>Content marketing, SEO cluster pages, webinar/event follow-ups.</div>
+      <a href="lp-blueprint.html">Open LP →</a>
+      <span class="utm">?utm_source=blog&utm_medium=organic&utm_campaign=blueprint</span>
+    </div>
+
+    <div class="card">
+      <h2>5 · Field Notes</h2>
+      <div class="file">lp-field-notes.html</div>
+      <div class="angle"><b>ANGLE</b>Human/warm. A personal letter to the overloaded EM — emotional cost angle.</div>
+      <div class="angle"><b>CHANNEL</b>Email nurture, community posts, word-of-mouth shares.</div>
+      <a href="lp-field-notes.html">Open LP →</a>
+      <span class="utm">?utm_source=email&utm_medium=nurture&utm_campaign=field-notes</span>
+    </div>
+  </div>
+
+  <div class="note">
+    <b>Before launch:</b> set the real booking URL in <code>lp-shared.js</code> (BOOKING_URL), and drop your GA4 / Pixel code into the <code>track()</code> stub.
+    Booking clicks are reported as <code>book_click</code> events with full UTM attribution.
+    Deploy: drop this folder into the site's <code>/public</code> (served at <code>/campaigns/...</code>) or publish as a separate Vercel static project.
+  </div>
+</body>
+</html>

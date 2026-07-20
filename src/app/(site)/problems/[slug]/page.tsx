@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import { ReaderFacingArtifactPage } from "@/components/reader-facing-artifact-page";
-import { loadReaderFacingArtifactPublicProjection } from "@/lib/reader-facing-artifact-public-projection";
+import { ProblemPage } from "@/components/problem-page";
+import { loadProblemPage } from "@/lib/problem-pages";
+import { toReaderFacingProblemPage } from "@/lib/reader-facing-publication";
 import { getSiteUrl } from "@/lib/site-url";
 
 type ProblemPageProps = {
@@ -17,27 +18,27 @@ function getOrigin(): string {
 
 export async function generateMetadata({ params }: ProblemPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const artifact = (await loadReaderFacingArtifactPublicProjection()).byPathname.get(`/problems/${slug}`);
+  const page = await loadProblemPage(slug, getOrigin(), { allowStaticFallback: true });
 
-  if (!artifact) {
+  if (!page) {
     return {};
   }
 
   return {
-    title: artifact.seo.title,
-    description: artifact.seo.description,
-    alternates: { canonical: new URL(artifact.canonicalPath, getOrigin()).toString() },
-    robots: { index: true, follow: true },
+    title: page.record.seoTitle,
+    description: page.record.seoDescription,
+    alternates: { canonical: page.canonicalUrl },
+    robots: page.publicationDecision.indexable ? { index: true, follow: true } : { index: false, follow: false },
   };
 }
 
 export default async function ProblemPageRoute({ params }: ProblemPageProps) {
   const { slug } = await params;
-  const artifact = (await loadReaderFacingArtifactPublicProjection()).byPathname.get(`/problems/${slug}`);
+  const page = await loadProblemPage(slug, getOrigin(), { allowStaticFallback: true });
 
-  if (!artifact) {
+  if (!page) {
     notFound();
   }
 
-  return <ReaderFacingArtifactPage artifact={artifact} />;
+  return <ProblemPage page={toReaderFacingProblemPage(page)} />;
 }

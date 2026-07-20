@@ -1,9 +1,9 @@
+import { loadPublicationSurfaceProjection } from "@/lib/publication-surface-projection";
 import { getSiteUrl } from "@/lib/site-url";
-import { loadReaderFacingArtifactPublicProjection } from "@/lib/reader-facing-artifact-public-projection";
 
 export async function GET() {
   const origin = getSiteUrl();
-  const projection = await loadReaderFacingArtifactPublicProjection();
+  const projection = await loadPublicationSurfaceProjection(origin);
   const publicRoutes = projection.llmsTxtPathnames;
   const body = [
     "# The Push LLM SEO Authority Engine",

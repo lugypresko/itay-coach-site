@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import { ReaderFacingArtifactPage } from "@/components/reader-facing-artifact-page";
+import { PublicContentPage } from "@/components/public-content-page";
+import { loadPublishedPublicContent } from "@/lib/public-content-loader";
 import { getPublicContentSectionSpec } from "@/lib/public-content";
-import { loadReaderFacingArtifactPublicProjection } from "@/lib/reader-facing-artifact-public-projection";
+import { toReaderFacingPublicContentPage } from "@/lib/reader-facing-publication";
 import { getSiteUrl } from "@/lib/site-url";
 
 type ContentPageProps = {
@@ -25,21 +26,21 @@ export async function generateMetadata({ params }: ContentPageProps): Promise<Me
     return {};
   }
 
-  const pathname = `/${spec.section}/${slug}`;
-  const artifact = (await loadReaderFacingArtifactPublicProjection()).byPathname.get(pathname);
-  if (!artifact) {
+  const page = await loadPublishedPublicContent(spec.section, slug, getOrigin(), { allowStaticFallback: true });
+
+  if (!page) {
     return {};
   }
 
   return {
-    title: artifact.seo.title,
-    description: artifact.seo.description,
-    alternates: { canonical: new URL(artifact.canonicalPath, getOrigin()).toString() },
-    robots: { index: true, follow: true },
+    title: page.record.seoTitle,
+    description: page.record.seoDescription,
+    alternates: { canonical: page.canonicalUrl },
+    robots: page.publicationDecision.indexable ? { index: true, follow: true } : { index: false, follow: false },
     openGraph: {
-      title: artifact.seo.title,
-      description: artifact.seo.description,
-      url: new URL(artifact.canonicalPath, getOrigin()).toString(),
+      title: page.record.seoTitle,
+      description: page.record.seoDescription,
+      url: page.canonicalUrl,
       type: "article",
     },
   };
@@ -53,11 +54,11 @@ export default async function ContentPage({ params }: ContentPageProps) {
     notFound();
   }
 
-  const artifact = (await loadReaderFacingArtifactPublicProjection()).byPathname.get(`/${spec.section}/${slug}`);
+  const page = await loadPublishedPublicContent(spec.section, slug, getOrigin(), { allowStaticFallback: true });
 
-  if (!artifact) {
+  if (!page) {
     notFound();
   }
 
-  return <ReaderFacingArtifactPage artifact={artifact} />;
+  return <PublicContentPage page={toReaderFacingPublicContentPage(page)} />;
 }

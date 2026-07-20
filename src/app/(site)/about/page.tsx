@@ -8,10 +8,7 @@ const page = getAuthorityLaunchPage("about");
 
 export const metadata: Metadata = buildAuthorityLaunchMetadata(page);
 
-export default function AboutPage() {
-  if (page.pageSource === "page_brief" && page.pageBrief) {
-    return <PageBriefLaunchPage brief={page.pageBrief} />;
-  }
-
-  return <AuthorityLaunchPage page={page} />;
-}
+ export default function AboutPage() {
+   // RESTORED: Explicit reader-facing path only.
+   return <AuthorityLaunchPage page={page} />;
+ }

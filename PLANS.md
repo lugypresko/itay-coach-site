@@ -3940,3 +3940,89 @@ Pending human action:
 - Review Draft 05 artifact version 2 and approve or request revisions against hash `f06d5cf04e27f07b38246445b031bf4637c4def6884bef3feabe8ce054571687`.
 - Separately authorize migration execution, deployment, and publication record creation only after artifact approval.
 - No prior approval is valid for the new artifact hash; no content is currently authorized for publication by Task 073.
+
+### Task 077 - Campaign Message-Market Fit
+
+State: `in_progress`
+Lane: `campaigns`, `analytics`, `conversion`
+Owner: Codex
+
+Goal:
+Launch and measure five campaign landing pages that route different audiences into the canonical coaching and sponsor journeys without competing with canonical SEO pages.
+
+Scope:
+- Define five campaign contracts under `/campaigns/*`.
+- Keep `/technical-leadership-coaching` and `/for-organizations` canonical.
+- Implement UTM and campaign-context capture.
+- Launch the first three campaigns only after route, CTA, and assessment contracts pass.
+- Preserve the human review and publication gates.
+
+Out of scope:
+- No automatic publication or deployment.
+- No new Payload collection or governed contract.
+- No unsupported claims, metrics, client logos, or testimonials.
+
+Files expected to change:
+- `src/lib/campaign-pages.ts`
+- `src/lib/public-authority-routes.ts`
+- `src/lib/public-content.ts`
+- `tests/unit/campaign-route-contract.test.ts`
+- `docs/plans/2026-07-20-campaign-message-market-fit.md`
+
+Validation steps:
+- Run campaign route contract tests.
+- Run focused existing public-route tests.
+- Run `npm test`.
+- Run `npm run typecheck`.
+- Run `npm run build` before completion.
+
+Acceptance criteria:
+- Campaign slugs and CTA destinations are deterministic and non-duplicative.
+- Campaign pages are excluded from canonical authority registries and primary navigation.
+- Operator's Memo targets sponsors, Field Notes targets individual managers, and Leadership OS targets diagnostic intent.
+- No campaign promises an assessment or form flow that does not exist.
+
+### Task 077 Progress Update - 2026-07-20
+
+State remains: `in_progress`
+
+Implemented route/campaign contracts, first three acquisition pages, campaign attribution, assessment lifecycle events, sponsor/individual qualification contract and form endpoint, and the campaign measurement document. Remaining work is assessment result routing, end-to-end journey coverage, claims/human review, and final release verification. No publication or deployment performed.
+
+### Task 077 Lead Destination Decision - 2026-07-20
+
+Resend remains the existing notification provider. Initial flow: `Form -> Next.js API -> Resend -> configured inbox`. No additional email provider is planned. Payload/PostgreSQL persistence is deferred to the lifecycle-tracking phase and must sit behind the existing API contract.
+
+### Task 077 Canonical Proof and Resend Update - 2026-07-20
+
+Updated About/Methodology reader-facing copy and renderer, added proof/limits/FAQ/CTA surfaces, hardened the fit-call form with honeypot and network-error handling, and documented Resend environment requirements. Framework and pillar routes remain behind publication governance.
+
+### Task 077 Production Readiness Update - 2026-07-20
+
+- Fixed the AI/runtime TypeScript contract drift across mission schemas, constraint selection, evidence values, gap analysis, verifier context, and launch analyzer imports.
+- `npm run typecheck` passes.
+- Resend lead delivery remains `Form -> Next.js API -> Resend`; production now fails closed when `RESEND_API_KEY` is missing instead of returning a false dry-run success.
+- Added `docs/operations/resend-production.md` with the Vercel environment and controlled verification checklist.
+- Remaining external action: configure reviewed Resend values in Vercel and submit one controlled production form. No secret was added to source control and no deployment was performed.
+### Task 078 - Synchronize Local Implementation
+
+State: `completed`
+Lane: `repository`, `release`
+Owner: Codex
+
+Goal:
+Commit the current implementation and documentation changes that belong to the project and push them to the active GitHub branch so the remote repository reflects the local working state.
+
+Scope:
+- Include source, tests, configuration, and project documentation changes.
+- Exclude local tooling state, logs, build output, and temporary file inventories.
+- Run focused validation before commit and verify the remote branch after push.
+
+Out of scope:
+- No production deployment or publication.
+- No secrets or local environment files beyond the tracked example file.
+
+Verification:
+- `npm run typecheck` passed.
+- `npm test` passed: 63 files / 348 tests.
+- Commit `39199482bfaf312ddb74b313b80538c53c13433b` pushed to `origin/codex/cleanup-working-tree`.
+- Local and remote branch are synchronized: 0 ahead / 0 behind.

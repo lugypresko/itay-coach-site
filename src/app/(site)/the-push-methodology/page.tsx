@@ -8,10 +8,7 @@ const page = getAuthorityLaunchPage("thePushMethodology");
 
 export const metadata: Metadata = buildAuthorityLaunchMetadata(page);
 
-export default function ThePushMethodologyPage() {
-  if (page.pageSource === "page_brief" && page.pageBrief) {
-    return <PageBriefLaunchPage brief={page.pageBrief} />;
-  }
-
-  return <AuthorityLaunchPage page={page} />;
-}
+ export default function ThePushMethodologyPage() {
+   // RESTORED: Explicit reader-facing path only.
+   return <AuthorityLaunchPage page={page} />;
+ }
