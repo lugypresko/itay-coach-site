@@ -141,7 +141,7 @@ function ManifestoPage({ copy, slug }: { copy: CampaignPageCopy; slug: string })
   return (
     <main className="concept-page concept-page--manifesto">
       <header className="manifesto-header"><Link className="concept-brand" href="/">THE<span>PUSH</span></Link><TrackedCta copy={copy} slug={slug} /></header>
-      <section className="manifesto-hero"><span className="manifesto-sticker">{copy.eyebrow}</span><h1>You are the best <em>player</em> on the team. <b>That's the trap.</b></h1><p>{copy.lede}</p><TrackedCta copy={copy} slug={slug} /></section>
+      <section className="manifesto-hero"><span className="manifesto-sticker">{copy.eyebrow}</span><h1>You are the best <em>player</em> on the team. <b>That&apos;s the trap.</b></h1><p>{copy.lede}</p><TrackedCta copy={copy} slug={slug} /></section>
       <section className="manifesto-dark"><span className="manifesto-sticker manifesto-sticker--lime">PLAYER TRAP TEST</span><h2>Five signs <em>you became the system</em></h2><div className="manifesto-checks">{copy.proof.map((item, index) => <div key={item}><span>0{index + 1}</span>{item}</div>)}</div></section>
       <section className="manifesto-posters"><p>HARD WORK <em>DOES NOT SCALE.</em></p><p>SPEED IS CHEAP. <em>DIRECTION IS EVERYTHING.</em></p><p>STOP RESCUING. <em>START BUILDING CAPACITY.</em></p></section>
       <section className="manifesto-final"><h2>The operating model has to <b>change.</b></h2><p>{copy.nextStep}</p><TrackedCta copy={copy} slug={slug} /></section>

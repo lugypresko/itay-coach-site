@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import type { AuthorityLaunchPageConfig } from "@/lib/authority-launch-pages";
 
 export function AuthorityLaunchPage({ page }: { page: AuthorityLaunchPageConfig }) {
@@ -134,7 +136,7 @@ export function AuthorityLaunchPage({ page }: { page: AuthorityLaunchPageConfig 
         <article className="content-panel content-panel-wide">
           <h2>Continue the conversation</h2>
           <p>Bring one current leadership situation to a fit call. We can decide whether the next step belongs in coaching, a diagnostic route, or no engagement.</p>
-          <a className="primary-link" href="/book-a-fit-call">Book a fit call</a>
+          <Link className="primary-link" href="/book-a-fit-call">Book a fit call</Link>
         </article>
       </section>
     </main>
