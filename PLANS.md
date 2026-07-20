@@ -4026,3 +4026,26 @@ Verification:
 - `npm test` passed: 63 files / 348 tests.
 - Commit `39199482bfaf312ddb74b313b80538c53c13433b` pushed to `origin/codex/cleanup-working-tree`.
 - Local and remote branch are synchronized: 0 ahead / 0 behind.
+
+### Task 079 - Repair Vercel Build Lint Failures
+
+State: `completed`
+Lane: `repository`, `release`
+Owner: Codex
+
+Goal:
+Resolve the deterministic ESLint errors reported by the Vercel production build after Task 078 was merged.
+
+Scope:
+- Replace internal `<a>` navigation with `next/link`.
+- Escape the unescaped apostrophe in the campaign manifesto copy.
+- Run local build validation and push the fix to the Vercel production branch.
+
+Out of scope:
+- No unrelated lint cleanup.
+- No production configuration or secret changes.
+
+Verification:
+- `npm run build` passed locally; only pre-existing lint warnings remain.
+- `npm test` passed: 63 files / 348 tests.
+- Replaced the internal anchor with `next/link` and escaped the manifesto apostrophe.
