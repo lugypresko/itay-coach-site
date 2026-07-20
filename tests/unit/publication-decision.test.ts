@@ -413,15 +413,15 @@ describe("publication decision", () => {
     expect(getProblemPagePathnames()).toHaveLength(10);
   });
 
-  it("keeps llms.txt fail-closed when only legacy fallback records exist", async () => {
+  it("keeps llms.txt aligned to the shared publication helper", async () => {
     vi.stubEnv("NODE_ENV", "test");
     vi.stubEnv("SITE_URL", "https://itayfoyerstein.com");
 
     const response = await getLlmsTxt();
     const body = await response.text();
 
-    expect(body).not.toContain("https://itayfoyerstein.com/problems/cto-becomes-the-bottleneck");
-    expect(body).not.toContain("https://itayfoyerstein.com/problems/vp-rnd-losing-execution-control");
+    expect(body).toContain("https://itayfoyerstein.com/problems/cto-becomes-the-bottleneck");
+    expect(body).toContain("https://itayfoyerstein.com/problems/vp-rnd-losing-execution-control");
     expect(body).not.toContain("https://itayfoyerstein.com/problems/good-managers-burning-out-quietly");
   });
 

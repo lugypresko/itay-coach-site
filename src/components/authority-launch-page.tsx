@@ -14,11 +14,40 @@ export function AuthorityLaunchPage({ page }: { page: AuthorityLaunchPageConfig 
     "brief-",
     "opportunity-",
   ];
-  const auditString = JSON.stringify(page);
-  if (leakagePatterns.some((pattern) => new RegExp(pattern, "i").test(auditString))) {
-    console.error(`Leakage detected in static page config for: ${page.canonicalPath}`);
-    throw new Error("BUILD_FAILURE: Internal language leakage detected in public route configuration.");
-  }
+   // CONTENT AUDIT & COMPLETENESS GUARD
+   const narratives = [
+     page.title,
+     page.description,
+     page.shortAnswer,
+     page.definitionBody,
+     page.frameworkBody
+   ].join(" ");
+ 
+   const forbidden = [
+     /work in progress/i, /page-brief-/i, /audience pain/i, /purpose/i, 
+     /review priority/i, /content plan/i, /proof needed/i, /the page should/i, 
+     /opportunity-/i, /brief-/i
+   ];
+ 
+   if (forbidden.some(regex => regex.test(narratives))) {
+     console.error(`Leakage detected in static page config for: ${page.canonicalPath}`);
+     throw new Error("BUILD_FAILURE: Internal language leakage detected in public route configuration.");
+   }
+ 
+   // Route-specific completeness validation
+   const isAbout = page.canonicalPath === "/about";
+   const isMethod = page.canonicalPath === "/the-push-methodology";
+   const isFaq = page.canonicalPath === "/faq";
+ 
+   if (isAbout && (!page.title.includes("Itay") || !page.definitionBody)) {
+     throw new Error("BUILD_FAILURE: About page lacks bio or definition substance.");
+   }
+   if (isMethod && (!page.frameworkSteps || page.frameworkSteps.length < 3)) {
+     throw new Error("BUILD_FAILURE: Methodology page lacks stages/mechanics.");
+   }
+   if (isFaq && (!page.faqEntries || page.faqEntries.length === 0)) {
+     throw new Error("BUILD_FAILURE: FAQ page lacks question-answer substance.");
+   }
 
   return (
     <main className="content-shell">
@@ -73,6 +102,40 @@ export function AuthorityLaunchPage({ page }: { page: AuthorityLaunchPageConfig 
             ))}
           </div>
         </nav>
+      </section>
+
+      <section className="content-grid">
+        <article className="content-panel content-panel-wide">
+          <h2>Key takeaways</h2>
+          <ul className="content-list">
+            {page.keyTakeaways.map((takeaway) => <li key={takeaway}>{takeaway}</li>)}
+          </ul>
+        </article>
+
+        <article className="content-panel">
+          <h2>Evidence and limits</h2>
+          <p>Framework definitions and professional observations explain the work; they are not guarantees of business outcomes. Testimonials, case studies, and quantified outcomes are shown only when separately verified and approved.</p>
+        </article>
+
+        {page.faqEntries?.length ? (
+          <article className="content-panel content-panel-wide">
+            <h2>Frequently asked questions</h2>
+            <div className="faq-list">
+              {page.faqEntries.map((entry) => (
+                <div className="faq-item" key={entry.question}>
+                  <h3>{entry.question}</h3>
+                  <p>{entry.answer}</p>
+                </div>
+              ))}
+            </div>
+          </article>
+        ) : null}
+
+        <article className="content-panel content-panel-wide">
+          <h2>Continue the conversation</h2>
+          <p>Bring one current leadership situation to a fit call. We can decide whether the next step belongs in coaching, a diagnostic route, or no engagement.</p>
+          <a className="primary-link" href="/book-a-fit-call">Book a fit call</a>
+        </article>
       </section>
     </main>
   );

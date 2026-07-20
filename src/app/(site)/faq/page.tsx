@@ -8,10 +8,7 @@ const page = getAuthorityLaunchPage("faq");
 
 export const metadata: Metadata = buildAuthorityLaunchMetadata(page);
 
-export default function FaqHubPage() {
-  if (page.pageSource === "page_brief" && page.pageBrief) {
-    return <PageBriefLaunchPage brief={page.pageBrief} />;
-  }
-
-  return <AuthorityLaunchPage page={page} />;
-}
+ export default function FaqHubPage() {
+   // RESTORED: Explicit reader-facing path only.
+   return <AuthorityLaunchPage page={page} />;
+ }

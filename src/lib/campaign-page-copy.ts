@@ -1,0 +1,40 @@
+import type { CampaignPageCopy } from "@/lib/campaign-pages";
+
+export const campaignPageCopy: Record<string, CampaignPageCopy> = {
+  "operators-memo": {
+    audience: "CTOs and VP R&D sponsors",
+    eyebrow: "The Operator's Memo / Sponsor path",
+    title: "Your managers should not need you to keep the system moving.",
+    lede: "When every difficult decision, escalation, and review routes through one leader, the organization is not scaling leadership capacity. It is scaling dependency.",
+    primaryCta: "Discuss coaching for your managers",
+    secondaryCta: "Learn how organizational sponsorship works",
+    destination: "/for-organizations",
+    proof: ["Clarify where managers are carrying execution that should belong to the system.", "Build decision capacity without adding another generic leadership program.", "Give the sponsor a clear view of the support required and the next decision."],
+    nextStep: "Start with the organization-level path, then decide whether coaching, a cohort, or focused advisory work fits the situation.",
+    variant: "memo",
+  },
+  "field-notes": {
+    audience: "Engineering managers and technical leaders",
+    eyebrow: "Field Notes / Individual path",
+    title: "You can be the person everyone relies on without remaining the person everything depends on.",
+    lede: "This is for the manager whose calendar is full, whose team still waits, and whose strategic work keeps losing to the next escalation.",
+    primaryCta: "Book a fit call",
+    secondaryCta: "Start with a conversation",
+    destination: "/book-a-fit-call",
+    proof: ["Name the invisible coordination and rescue work consuming your role.", "Separate a genuine leadership dependency from a temporary delivery problem.", "Replace constant availability with clearer judgment, ownership, and boundaries."],
+    nextStep: "A fit call is a short conversation about your role, team shape, and one current situation where progress still comes back to you.",
+    variant: "field-notes",
+  },
+  "leadership-os": {
+    audience: "Technical leaders who prefer a systems view",
+    eyebrow: "Leadership OS / Diagnostic path",
+    title: "Find the dependency that keeps leadership capacity trapped in one person.",
+    lede: "Run a practical assessment of decisions, approvals, reviews, and rescue work that still route through you. The goal is not a score. It is a better next question.",
+    primaryCta: "Run the Leadership Dependency Assessment",
+    secondaryCta: "View The Push methodology",
+    destination: "/leadership-dependency-assessment",
+    proof: ["Map the recurring situations that trigger your intervention.", "Identify whether the constraint is decision rights, judgment, or operating context.", "Leave with a concrete route into coaching or organizational support."],
+    nextStep: "The assessment is informational, not a psychological evaluation or objective measurement. Use the result to choose the next conversation.",
+    variant: "diagnostic",
+  },
+};

@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { track } from "@vercel/analytics";
 import { useRouter } from "next/navigation";
 
 import {
@@ -39,7 +40,7 @@ function parseLeadResponse(responseText: string) {
   }
 
   try {
-    return JSON.parse(responseText) as { error?: string; reportUrl?: string };
+    return JSON.parse(responseText) as { error?: string; reportUrl?: string; result?: { tier?: string } };
   } catch {
     return {};
   }
@@ -60,6 +61,17 @@ export function PlayerTrapAssessmentClient({
   const [error, setError] = useState<string | null>(null);
   const complete = isComplete(answers, questions);
   const utm = useMemo(() => normalizeUtmAttribution(initialUtm), [initialUtm]);
+  useEffect(() => {
+    track("assessment_start", {
+      assessment: "player-trap",
+      page_language: pageLanguage,
+      utm_source: utm.utmSource,
+      utm_medium: utm.utmMedium,
+      utm_campaign: utm.utmCampaign,
+      utm_content: utm.utmContent,
+      utm_term: utm.utmTerm,
+    });
+  }, [pageLanguage, utm]);
 
   async function handleLeadSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -101,6 +113,17 @@ export function PlayerTrapAssessmentClient({
       if (!response.ok) {
         throw new Error(payload.error ?? "Unable to create the diagnostic report.");
       }
+
+      track("assessment_complete", {
+        assessment: "player-trap",
+        page_language: pageLanguage,
+        result_type: typeof payload.result?.tier === "string" ? payload.result.tier : "",
+        utm_source: utm.utmSource,
+        utm_medium: utm.utmMedium,
+        utm_campaign: utm.utmCampaign,
+        utm_content: utm.utmContent,
+        utm_term: utm.utmTerm,
+      });
 
       if (!payload.reportUrl) {
         throw new Error("Report URL missing from response.");

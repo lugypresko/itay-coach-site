@@ -190,3 +190,33 @@ This file is the project’s single append-only decision record. New decisions a
 - Rejected alternatives: Bind approval to a broad CMS record; construct the public object only during frontend rendering; use an adapter between workflow output and a late DTO; transfer legacy approval automatically; leave drafts accessible with `noindex` as the default production behavior.
 - Consequences: Draft/review artifacts return 404 on production routes unless exposed through a separate authenticated or local preview. Legacy records retain history but have no public existence until a new artifact passes review and approval. Any public-field change creates a new artifact version/hash and invalidates prior validation, semantic review, approval, and publication linkage. Draft 05 replacement returns to human review and remains non-public.
 - Supersedes: Any interpretation of `DEC-20260713-03` in which a late frontend DTO is sufficient to establish approval or publication identity.
+
+## DEC-20260720-01 - Campaign acquisition remains separate from canonical authority
+
+- Date: `2026-07-20`
+- Status: `implementation`
+- Scope: Campaign landing pages, sponsor/individual conversion paths, attribution, and measurement.
+- Decision: Keep campaign pages under `/campaigns/*` as `noindex` acquisition surfaces outside primary navigation. Preserve `/technical-leadership-coaching` and `/for-organizations` as canonical authority destinations.
+- Context: `docs/plans/2026-07-20-campaign-message-market-fit.md`; `docs/measurement/campaign-message-market-fit.md`; `src/lib/campaign-pages.ts`.
+- Rationale: Campaign concepts serve different entry contexts and should be measured for qualified conversations without competing with canonical SEO ownership.
+- Consequences: Campaign performance is evaluated by qualified conversations and persona, not clicks alone. Human review remains required before traffic, publication, or deployment.
+
+## DEC-20260720-02 - Initial qualification delivery uses the existing email boundary
+
+- Date: `2026-07-20`
+- Status: `implementation`
+- Scope: Sponsor and individual fit-call qualification.
+- Decision: Use a shared deterministic qualification contract and the existing Resend integration for the initial lead handoff; do not add a new Payload collection or CRM migration in this campaign batch.
+- Context: `docs/plans/2026-07-20-campaign-message-market-fit.md`; `src/lib/lead-qualification.ts`; `src/app/api/fit-call/lead/route.ts`.
+- Rationale: The current repository has no established fit-call lead collection. Email handoff keeps the implementation bounded while preserving persona, intent, timing, challenge, and attribution fields for manual qualification.
+- Consequences: CRM persistence, booked/attended call reconciliation, retention policy, and production recipient configuration remain explicit follow-up work and human review items.
+
+## DEC-20260720-03 - Proof language is evidence-gated
+
+- Date: `2026-07-20`
+- Status: `implementation`
+- Scope: Campaign pages, canonical authority pages, testimonials, case studies, company relationships, quantified outcomes, and framework claims.
+- Decision: Public copy may use source-backed facts, approved framework definitions, clearly labeled professional observations, and modal professional theses. Testimonials, case studies, quantified outcomes, stronger company relationship wording, and scientific-validation language remain blocked until claim-level evidence and human approval exist.
+- Context: `docs/evidence/campaign-claim-ledger.md`; `docs/evidence/authority-evidence-registry.md`; `docs/plans/2026-07-20-campaign-message-market-fit.md`; `AGENTS.md`.
+- Rationale: Visual polish and framework language establish positioning but do not prove outcomes. Unsupported metrics and implied client proof would weaken trust and violate the repository evidence gate.
+- Consequences: The public campaign copy gate rejects `73%`, `41%`, `2.5x`, `tested in production`, and unqualified `clients include` language. Missing proof is recorded as an evidence gap rather than filled with invented claims.

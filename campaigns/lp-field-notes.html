@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Field Notes for Engineering Managers — Itay Foyerstein</title>
+<meta name="description" content="Nobody teaches you the job after the promotion. Field notes and a practical method for technical leaders who became the system their team depends on.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Libre+Franklin:wght@400;500;600;800&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,900;1,9..144,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FAF6EC;
+    --kraft:#EDE4CE;
+    --ink:#2A2822;
+    --soft:#6E6A5B;
+    --lime:#D8F000;
+    --tape:rgba(216,240,0,.75);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--paper);color:var(--ink);
+    font-family:'Libre Franklin',sans-serif;font-size:16.5px;line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+  }
+  .fraunces{font-family:'Fraunces',serif;}
+  .hand{font-family:'Caveat',cursive;}
+
+  /* tape piece */
+  .tape{
+    position:absolute;width:110px;height:30px;background:var(--tape);
+    top:-14px;left:50%;transform:translateX(-50%) rotate(-3deg);
+    box-shadow:0 1px 3px rgba(0,0,0,.12);
+  }
+
+  header{
+    max-width:1080px;margin:0 auto;padding:34px 5vw 0;
+    display:flex;justify-content:space-between;align-items:baseline;
+  }
+  .brand{font-family:'Fraunces',serif;font-weight:900;font-size:24px;}
+  .brand .hand{color:var(--soft);font-size:20px;margin-left:8px;}
+  nav a{font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--soft);text-decoration:none;margin-left:24px;}
+  nav a:hover{color:var(--ink);}
+  nav a.book{color:var(--ink);border-bottom:3px solid var(--lime);padding-bottom:3px;}
+
+  main{max-width:1080px;margin:0 auto;padding:0 5vw;}
+
+  /* hero note */
+  .hero{padding:80px 0 70px;display:grid;grid-template-columns:1.35fr 1fr;gap:60px;align-items:start;}
+  h1{
+    font-family:'Fraunces',serif;font-weight:900;font-size:clamp(38px,5.4vw,72px);
+    line-height:1.04;letter-spacing:-.01em;
+  }
+  h1 .u{
+    background:linear-gradient(transparent 65%, var(--lime) 65%, var(--lime) 92%, transparent 92%);
+  }
+  .hero-left .hand-note{
+    font-family:'Caveat',cursive;font-size:26px;color:var(--soft);margin-top:26px;transform:rotate(-1.2deg);
+  }
+  .hero-actions{margin-top:34px;display:flex;gap:20px;align-items:center;flex-wrap:wrap;}
+  .btn{
+    font-weight:800;font-size:13px;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;
+    background:var(--ink);color:var(--paper);padding:16px 28px;transition:all .15s;
+  }
+  .btn:hover{background:#000;transform:translateY(-2px);}
+  .quiet{font-size:14px;font-weight:600;color:var(--soft);text-decoration:underline;text-underline-offset:4px;}
+
+  /* polaroid */
+  .polaroid{
+    background:#fff;padding:16px 16px 20px;position:relative;
+    box-shadow:0 10px 30px rgba(42,40,34,.14);transform:rotate(2deg);
+    transition:transform .25s;
+  }
+  .polaroid:hover{transform:rotate(0deg) scale(1.02);}
+  .polaroid .photo{
+    background:var(--kraft);aspect-ratio:4/3;display:grid;place-items:center;
+    font-family:'Caveat',cursive;font-size:24px;color:var(--soft);text-align:center;padding:20px;line-height:1.3;
+  }
+  .polaroid figcaption{margin-top:14px;font-family:'Caveat',cursive;font-size:21px;color:var(--ink);text-align:center;}
+
+  /* divider */
+  .divider{
+    display:flex;align-items:center;gap:18px;margin:26px 0 60px;color:var(--soft);
+    font-family:'Caveat',cursive;font-size:22px;
+  }
+  .divider::before,.divider::after{content:"";flex:1;height:1px;background:#D8D2BE;}
+
+  /* letter */
+  .letter{
+    background:#fff;border:1px solid #E5DEC9;padding:56px 60px;position:relative;
+    box-shadow:0 14px 40px rgba(42,40,34,.08);max-width:760px;margin:0 auto;
+  }
+  .letter h2{font-family:'Fraunces',serif;font-weight:900;font-size:clamp(28px,3.6vw,44px);line-height:1.1;margin-bottom:28px;}
+  .letter p{margin-bottom:20px;color:#3C3A32;}
+  .letter .pull{
+    font-family:'Fraunces',serif;font-style:italic;font-size:24px;line-height:1.35;color:var(--ink);
+    border-left:5px solid var(--lime);padding-left:24px;margin:34px 0;
+  }
+  .letter .sig{font-family:'Caveat',cursive;font-size:34px;transform:rotate(-2deg);display:inline-block;margin-top:10px;}
+  .margin-note{
+    position:absolute;right:-90px;top:180px;width:150px;font-family:'Caveat',cursive;
+    font-size:21px;color:var(--soft);transform:rotate(4deg);line-height:1.25;
+  }
+
+  /* notebook cards */
+  .notebook{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:34px;}
+  .card{
+    background:var(--kraft);padding:34px 30px 30px;position:relative;
+    box-shadow:0 8px 24px rgba(42,40,34,.1);
+  }
+  .card:nth-child(odd){transform:rotate(-.8deg);}
+  .card:nth-child(even){transform:rotate(.9deg);}
+  .card:hover{transform:rotate(0);}
+  .card .step{font-family:'Caveat',cursive;font-size:24px;color:var(--soft);}
+  .card h3{font-family:'Fraunces',serif;font-weight:900;font-size:23px;line-height:1.15;margin:8px 0 12px;}
+  .card p{font-size:14.5px;color:#4B483E;}
+  .card .hand-mark{font-family:'Caveat',cursive;font-size:19px;color:var(--ink);margin-top:14px;display:block;}
+
+  /* timeline */
+  .timeline{max-width:700px;margin:0 auto;position:relative;padding-left:40px;}
+  .timeline::before{content:"";position:absolute;left:10px;top:6px;bottom:6px;width:2px;background:#D8D2BE;}
+  .tl{position:relative;margin-bottom:38px;}
+  .tl::before{
+    content:"";position:absolute;left:-36px;top:7px;width:12px;height:12px;border-radius:50%;
+    background:var(--lime);border:2px solid var(--ink);
+  }
+  .tl .when{font-family:'Caveat',cursive;font-size:22px;color:var(--soft);}
+  .tl h4{font-family:'Fraunces',serif;font-weight:600;font-size:20px;margin:4px 0 6px;}
+  .tl p{font-size:15px;color:#4B483E;}
+
+  /* ps / cta */
+  .ps{max-width:760px;margin:0 auto;text-align:center;padding:10px 0 30px;}
+  .ps .hand{font-size:30px;line-height:1.35;transform:rotate(-1deg);display:block;}
+  .ps .btn{margin-top:30px;display:inline-block;font-size:14px;}
+  .ps small{display:block;margin-top:18px;color:var(--soft);font-size:13.5px;}
+
+  footer{
+    max-width:1080px;margin:60px auto 0;padding:26px 5vw 34px;border-top:1px solid #E0D9C4;
+    display:flex;justify-content:space-between;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--soft);
+  }
+
+  @media(max-width:900px){
+    .hero{grid-template-columns:1fr;}
+    .polaroid{max-width:380px;margin:0 auto;}
+    .margin-note{display:none;}
+    .letter{padding:40px 28px;}
+    nav a:not(.book){display:none;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">Itay Foyerstein <span class="hand">— field notes</span></div>
+  <nav>
+    <a href="#letter">The Letter</a>
+    <a href="#method">The Method</a>
+    <a href="#path">The Path</a>
+    <a href="#ps" class="book">Book a Fit Call</a>
+  </nav>
+</header>
+
+<main>
+
+  <div class="hero">
+    <div class="hero-left">
+      <h1>Nobody teaches you the job <span class="u">after</span> the promotion.</h1>
+      <p class="hand-note">25 years of watching brilliant engineers get stuck in the same trap — written down, finally.</p>
+      <div class="hero-actions">
+        <a class="btn" href="#ps">Start With a Conversation</a>
+        <a class="quiet" href="#letter">Read the letter first</a>
+      </div>
+    </div>
+    <figure class="polaroid">
+      <div class="tape"></div>
+      <div class="photo">“You were promoted for being the best player.<br>Now your job is the opposite.”</div>
+      <figcaption>note to self, ~year 12</figcaption>
+    </figure>
+  </div>
+
+  <div class="divider">the letter</div>
+
+  <div class="letter" id="letter">
+    <h2>Dear Engineering Manager who can't take a week off,</h2>
+    <p>You already know you should delegate. That's not the issue. The issue is that the work you carry contains context, judgment, relationships, and risk that can't simply be handed over.</p>
+    <p>So you keep carrying it. The approvals. The escalations. The "quick questions." The roadmap that changes every week. The AI output that still needs your judgment.</p>
+    <div class="pull">Your competence has become the organization's dependency. That's not a character flaw — it's a structural problem. And structural problems have structural fixes.</div>
+    <p>The Push is how we fix it: not by asking you to work harder or "let go," but by redesigning how decisions, ownership, and judgment move through your team — inside your real work, not in a workshop.</p>
+    <p>— Itay</p>
+    <span class="sig">Itay Foyerstein</span>
+    <div class="margin-note">this part → it's never about effort. it's the operating model.</div>
+  </div>
+
+  <div class="divider" id="method">the method, in five notes</div>
+
+  <div class="notebook">
+    <div class="card">
+      <div class="tape"></div>
+      <div class="step">note 01</div>
+      <h3>Diagnose the Dependency</h3>
+      <p>Find exactly where you became the default route for progress. We call it the Player Trap — still playing the role that made you successful.</p>
+      <span class="hand-mark">↳ goal: make it visible, no blame</span>
+    </div>
+    <div class="card">
+      <div class="tape"></div>
+      <div class="step">note 02</div>
+      <h3>Expose the Invisible Executor</h3>
+      <p>The connecting, translating, reviewing, calming — work no role description contains. Invisible work can't be transferred until it's written down.</p>
+      <span class="hand-mark">↳ goal: a real map of the load</span>
+    </div>
+    <div class="card">
+      <div class="tape"></div>
+      <div class="step">note 03</div>
+      <h3>Clarify Decision Rights</h3>
+      <p>Which decisions the team owns, which need consultation, which escalate. Ambiguity removed, control kept where it matters.</p>
+      <span class="hand-mark">↳ goal: less approval-seeking</span>
+    </div>
+    <div class="card">
+      <div class="tape"></div>
+      <div class="step">note 04</div>
+      <h3>Transfer Judgment, Not Tasks</h3>
+      <p>Principles, trade-offs, feedback on judgment. You stop being the answer and start improving how answers get produced.</p>
+      <span class="hand-mark">↳ goal: decision capacity in the team</span>
+    </div>
+    <div class="card">
+      <div class="tape"></div>
+      <div class="step">note 05</div>
+      <h3>Build Strategic Capacity</h3>
+      <p>Direction, org design, architecture, AI governance — the work only you can do. This is what leadership time is actually for.</p>
+      <span class="hand-mark">↳ goal: higher-leverage leadership</span>
+    </div>
+  </div>
+
+  <div class="divider" id="path">the path here</div>
+
+  <div class="timeline">
+    <div class="tl"><div class="when">the early years</div><h4>Inside real technology organizations</h4><p>Complex programs, product &amp; engineering operations, delivery. 25+ years across technology, transformation, and leadership.</p></div>
+    <div class="tl"><div class="when">the pattern</div><h4>Same story, different companies</h4><p>ServiceNow, Amdocs, EY, 888, Claroty, Paragon. Capable people everywhere — progress still routed through a few overloaded leaders.</p></div>
+    <div class="tl"><div class="when">the realization</div><h4>Effort is not the fix</h4><p>A strong leader can compensate for a weak operating system for a while. Eventually, their competence becomes the bottleneck.</p></div>
+    <div class="tl"><div class="when">now</div><h4>The Push</h4><p>A practical methodology for technical leaders who became the dependency path for their own team. Coaching plus operating-model change, inside real work.</p></div>
+  </div>
+
+  <div class="divider">p.s.</div>
+
+  <div class="ps" id="ps">
+    <span class="hand">P.S. — A fit call is not a pitch. It's a 20-minute working session: where the bottleneck is, what keeps coming back to you, and whether The Push is the right intervention. If it isn't, you'll still leave with a diagnosis.</span>
+    <a class="btn" href="#">Book a Fit Call</a>
+    <small>Typically replies within one business day.</small>
+  </div>
+
+</main>
+
+<footer>
+  <span>© 2026 Itay Foyerstein</span>
+  <span>Itay Foyerstein · The Push</span>
+</footer>
+
+<script src="lp-shared.js" defer></script>
+</body>
+</html>

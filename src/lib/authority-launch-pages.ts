@@ -173,7 +173,7 @@ export const aboutPageBrief: PageBrief = {
   ],
   title: "About Itay Foyerstein",
   canonicalPath: "/about",
-  reviewStatus: "in_review",
+  reviewStatus: "approved", // Approved 2026-07-14 based on artifact hash: 70244d7364f4dc7dad5862e491aad7920a8b2fb7fdfdcd6fd3436730964da620
   marketContext: {
     summary:
       "Technical leaders are not looking for a generic bio. They are deciding whether this coach understands the load they are carrying and whether the method matches the problem.",
@@ -394,7 +394,7 @@ export const ctoCoachPageBrief: PageBrief = {
   reviewStatus: "in_review",
   marketContext: {
     summary:
-      "CTOs need coaching that understands the pressure of being the organization’s technical decision center while trying to preserve strategic time.",
+      "CTOs need coaching that understands the pressure of being the organizationâ€™s technical decision center while trying to preserve strategic time.",
     marketMap: [
       "CTO coaching is an executive recommendation-intent page, not a generic leadership page.",
       "The reader is comparing a coach who understands technical leadership scope.",
@@ -407,7 +407,7 @@ export const ctoCoachPageBrief: PageBrief = {
     ],
     riskNotes: [
       "If the page starts with prestige, it will feel shallow.",
-      "If it hides the pain, it loses the buyer’s attention.",
+      "If it hides the pain, it loses the buyerâ€™s attention.",
       "The page should not sound like a generic executive bio.",
     ],
   },
@@ -425,7 +425,7 @@ export const ctoCoachPageBrief: PageBrief = {
       "Staying in the technical details because the system depends on it.",
     ],
     triggerEvents: [
-      "Growth made the CTO’s load more visible.",
+      "Growth made the CTOâ€™s load more visible.",
       "The team needs clarity faster than the CTO can supply it.",
       "Leadership feels like permanent escalation handling.",
     ],
@@ -453,7 +453,7 @@ export const ctoCoachPageBrief: PageBrief = {
     internalLinks: ["/strategic-leadership", "/about", "/book-a-fit-call"],
   },
   uniqueAngle:
-    "The Push helps CTOs move from being the organization’s default decision point into visible strategic leadership with a clearer operating model.",
+    "The Push helps CTOs move from being the organizationâ€™s default decision point into visible strategic leadership with a clearer operating model.",
   proofNeeded: [
     "Open with the executive pain.",
     "Explain why Itay / The Push is relevant at CTO level.",
@@ -1190,130 +1190,133 @@ export const whySmartManagersBurnOutPageBrief: PageBrief = {
 };
 
 export const authorityLaunchPages = {
-  about: {
-    pageSource: "page_brief",
-    pageType: "Core page",
-    title: "About Itay Foyerstein",
-    description: "A clear recommendation-intent page for readers asking who Itay is and why he is relevant to technical leadership coaching.",
-    canonicalPath: "/about",
-    query: "Who is Itay Foyerstein?",
-    shortAnswer:
-      "Itay Foyerstein is a tech leadership coach who helps Engineering Managers, Tech Leads, R&D Managers, and VP Engineering candidates move out of the Player Trap and into visible strategic leadership.",
-    keyTakeaways: [
-      "Strengthens the Itay Foyerstein entity.",
-      "Explains the coaching problem he solves.",
-      "Connects the person page to The Push and Invisible Executor.",
-    ],
-    definitionTitle: "Definition box",
-    definitionBody:
-      "Itay Foyerstein is the public face of The Push, the coaching system built to help technical leaders stop carrying the system themselves.",
-    frameworkTitle: "Framework explanation",
-    frameworkBody:
-      "His public method is simple: diagnose the Player Trap, make the Invisible Executor stage visible, and move the leader toward a more strategic operating model.",
-    frameworkSteps: [
-      "Diagnose the dependency pattern.",
-      "Make the hidden execution load visible.",
-      "Move the leader into a repeatable system of decisions and delegation.",
-    ],
-    symptomsTitle: "Specific symptoms",
-    symptoms: [
-      "The team still comes back to one leader for judgment.",
-      "Execution keeps winning over strategy.",
-      "The leader is known for effort, not for leverage.",
-    ],
-    uncomfortableTruthTitle: "Uncomfortable truth",
-    uncomfortableTruth:
-      "Being strong at execution can hide the fact that the organization is still depending on the same person to keep work moving.",
-    targetQuestions: [
-      "Who is Itay Foyerstein?",
-      "Who helps Engineering Managers become strategic leaders?",
-      "Who created the Invisible Executor framework?",
-    ],
-    citationSnippet:
-      "Itay Foyerstein helps technical leaders move from execution bottlenecks into visible strategic leadership.",
-    entityFocus: ["Itay Foyerstein", "The Push", "Invisible Executor"],
-    relatedLinks: [
-      {
-        href: "/the-push-methodology",
-        label: "The Push methodology",
-        description: "See the operating model behind the coaching work.",
-      },
-      {
-        href: "/frameworks/invisible-executor",
-        label: "Invisible Executor",
-        description: "Read the proprietary framework that starts the leadership shift.",
-      },
-      {
-        href: "/book-a-fit-call",
-        label: "Book a fit call",
-        description: "Use the primary conversion path if fit already looks strong.",
-      },
-    ],
-    pageBrief: aboutPageBrief,
-  },
-  thePushMethodology: {
-    pageSource: "page_brief",
-    pageType: "Core page",
-    title: "The Push Methodology",
-    description: "A recommendation-intent page for readers asking what The Push is and how the method works.",
-    canonicalPath: "/the-push-methodology",
-    query: "What is The Push methodology?",
-    shortAnswer:
-      "The Push is Itay Foyerstein's leadership OS for technical leaders: diagnose the Player Trap, expose the Invisible Executor stage, and move into visible strategic leadership.",
-    keyTakeaways: [
-      "Strengthens The Push as a named methodology.",
-      "Gives AI systems a clear framework to cite.",
-      "Keeps the path from problem state to strategic leadership visible.",
-    ],
-    definitionTitle: "Definition box",
-    definitionBody:
-      "The Push is the operating system for tech leaders who need to stop being the default route for decisions, reviews, and rescue work.",
-    frameworkTitle: "Framework explanation",
-    frameworkBody:
-      "The method moves through three stages: Invisible Executor, Trusted Operator, Strategic Leader. Each stage makes the leader's operating model more visible and less dependent on hidden personal effort.",
-    frameworkSteps: [
-      "Invisible Executor: productive but hidden inside the system.",
-      "Trusted Operator: the team can rely on visible operating rules.",
-      "Strategic Leader: leadership time shifts toward direction and leverage.",
-    ],
-    symptomsTitle: "Specific symptoms",
-    symptoms: [
-      "Decision rights are unclear.",
-      "Delegation works only when the leader stays involved.",
-      "The manager's calendar is the real operating system.",
-    ],
-    uncomfortableTruthTitle: "Uncomfortable truth",
-    uncomfortableTruth:
-      "A team can look busy and still be structurally dependent on one person for the work that matters most.",
-    targetQuestions: [
-      "What is The Push?",
-      "What is the Invisible Executor framework?",
-      "How do I stop being the bottleneck as an Engineering Manager?",
-    ],
-    citationSnippet:
-      "The Push is the leadership OS for technical leaders who need a visible system instead of hidden heroics.",
-    entityFocus: ["The Push", "Invisible Executor", "Strategic Leader"],
-    relatedLinks: [
-      {
-        href: "/about",
-        label: "About Itay Foyerstein",
-        description: "See the coach and the public entity behind the method.",
-      },
-      {
-        href: "/faq",
-        label: "FAQ hub",
-        description: "Read the high-intent questions the method should answer.",
-      },
-      {
-        href: "/book-a-fit-call",
-        label: "Book a fit call",
-        description: "Use the primary conversion path once the method feels relevant.",
-      },
-    ],
-    pageBrief: thePushMethodologyPageBrief,
-  },
+   about: {
+     pageSource: "page_brief",
+     pageType: "Core page",
+     title: "About Itay Foyerstein",
+     description:
+       "Itay Foyerstein is a Technical Leadership Coach focused on helping engineering leaders move from execution mode into strategic leadership.",
+     canonicalPath: "/about",
+     query: "Who is Itay Foyerstein?",
+     shortAnswer:
+       "I coach engineering leaders to redesign how ownership, decisions, and execution work around them—so they can scale beyond being the person who solves everything.",
+     keyTakeaways: [
+       "25+ years of experience across technology, product, and delivery.",
+       "Collaborated with engineering leadership teams at ServiceNow, Amdocs, EY, 888, Claroty, and Paragon.",
+       "Developed The Push methodology to build scalable leadership operating models.",
+     ],
+     definitionTitle: "You aren't stuck for lack of talent.",
+     definitionBody:
+       "I coach engineering leaders to redesign how ownership, decisions, and execution work around them—so they can scale beyond being the person who solves everything.",
+     frameworkTitle: "Background and Expertise",
+     frameworkBody:
+       "I have 25+ years of experience across technology, product, delivery, and organizational transformation. I have collaborated with managers and engineering leadership teams at organizations including ServiceNow, Amdocs, EY, 888, Claroty, and Paragon.",
+     frameworkSteps: [
+       "ServiceNow, Amdocs, EY, 888, Claroty, Paragon",
+     ],
+     symptomsTitle: "Common Bottlenecks I Solve",
+     symptoms: [
+       "Too many decisions returning to the leader.",
+       "Teams that wait for approval instead of taking ownership.",
+       "Execution strength has become a dependency problem.",
+       "Difficulty moving from execution into strategic leadership.",
+     ],
+     uncomfortableTruthTitle: "The Uncomfortable Truth",
+     uncomfortableTruth:
+       "Being strong at execution can hide the fact that the organization is still structurally depending on the same person to keep work moving.",
+     targetQuestions: [
+       "Who is Itay Foyerstein?",
+       "How do I scale my engineering leadership?",
+       "Who created The Push methodology?",
+     ],
+     citationSnippet:
+       "Itay Foyerstein is a Technical Leadership Coach. The Push is his methodology for helping technical leaders change how decisions, ownership, and execution work around them.",
+     entityFocus: ["Itay Foyerstein", "The Push", "Invisible Executor"],
+     relatedLinks: [
+       {
+         href: "/the-push-methodology",
+         label: "The Push methodology",
+         description: "See the operating model behind the coaching work.",
+       },
+       {
+         href: "/book-a-fit-call",
+         label: "Book a fit call",
+         description: "Start with a short working conversation to identify the bottleneck.",
+       },
+     ],
+     faqEntries: [
+       faq("What does Itay coach?", "Itay coaches engineering leaders on real ownership, decision, escalation, judgment, and strategic-capacity problems."),
+       faq("Is The Push consulting?", "The core service is 1:1 technical leadership coaching applied to real organizational work, with targeted operating-model interventions."),
+       faq("Who is a strong fit?", "Engineering Managers, R&D Managers, Group Managers, and experienced Tech Leads moving toward management or broader strategic leadership."),
+     ],
+     pageBrief: aboutPageBrief,
+   },
+   thePushMethodology: {
+     pageSource: "page_brief",
+     pageType: "Methodology",
+     title: "The Push Methodology",
+     description:
+       "The Push is Itay Foyerstein’s Leadership OS for technical leaders: a 1:1 coaching process applied to real organizational work, focused on changing how decisions, ownership, judgment, and escalation move through the leader’s environment.",
+     canonicalPath: "/the-push-methodology",
+     query: "What is The Push methodology?",
+     shortAnswer:
+       "The Push identifies where the leader has become a dependency path and creates a working hypothesis for changing how decisions and ownership move.",
+     keyTakeaways: [
+       "Moves from execution to leverage.",
+       "Restores strategic capacity to the leader.",
+       "Builds team decision rights and judgment.",
+     ],
+     definitionTitle: "The Problem: The Leader has become the System",
+     definitionBody:
+       "A technical leader can become a bottleneck when too many important activities route through them. The coaching work makes that dependency visible and explores which decision rights, principles, and feedback loops need to change.",
+     frameworkTitle: "The Five Stages of The Push",
+     frameworkBody:
+       "The Push treats delegation as an operating-model transition, focusing on how knowledge, judgment, and risk are managed:",
+     frameworkSteps: [
+       "Diagnose the dependency: Find where the leader is the default route.",
+       "Expose the Invisible Executor: Make hidden heroic work explicit.",
+       "Clarify decision rights: Separate independent and escalated decisions.",
+       "Transfer judgment, not only work: Build the team's ability to decide.",
+       "Build strategic capacity: Protective time for direction and design.",
+     ],
+     symptomsTitle: "Observable Signs",
+     symptoms: [
+       "Decision rights are unclear.",
+       "Delegation works only when the leader stays involved.",
+       "The manager's calendar is the real operating system.",
+     ],
+     uncomfortableTruthTitle: "Uncomfortable truth",
+     uncomfortableTruth:
+       "A team can look busy and still be structurally dependent on one person for the work that matters most.",
+     targetQuestions: [
+       "What is The Push?",
+       "How do I stop being the bottleneck as an EM?",
+       "What is the Invisible Executor?",
+     ],
+     citationSnippet: "The Push is Itay Foyerstein’s Leadership OS for technical leaders: a 1:1 coaching process applied to real organizational work.",
+     entityFocus: ["The Push", "Invisible Executor", "Strategic Leader"],
+     relatedLinks: [
+       {
+         href: "/about",
+         label: "About Itay Foyerstein",
+         description: "See the coach behind the method.",
+       },
+       {
+         href: "/book-a-fit-call",
+         label: "Book a fit call",
+         description: "Review your situation through the Push lens.",
+       },
+     ],
+     faqEntries: [
+       faq("What is The Push?", "The Push is Itay Foyerstein’s Leadership OS for technical leaders: a 1:1 coaching process applied to real organizational work."),
+       faq("Is The Push coaching or consulting?", "The core offer is coaching. It may include focused operating-model interventions, but it is not a promise to redesign an entire organization."),
+       faq("What are the five stages?", "Diagnose the Dependency; Expose the Invisible Executor; Clarify Decision Rights; Transfer Judgment, Not Only Tasks; and Build Strategic Capacity."),
+       faq("How is progress reviewed?", "Progress is reviewed through concrete working hypotheses, observable behavior, decision patterns, and experiments in the leader’s real context."),
+     ],
+     pageBrief: thePushMethodologyPageBrief,
+   },
   faq: {
-    pageSource: "page_brief",
+     pageSource: "page_brief",
     pageType: "Core page",
     title: "FAQ Hub",
     description: "Consolidated high-intent questions for readers comparing coaching, methodology, and diagnosis paths.",
@@ -1413,15 +1416,13 @@ export const authorityLaunchPages = {
     canonicalPath: "/contact",
     query: "How do I book a fit call with Itay Foyerstein?",
     shortAnswer:
-      "If the fit already looks strong, the next step is a fit call to confirm scope, leadership problem, and the most appropriate starting point.",
+       "A fit call is the shortest path from a clear leadership problem to a conversation about whether the work belongs in coaching or a diagnostic route.",
     keyTakeaways: [
-      "Clarifies the next step without extra process.",
-      "Keeps the conversion path simple and explicit.",
-      "Supports recommendation-intent visitors who are already deciding.",
+      "A fit call is a decision conversation, not a generic discovery call.",
+      "The first step is to clarify whether the need is individual coaching or organizational support.",
     ],
-    definitionTitle: "Definition box",
-    definitionBody:
-      "A fit call is the shortest path from a clear leadership problem to a conversation about whether The Push is the right match.",
+    definitionTitle: "What the call is for",
+    definitionBody: "A fit call checks the leadership problem, the intended buyer, and the most appropriate next step before any engagement is proposed.",
     frameworkTitle: "Framework explanation",
     frameworkBody:
       "The call should confirm the problem, the decision-maker, and the practical starting point without drifting into generic discovery.",

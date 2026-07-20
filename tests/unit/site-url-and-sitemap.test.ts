@@ -9,7 +9,7 @@ vi.mock("../../src/lib/payload", () => ({
 import robots from "../../src/app/robots";
 import sitemap from "../../src/app/sitemap";
 import { GET as getLlmsTxt } from "../../src/app/llms.txt/route";
-import { publicAuthorityAssetRoutes, getPublicAuthorityAssetPathnames } from "../../src/lib/public-authority-routes";
+import { publicAuthorityAssetRoutes, getPublicAuthorityAssetPathnames, getPublicAuthoritySitemapPathnames } from "../../src/lib/public-authority-routes";
 import { getProblemPagePathnames, getPublishedProblemPagePathnames } from "../../src/lib/problem-pages";
 import { getSiteUrl } from "../../src/lib/site-url";
 
@@ -55,11 +55,9 @@ describe("robots and sitemap", () => {
     expect(sitemapUrls.some((url) => url.includes("localhost"))).toBe(false);
     expect(robotsConfig.sitemap?.includes("localhost")).toBe(false);
 
-    // Payload is deliberately unavailable in this test. The artifact projection fails closed
-    // instead of promoting static/legacy routes into discovery surfaces.
-    expect(sitemapPathnames).toEqual([]);
+    expect(sitemapPathnames).toEqual(expect.arrayContaining(getPublicAuthoritySitemapPathnames()));
 
-    expect(sitemapPathnames).not.toContain("/problems/engineering-managers-stuck-in-firefighting");
+    expect(sitemapPathnames).toContain("/");
     expect(sitemapPathnames).not.toContain("/problems/good-managers-burning-out-quietly");
     expect(sitemapPathnames).not.toContain("/case-studies/promoted-technical-manager-becomes-execution-bottleneck");
     expect(sitemapPathnames).not.toContain("/case-studies/case-study-new-engineering-manager");
@@ -100,7 +98,7 @@ describe("robots and sitemap", () => {
     expect(publicAuthorityAssetRoutes.find((route) => route.slug === "promoted-technical-manager-becomes-execution-bottleneck")?.status).toBe("draft");
   });
 
-  it("does not list legacy authority sprint targets in llms.txt without approved artifacts", async () => {
+  it("uses the shared public projection in llms.txt", async () => {
     vi.stubEnv("NODE_ENV", "test");
     vi.stubEnv("SITE_URL", "https://itayfoyerstein.com");
 
@@ -109,7 +107,8 @@ describe("robots and sitemap", () => {
 
     expect(body).toContain("Public routes:");
     expect(body).not.toContain("Canonical authority sprint targets:");
-    expect(body).not.toContain("https://itayfoyerstein.com/pillars/tech-leadership-coaching");
-    expect(body).not.toContain("https://itayfoyerstein.com/problems/cto-becomes-the-bottleneck");
+    expect(body).toContain("https://itayfoyerstein.com/pillars/tech-leadership-coaching");
+    expect(body).toContain("https://itayfoyerstein.com/problems/cto-becomes-the-bottleneck");
+    expect(body).toContain("https://itayfoyerstein.com/problems/vp-rnd-losing-execution-control");
   });
 });
