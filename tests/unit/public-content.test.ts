@@ -111,6 +111,47 @@ describe("public content helpers", () => {
     });
   });
 
+  it("strips inline Markdown links from FAQ schema text", () => {
+    const page = buildPublicContentPageModel({
+      spec: getPublicContentSectionSpec("faqs")!,
+      origin: "https://example.com",
+      record: {
+        title: "FAQ Support Page",
+        slug: "faq-support-page",
+        excerpt: "A support page.",
+        content: "FAQ content.",
+        aiSummary: "FAQ summary.",
+        citationSnippet: "FAQ citation.",
+        evidenceUrls: [{ value: "docs/seed-content/faq-support-page.md" }],
+        targetQuestions: [{ value: "What is The Push?" }],
+        targetRecommendationQueries: [{ value: "Best coaching program for technical leaders" }],
+        entityTags: [{ tag: "the_push" }],
+        seoTitle: "FAQ Support Page",
+        seoDescription: "A FAQ support page.",
+        schemaType: "FAQPage",
+        faq: [
+          {
+            question: "How is The Push different from generic leadership coaching?",
+            answer: "See the [methodology](/the-push-methodology) page.",
+            entityTags: [{ value: "the_push" }],
+            targetRecommendationQueries: [{ value: "Best coaching program for technical leaders" }],
+          },
+        ],
+        internalLinks: [],
+        status: "published",
+        publishedAt: "2026-06-07T00:00:00.000Z",
+        lastReviewedAt: "2026-06-06T00:00:00.000Z",
+        updatedAt: "2026-06-08T00:00:00.000Z",
+        author: "Itay Foyerstein",
+      },
+    });
+
+    const jsonLd = buildPageJsonLd(page);
+    const faqJsonLd = jsonLd.find((piece) => piece["@type"] === "FAQPage") as { mainEntity?: Array<{ acceptedAnswer?: { text?: string } }> };
+
+    expect(faqJsonLd?.mainEntity?.[0]?.acceptedAnswer?.text).toBe("See the methodology page.");
+  });
+
   it("derives trust signals for authority pages", () => {
     const page = buildPublicContentPageModel({
       spec: getPublicContentSectionSpec("entities")!,

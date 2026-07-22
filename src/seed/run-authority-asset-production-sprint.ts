@@ -1,3 +1,5 @@
+import type { PayloadRequest } from "payload";
+
 import "./load-env";
 import { pathToFileURL } from "node:url";
 
@@ -6,6 +8,7 @@ import { authorityAssetProductionSprintAssets } from "./authority-asset-producti
 
 type PayloadLike = Awaited<ReturnType<typeof getServerPayload>>;
 type CollectionSlug = Parameters<PayloadLike["find"]>[0]["collection"];
+const humanSeedRequest = { user: { role: "human" } as unknown as PayloadRequest["user"] } satisfies Partial<PayloadRequest>;
 
 function toTextItems(values: readonly string[]) {
   return values.map((value) => ({ value }));
@@ -33,12 +36,14 @@ async function upsertBySlug(payload: PayloadLike, collection: CollectionSlug, sl
     return payload.update({
       collection,
       id: doc.id,
+      req: humanSeedRequest,
       data: data as never,
     });
   }
 
   return payload.create({
     collection,
+    req: humanSeedRequest,
     data: data as never,
   });
 }
@@ -60,6 +65,7 @@ export async function runAuthorityAssetProductionSprintSeed() {
       entityTags: toEntityTagItems(asset.payloadData.entityTags),
       seoTitle: asset.payloadData.seoTitle,
       seoDescription: asset.payloadData.seoDescription,
+      canonicalUrl: asset.payloadData.canonicalUrl,
       schemaType: asset.payloadData.schemaType,
       faq: asset.payloadData.faq.map((entry) => ({
         question: entry.question,

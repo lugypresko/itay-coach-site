@@ -57,6 +57,7 @@ const llmsFixedPathnames = new Set([
   "/frameworks",
   "/case-studies",
   "/faqs",
+  "/faq",
   "/glossary",
   "/player-trap",
 ]);

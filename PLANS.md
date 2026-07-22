@@ -4048,3 +4048,399 @@ Verification:
 - `npm run build` passed locally; only pre-existing lint warnings remain.
 - `npm test` passed: 63 files / 348 tests.
 - Replaced the internal anchor with `next/link` and escaped the manifesto apostrophe.
+
+### Task 080 - FAQ SEO Planning Document
+
+State: `completed`
+Lane: `content-planning`, `seo`
+Owner: Codex
+
+Goal:
+Create the internal FAQ SEO planning document for The Push before any final FAQ copy or production-page modification.
+
+Scope:
+- Record repository and SEO architecture findings.
+- Record the keyword and search-intent map.
+- Record the selected 34-question FAQ planning table.
+- Record consolidation notes, cannibalization risks, internal-link recommendations, and remaining data gaps.
+
+Out of scope:
+- No final FAQ answers.
+- No production-page modification.
+- No Payload change, schema migration, publication, deployment, or provider call.
+
+Verification:
+- Created `docs/FAQ Planning Layer.md`.
+- Included repository findings, keyword map, candidate inventory, final 34-question planning table, consolidation notes, cannibalization risks, internal-link map, and data gaps.
+- Confirmed the final planning table contains exactly 34 questions.
+- `git diff --check` passed for the changed planning files.
+- No final FAQ answers or production-page changes were made.
+
+### Task 081 - FAQ Seven-Section Revision
+
+State: `completed`
+Lane: `content-planning`, `seo`, `conversion`
+Owner: Codex
+
+Goal:
+Revise the internal FAQ planning layer around seven sections, stronger product clarity, conversion questions, and staged CTAs.
+
+Scope:
+- Replace the 8-section recommendation with a 7-section journey.
+- Add first-session, stakeholder feedback, sponsorship, pricing, remote delivery, and organizational-problem questions.
+- Remove the template-framed FAQ question and use a natural customer question instead.
+- Update schema, internal-linking, and CTA guidance.
+
+Out of scope:
+- No final FAQ answers.
+- No production-page modification.
+- No Payload change, publication, deployment, or provider call.
+
+Verification:
+- Revised `docs/FAQ Planning Layer.md` to a 7-section architecture.
+- Added a current 36-question planning table.
+- Added product-clarity and conversion questions for first session, stakeholder feedback, sponsorship, pricing, remote delivery, and organizational problems.
+- Updated internal-linking, CTA, and schema guidance.
+- Confirmed the current planning table contains exactly 36 questions.
+- `git diff --check` passed for the changed planning files.
+
+### Task 082 - FAQ Copy Draft Generation
+
+State: `completed`
+Lane: `content-writing`, `conversion`
+Owner: Codex
+
+Goal:
+Generate the review-ready English FAQ copy for The Push from the approved 36-question planning table.
+
+Scope:
+- Write the FAQ in two batches of 18 questions.
+- Keep each answer within 60-120 words.
+- Treat `docs/FAQ Planning Layer.md` as authoritative for section order, question order, internal-linking guidance, CTA placement, and approved language boundaries.
+- Run a separate QA pass after both batches are drafted to detect overlap, duplication, or answer drift.
+- Produce a comparison audit and revise only the answers flagged as overlapping.
+
+Out of scope:
+- No SEO planning-layer rewrite.
+- No production page change.
+- No web search.
+- No Payload change, publication, deployment, or provider call.
+
+Files expected to change:
+- `docs/FAQ Copy Draft.md`
+- `PLANS.md`
+
+Validation steps:
+- Verify exactly 36 FAQ answers exist in the draft.
+- Verify the draft is split into two batches of 18.
+- Verify each answer is 60-120 words.
+- Run a manual QA pass for overlap, duplication, and claim drift.
+- Verify the draft follows the approved seven-section structure.
+
+Acceptance criteria:
+- A new FAQ draft file exists with all 36 answers.
+- The draft is organized as Batch 1 and Batch 2, each with 18 answers.
+- A separate QA section documents overlap findings and any corrections.
+- The planning layer is unchanged.
+- No production or publication files are modified.
+
+Verification notes:
+- Created `docs/FAQ Copy Draft.md`.
+- Verified 36 answers.
+- Verified the answer word-count range is 62-101 words.
+- Verified the draft is split into two batches of 18.
+- QA pass recorded no material overlap requiring rewrite.
+
+### Task 083 - FAQ Revision with Itay Section and Audit Gates
+
+State: `completed`
+Lane: `content-writing`, `conversion`, `seo-review`
+Owner: Codex
+
+Goal:
+Revise the FAQ draft to include a short About Itay Foyerstein section, restore concrete deliverables, split the fit question, and add three separate pre-publication audits.
+
+Scope:
+- Add the About Itay Foyerstein section using the approved source draft.
+- Reduce repetitive language around system, pattern, and dependency.
+- Add engineering examples and concrete deliverables.
+- Make the first-session answer specific and practical.
+- Split the combined fit question into two clearer questions.
+- Add separate Editorial, Technical SEO, and Evidence audit sections.
+
+Out of scope:
+- No web search.
+- No production-page modification.
+- No publishing, deployment, or provider call.
+- No SEO planning rewrite unless required to keep the draft internally coherent.
+
+Files expected to change:
+- `docs/FAQ Copy Draft.md`
+
+Validation steps:
+- Verify the new About Itay section is present.
+- Verify the fit question is split into separate fit and conversation questions.
+- Verify the draft includes explicit deliverables language.
+- Verify the three audits are separated and labeled.
+- Verify each answer stays focused on one question.
+
+Acceptance criteria:
+- The FAQ draft reflects the new section and revised copy requests.
+- The draft is tighter, less repetitive, and more concrete.
+- The audits are clearly separated.
+- No production or publication files are modified.
+
+Verification notes:
+- Updated `docs/FAQ Copy Draft.md`.
+- Added the About Itay Foyerstein section.
+- Split the fit question into separate fit and conversation questions.
+- Restored explicit deliverables language.
+- Added separate Editorial, Technical SEO, and Evidence audit sections.
+- Verified 40 questions with word counts between 60 and 84 words.
+
+### Task 084 - FAQ Comparison Question Restore
+
+State: `completed`
+Lane: `content-writing`, `conversion`, `seo-review`
+Owner: Codex
+
+Goal:
+Restore the central comparison question about mentoring, consulting, and management training, while tightening the About Itay proof line, why-now framing, and fit-conversation promise.
+
+Scope:
+- Restore the comparison question in the Alternatives section.
+- Add a more concrete proof line to the About Itay section.
+- Add a why-now sentence to the About section.
+- Soften the fit-conversation promise so it does not sound like a mini-diagnostic.
+- Re-run content and count verification on the draft.
+
+Out of scope:
+- No web search.
+- No SEO planning rewrite.
+- No production-page modification.
+- No publishing, deployment, or provider call.
+
+Files expected to change:
+- `docs/FAQ Copy Draft.md`
+
+Validation steps:
+- Verify the comparison question exists.
+- Verify the About section includes one concrete proof line.
+- Verify the fit-conversation wording is less expansive.
+- Verify answer count and word-count range after the change.
+
+Acceptance criteria:
+- The key comparison question is restored.
+- The About section feels less generic.
+- The fit-conversation promise is tighter.
+- No production or publication files are modified.
+
+Verification notes:
+- Updated `docs/FAQ Copy Draft.md`.
+- Restored the mentoring/consulting/management training comparison question.
+- Added the why-now line and the concrete proof line in About Itay.
+- Tightened the fit-conversation promise.
+- Verified 41 questions with word counts between 60 and 93 words.
+
+### Task 085 - FAQ Public Page Publication Update
+
+State: `completed`
+Lane: `content-writing`, `publication`, `frontend`
+Owner: Codex
+
+Goal:
+Publish the revised FAQ draft to the public `/faq` page and align the page structure with the approved sectioned copy.
+
+Scope:
+- Update the public FAQ page content source.
+- Add sectioned FAQ rendering support to the public page component.
+- Align the public FAQ copy with the revised draft, including the About Itay section and the restored comparison question.
+- Keep the public page readable, sectioned, and conversion-oriented.
+
+Out of scope:
+- No web search.
+- No new SEO planning layer.
+- No unrelated public page rewrites.
+- No deployment or provider call unless explicitly authorized after verification.
+
+Files expected to change:
+- `src/lib/authority-launch-pages.ts`
+- `src/components/authority-launch-page.tsx`
+- `docs/FAQ Copy Draft.md` or supporting FAQ notes only if needed for alignment
+
+Validation steps:
+- Run `npm run typecheck`.
+- Run `npm run build`.
+- Verify the `/faq` route compiles with sectioned FAQ content.
+- Verify the comparison question is present in the public FAQ.
+
+Acceptance criteria:
+- The public FAQ page reflects the revised draft.
+- Sectioned FAQ rendering works on `/faq`.
+- The restored comparison question is live.
+- No production publication or deployment side effects occur without explicit verification.
+
+Verification notes:
+- Updated `src/lib/authority-launch-pages.ts` with the published FAQ content and sectioned FAQ data.
+- Updated `src/components/authority-launch-page.tsx` to render FAQ sections when present.
+- `npm run typecheck` passed.
+- `npm run build` passed.
+- `/faq` compiled successfully in the production build.
+
+### Task 086 - FAQ Discovery Indexability Update
+
+State: `completed`
+Lane: `seo`, `publication`, `discovery`
+Owner: Codex
+
+Goal:
+Make the public `/faq` page indexable by search engines and eligible for LLM discovery while preserving the existing noindex behavior on other governed authority-launch pages.
+
+Scope:
+- Allow `/faq` to emit `index, follow` metadata.
+- Include `/faq` in the LLM-readable route inventory.
+- Add or adjust regression tests so the FAQ discoverability behavior is explicit.
+
+Out of scope:
+- No FAQ copy rewrite.
+- No unrelated publication or content changes.
+- No deployment or external search-console actions.
+
+Files expected to change:
+- `src/lib/authority-launch-pages.ts`
+- `src/lib/publication-surface-projection.ts`
+- `tests/unit/*`
+- `decisions.md`
+- `PLANS.md`
+
+Data contracts affected:
+- None.
+
+Agent permissions affected:
+- None.
+
+Validation steps:
+- Run focused unit tests for FAQ metadata and `llms.txt` eligibility.
+- Run `npm run typecheck`.
+- Run `npm run build`.
+
+Acceptance criteria:
+- `/faq` emits `index, follow`.
+- `/faq` appears in `llms.txt`.
+- Other authority-launch pages keep their existing robots behavior unless explicitly changed.
+- Tests verify the intended FAQ discovery surface.
+
+Verification notes:
+- Updated `src/lib/authority-launch-pages.ts` so `/faq` emits `index, follow` while other authority-launch pages remain `noindex, nofollow`.
+- Updated `src/lib/publication-surface-projection.ts` so `/faq` is included in the LLM-readable route inventory.
+- Added regression coverage in `tests/unit/authority-launch-pages.test.ts` and `tests/unit/site-url-and-sitemap.test.ts`.
+- `npm test -- tests/unit/authority-launch-pages.test.ts tests/unit/site-url-and-sitemap.test.ts` passed.
+- `npm run typecheck` passed.
+- `npm run build` passed.
+- Production deployment completed at `https://itay-coach-site-6g7k758ag-fitay-yahoocoms-projects.vercel.app` and was aliased to `https://itayfoyerstein.com`.
+- Live verification confirmed `/faq` no longer contains `noindex, nofollow`, does contain `index, follow`, and `/llms.txt` contains `/faq`.
+
+### Task 087 - FAQ Technical Audit and Scoped Fixes
+
+State: `completed`
+Lane: `seo`, `ux`, `accessibility`, `publication`
+Owner: Codex
+
+Goal:
+Perform the scoped `/faq` audit and fix pass requested by the user, then validate the linked destinations without redesigning the linked pages.
+
+Scope:
+- Audit `/faq` content, UX, accessibility, internal linking, and technical SEO.
+- Replace visible Markdown link syntax with rendered links where present.
+- Validate heading hierarchy, scanability, section navigation, accordion behavior, anchor IDs, CTA placement, canonical, indexability, and FAQ schema.
+- Validate the linked destination pages end to end without redesigning them.
+- Run a short Lighthouse/axe-style technical audit after the Markdown-link fix.
+
+Out of scope:
+- No full redesign of `/faq`.
+- No optimization of linked service pages beyond validation and issue logging.
+- No FAQ copy rewrite unless required to fix a broken implementation issue.
+- No deployment unless the audit produces scoped fixes worth shipping.
+
+Files expected to change:
+- `src/app/(site)/faq/page.tsx`
+- `src/components/authority-launch-page.tsx`
+- `src/lib/authority-launch-pages.ts`
+- `src/lib/public-schema.ts`
+- `tests/unit/*`
+- `PLANS.md`
+
+Data contracts affected:
+- None.
+
+Agent permissions affected:
+- None.
+
+Validation steps:
+- Run targeted unit tests around FAQ rendering, schema, metadata, and linked destinations.
+- Run `npm run typecheck`.
+- Run `npm run build`.
+- Run a short Lighthouse/axe-style local accessibility check after Markdown-link validation.
+
+Acceptance criteria:
+- Any visible Markdown link syntax on `/faq` is replaced by rendered links.
+- Heading hierarchy and anchors are valid.
+- Canonical and indexability remain correct.
+- Linked destinations are validated and documented by route/issue/severity/impact/follow-up.
+- Any follow-up issues outside scope are listed separately.
+
+Verification notes:
+- Added `src/lib/markdown-links.ts` and rendered FAQ answers as real links instead of visible Markdown literal text.
+- Updated `/faq` to use accessible `<details>/<summary>` accordions with stable section and question anchors.
+- Added jump navigation and a most-asked-questions section.
+- Updated FAQ schema to strip inline Markdown link syntax from visible answer text.
+- Updated authority-launch metadata to emit canonical URLs and keep `/faq` as `index, follow`.
+- Adjusted typography so the eyebrow label passes contrast.
+- Added/updated tests covering FAQ rendering, Markdown-link stripping, schema text, canonical metadata, and LLM route inventory.
+- `npm test -- tests/unit/authority-launch-pages.test.ts tests/unit/site-url-and-sitemap.test.ts tests/unit/public-content.test.ts` passed.
+- `npm run typecheck` passed.
+- `npm run build` passed.
+- Lighthouse on `http://localhost:3003/faq` reported the selected audits as passing, and axe on the rebuilt FAQ returned no violations.
+- Live production verification confirmed `/faq` now emits canonical `https://itayfoyerstein.com/faq`, `robots: index, follow`, and `/llms.txt` still includes `/faq`.
+- Deployment completed to `https://itay-coach-site-e19a593dm-fitay-yahoocoms-projects.vercel.app` and was aliased to `https://itayfoyerstein.com`.
+- Linked destination validation found several linked authority pages remain `noindex, nofollow` by current design; `/player-trap` also lacks a canonical tag. Those are documented as follow-up SEO issues outside this task scope.
+
+### Task 088 - Payload FAQ Seed Sync
+
+State: `completed`
+Lane: `cms`, `content`
+Owner: Codex
+
+Goal:
+Sync the Payload FAQ seed source with the current approved FAQ message for The Push so the CMS reflects the updated answer set.
+
+Scope:
+- Update the FAQ seed asset source to the current FAQ copy draft.
+- Keep the existing collection schema unchanged.
+- Preserve existing public route behavior for this turn.
+
+Out of scope:
+- No public-page redesign.
+- No FAQ SEO planning regeneration.
+- No schema migration.
+- No publication or deployment.
+
+Files expected to change:
+- `src/seed/authority-asset-production-sprint.ts`
+- `src/seed/run-authority-asset-production-sprint.ts`
+- `PLANS.md`
+
+Validation steps:
+- Verify the seed manifest still has the expected shape.
+- Run a focused unit test for the production-sprint manifest.
+
+Acceptance criteria:
+- The FAQ seed source reflects the current approved FAQ message.
+- The seed runner can persist the updated canonical URL when present.
+- Existing asset-count expectations continue to pass.
+
+Verification notes:
+- Updated the existing `faqs` sprint asset to reference `docs/FAQ Copy Draft.md` and reflect the current approved FAQ messaging for The Push.
+- Added `canonicalUrl` support to the sprint payload interface and seed runner so the FAQ record can persist `/faq`.
+- `npm test -- tests/unit/authority-asset-production-sprint.test.ts` passed.
+- `npm run typecheck` passed.

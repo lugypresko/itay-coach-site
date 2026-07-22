@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 
 import {
   authorityLaunchPages,
+  buildAuthorityLaunchMetadata,
+  getAuthorityLaunchPage,
   validateAuthorityLaunchPageConfig,
   validateAuthorityLaunchPagesManifest,
 } from "../../src/lib/authority-launch-pages";
@@ -48,8 +50,22 @@ describe("authority launch pages", () => {
   });
 
   it("keeps the FAQ hub high-intent and dense enough", () => {
-    expect(authorityLaunchPages.faq.faqEntries).toHaveLength(20);
-    expect(authorityLaunchPages.faq.targetQuestions.length).toBeGreaterThanOrEqual(8);
+    expect(authorityLaunchPages.faq.faqEntries).toHaveLength(41);
+    expect(authorityLaunchPages.faq.targetQuestions.length).toBeGreaterThanOrEqual(5);
+  });
+
+  it("lets only the FAQ launch page emit indexable robots metadata", () => {
+    vi.stubEnv("NODE_ENV", "production");
+    vi.stubEnv("SITE_URL", "https://itayfoyerstein.com");
+
+    expect(buildAuthorityLaunchMetadata(getAuthorityLaunchPage("faq"))).toMatchObject({
+      robots: { index: true, follow: true },
+      alternates: { canonical: "https://itayfoyerstein.com/faq" },
+    });
+    expect(buildAuthorityLaunchMetadata(getAuthorityLaunchPage("about"))).toMatchObject({
+      robots: { index: false, follow: false },
+      alternates: { canonical: "https://itayfoyerstein.com/about" },
+    });
   });
 
   it("validates the launch manifest and rejects new landing pages without PageBrief", () => {

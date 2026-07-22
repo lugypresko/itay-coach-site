@@ -220,3 +220,14 @@ This file is the project’s single append-only decision record. New decisions a
 - Context: `docs/evidence/campaign-claim-ledger.md`; `docs/evidence/authority-evidence-registry.md`; `docs/plans/2026-07-20-campaign-message-market-fit.md`; `AGENTS.md`.
 - Rationale: Visual polish and framework language establish positioning but do not prove outcomes. Unsupported metrics and implied client proof would weaken trust and violate the repository evidence gate.
 - Consequences: The public campaign copy gate rejects `73%`, `41%`, `2.5x`, `tested in production`, and unqualified `clients include` language. Missing proof is recorded as an evidence gap rather than filled with invented claims.
+
+## DEC-20260721-01 - FAQ is indexable and LLM-readable as a canonical discovery surface
+
+- Date: `2026-07-21`
+- Status: `approved`
+- Scope: Public FAQ metadata, `llms.txt` discovery inventory, and FAQ-specific search/LLM visibility.
+- Decision: The public `/faq` page should emit `index, follow` metadata and appear in the LLM-readable route inventory. Other governed authority-launch pages retain their existing robots behavior unless explicitly changed.
+- Context: `PLANS.md` Task 086; `src/lib/authority-launch-pages.ts`; `src/lib/publication-surface-projection.ts`; `src/app/llms.txt/route.ts`.
+- Rationale: The FAQ now functions as a canonical question-answer surface for discovery, comparison, and conversion. Keeping it discoverable improves search engine indexing and LLM retrieval without weakening the noindex boundary on other authority-launch pages.
+- Rejected alternatives: Leave the FAQ `noindex`; make all authority-launch pages indexable by default; add a separate FAQ-only route outside the governed discovery surfaces.
+- Consequences: `/faq` becomes a searchable public authority asset and a first-class LLM-facing discovery surface. Tests must cover both the robots output and `llms.txt` inclusion so the policy does not drift.

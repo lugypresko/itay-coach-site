@@ -43,6 +43,9 @@ describe("legacy static page rewrites", () => {
     expect(leadershipHtml).toContain("Leadership Coach for Engineering Managers");
     expect(pushHtml).toContain("The Push Methodology");
     expect(faqHtml).toContain("FAQ Hub");
+    expect(faqHtml).toContain("<details");
+    expect(faqHtml).toContain('href="#faq-section-');
+    expect(faqHtml).not.toContain("](/");
     expect(strategicHtml).toContain("Strategic Leadership");
     expect(bottleneckHtml).toContain("Why Engineering Managers Become Bottlenecks");
     expect(starHtml).toContain("From Star Player to Strategic Leader");
