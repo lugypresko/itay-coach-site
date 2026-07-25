@@ -251,3 +251,13 @@ This file is the project’s single append-only decision record. New decisions a
 - Context: User-approved chain order on `2026-07-26`; `PLANS.md` Task 095; `DEC-20260713-04`; `DEC-20260725-01`.
 - Rationale: Keeping the static PageBrief as a parallel authority would recreate the two-source-of-truth problem. A deterministic projection makes the decision, artifact, validation, approval, and publication identities auditable.
 - Consequences: The generated artifact is a draft until a human reviews and approves its exact hash. No publication record, sitemap, `llms.txt`, or analytics update is produced by this implementation step.
+
+## DEC-20260726-02 - ContentDecision provenance is explicit for publication binding
+
+- Date: `2026-07-26`
+- Status: `implementation`
+- Scope: ContentDecision-generated artifact provenance and publishing validation.
+- Decision: ContentDecision-generated provenance must include both `contentDecisionId` and `contentDecisionVersion` in addition to the artifact and PageBrief bindings. Publishing validation consumes those explicit fields and fails on any mismatch.
+- Context: User review correction on `2026-07-26`; `PLANS.md` Task 095; `src/ai/content-decision/integration-gates.ts`; `DEC-20260726-01`.
+- Rationale: Artifact approval must not be detached from the exact ContentDecision revision that produced it.
+- Consequences: Existing historical artifact provenance remains compatible as legacy provenance; newly generated ContentDecision artifacts cannot be considered publication-ready without the explicit decision binding.

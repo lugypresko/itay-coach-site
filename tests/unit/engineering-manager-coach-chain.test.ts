@@ -14,6 +14,7 @@ import {
   validateArtifactInternalLanguage,
   validateReaderFacingArtifactDeterministically,
 } from "../../src/ai/governance/reader-facing-artifact-governance";
+import { validatePublishingProvenance } from "../../src/ai/content-decision/integration-gates";
 
 describe("Engineering Manager Coach canonical content chain", () => {
   it("revalidates the decision and makes its projection the only PageBrief source", () => {
@@ -64,7 +65,24 @@ describe("Engineering Manager Coach canonical content chain", () => {
       generatedAt: "2026-07-26T00:03:00.000Z",
     });
     expect(provenance.pageBriefId).toBe(chain.pageBrief.id);
+    expect(provenance.contentDecisionId).toBe(chain.decision.id);
+    expect(provenance.contentDecisionVersion).toBe(chain.decision.decisionVersion);
     expect(provenance.sourceApprovedInsightIds).toEqual(chain.decision.sourceInsightIds);
     expect(provenance.artifactHash).toBe(artifact.artifactHash);
+
+    expect(validatePublishingProvenance({
+      decision: chain.decision,
+      artifactDecisionId: provenance.contentDecisionId,
+      artifactDecisionVersion: provenance.contentDecisionVersion,
+      vocabulary: contentDecisionVocabulary,
+      now: "2026-07-26T00:04:00.000Z",
+    }).allowed).toBe(true);
+    expect(validatePublishingProvenance({
+      decision: chain.decision,
+      artifactDecisionId: provenance.contentDecisionId,
+      artifactDecisionVersion: provenance.contentDecisionVersion + 1,
+      vocabulary: contentDecisionVocabulary,
+      now: "2026-07-26T00:04:00.000Z",
+    }).failureCodes).toContain("provenance_version_mismatch");
   });
 });

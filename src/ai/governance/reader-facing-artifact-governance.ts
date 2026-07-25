@@ -57,6 +57,11 @@ export const artifactProvenanceSchema = artifactBindingSchema.extend({
   generatedAt: isoDate,
 }).strict();
 
+export const contentDecisionArtifactProvenanceSchema = artifactProvenanceSchema.extend({
+  contentDecisionId: nonEmpty,
+  contentDecisionVersion: z.number().int().positive(),
+}).strict();
+
 export const publicationRecordSchema = artifactBindingSchema.extend({
   publicationState: z.enum(["draft", "published", "archived"]),
   indexable: z.boolean(),
@@ -75,6 +80,7 @@ export type ArtifactValidationResult = z.infer<typeof artifactValidationResultSc
 export type ArtifactSemanticReview = z.infer<typeof artifactSemanticReviewSchema>;
 export type ArtifactHumanApproval = z.infer<typeof artifactHumanApprovalSchema>;
 export type ArtifactProvenance = z.infer<typeof artifactProvenanceSchema>;
+export type ContentDecisionArtifactProvenance = z.infer<typeof contentDecisionArtifactProvenanceSchema>;
 export type PublicationRecord = z.infer<typeof publicationRecordSchema>;
 
 export interface ArtifactPublicationEvaluation {

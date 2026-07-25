@@ -4,8 +4,8 @@ import {
   type ReaderFacingPageArtifact,
 } from "../../domain/reader-facing-page-artifact";
 import {
-  artifactProvenanceSchema,
-  type ArtifactProvenance,
+  contentDecisionArtifactProvenanceSchema,
+  type ContentDecisionArtifactProvenance,
 } from "../governance/reader-facing-artifact-governance";
 import { contentDecisionSchema, type ContentDecision } from "./contracts";
 import { contentDecisionToPageBrief } from "./to-page-brief";
@@ -133,12 +133,14 @@ export function buildEngineeringManagerCoachArtifactProvenance(input: {
   artifact: ReaderFacingPageArtifact;
   chain: CanonicalContentChain;
   generatedAt: string;
-}): ArtifactProvenance {
-  return artifactProvenanceSchema.parse({
+}): ContentDecisionArtifactProvenance {
+  return contentDecisionArtifactProvenanceSchema.parse({
     artifactId: input.artifact.artifactId,
     artifactVersion: input.artifact.artifactVersion,
     artifactHash: input.artifact.artifactHash,
     pageBriefId: input.chain.pageBrief.id,
+    contentDecisionId: input.chain.decision.id,
+    contentDecisionVersion: input.chain.decision.decisionVersion,
     generationMode: "deterministic",
     sourceApprovedInsightIds: input.chain.decision.sourceInsightIds,
     generatedAt: input.generatedAt,

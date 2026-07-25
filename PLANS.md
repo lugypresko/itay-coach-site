@@ -114,6 +114,7 @@ Verification notes:
 - Revalidated `decision-engineering-manager-coach` at `2026-07-26T00:00:00.000Z`; `decisionVersion=1`, `validationStatus=valid`.
 - The legacy PageBrief remains exported only as `engineeringManagerCoachHistoricalPageBrief`; the authority launch config now uses the ContentDecision projection.
 - Generated deterministic draft artifact `artifact-engineering-manager-coach` has hash `b051e2c3c11fc716628c024e184854b3abfe4a9817df5b8af17a3c7075d44063` and provenance generated at `2026-07-26T00:03:00.000Z`.
+- ContentDecision provenance now explicitly includes `contentDecisionId=decision-engineering-manager-coach` and `contentDecisionVersion=1`; the publishing gate passes for the matching pair and fails on a version mismatch.
 - Deterministic, internal-language, completeness, focused chain, full test suite (`72` files / `372` tests), typecheck, and build passed.
 - ContentDecision coverage verifier exited `0`.
 - Authority Graph verifier was attempted but blocked by unavailable local Postgres (`ECONNREFUSED` on `localhost:5432`); no database state was changed.
