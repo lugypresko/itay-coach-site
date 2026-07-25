@@ -138,6 +138,7 @@ Verification notes:
 - Coverage verifier: passed with 11 mapped complete pages, one explicit `/contact` exclusion, no failures.
 - Authority Graph verifier: blocked by local Postgres unavailable at `127.0.0.1:5432`; rerun with the repository database available before merge.
 - Publishing approval now rejects supplied ContentDecision provenance when the decision is stale, invalid, or version-mismatched.
+- Generation enforcement is now default-on: `ContentDraftWorkflowInput.contentDecision` is required, API generation enables the gate, and `ProductionDirective` requires an explicit decision matching the canonical path.
 
 ## Task Sequence
 

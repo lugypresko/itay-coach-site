@@ -49,5 +49,13 @@ export const contentDecisionVocabulary: ContentDecisionVocabulary = {
   ctas: [{ id: "book-fit-call", label: "Book a fit call", href: "/book-a-fit-call", compatibleJourneyStages: ["consideration", "decision", "coach_intent"], status: "approved" }],
   claims: [{ id: "claim-leaders-become-default-route", status: "approved" }],
   evidence: [{ id: "evidence-approved-insight-player-trap", status: "approved" }],
-  sourceInsights: [{ id: "approved-insight-player-trap-05", status: "approved" }],
+  sourceInsights: [
+    { id: "approved-insight-player-trap-01", status: "approved" },
+    { id: "approved-insight-player-trap-02", status: "approved" },
+    { id: "approved-insight-player-trap-03", status: "approved" },
+    { id: "approved-insight-player-trap-04", status: "approved" },
+    { id: "approved-insight-player-trap-05", status: "approved" },
+    { id: "approved-insight-player-trap-06", status: "approved" },
+    { id: "approved-insight-player-trap-07", status: "approved" },
+  ],
 };

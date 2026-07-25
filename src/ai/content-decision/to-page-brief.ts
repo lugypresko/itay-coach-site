@@ -9,7 +9,7 @@ function label(items: VocabularyItem[], id: string) {
 export function contentDecisionToPageBrief(
   decisionInput: ContentDecision,
   vocabulary: ContentDecisionVocabulary,
-  options: { title?: string; priorityQueries?: string[] } = {},
+  options: { title?: string; priorityQueries?: string[]; base?: PageBrief } = {},
 ): PageBrief {
   const decision = contentDecisionSchema.parse(decisionInput);
   const audience = label(vocabulary.entities, decision.primaryAudienceEntityId);
@@ -18,7 +18,7 @@ export function contentDecisionToPageBrief(
   const cta = vocabulary.ctas.find((item) => item.id === decision.primaryCtaId);
   if (!cta) throw new Error(`Unknown CTA ${decision.primaryCtaId}.`);
 
-  return pageBriefSchema.parse({
+  const projected = {
     id: `page-brief-${decision.id}-v${decision.decisionVersion}`,
     sourceInsightIds: decision.sourceInsightIds,
     title: options.title ?? `${audience}: ${problem}`,
@@ -54,5 +54,19 @@ export function contentDecisionToPageBrief(
     contentPlan: [{ sectionTitle: "Diagnosis", purpose: problem, proofNeeded: decision.claimIds }],
     cta: { label: cta.label ?? cta.id, href: cta.href, rationale: `CTA selected by ${decision.primaryCtaId}.` },
     author: "Itay Foyerstein",
-  });
+  };
+  return pageBriefSchema.parse(options.base ? {
+    ...projected,
+    contentPlan: options.base.contentPlan,
+    proofNeeded: options.base.proofNeeded,
+    pagePromise: options.base.pagePromise,
+    title: options.title ?? options.base.title,
+    author: options.base.author ?? projected.author,
+    topicClusterPosition: {
+      ...projected.topicClusterPosition,
+      summary: options.base.topicClusterPosition.summary,
+      clusterRole: options.base.topicClusterPosition.clusterRole,
+      internalLinks: options.base.topicClusterPosition.internalLinks,
+    },
+  } : projected);
 }

@@ -34,7 +34,7 @@ export interface ContentDraftWorkflowInput {
   semanticQualityEvaluation?: SemanticQualityEvaluation;
   canonicalOwnerPath?: string;
   knownCollidingIntentKeys?: string[];
-  contentDecision?: ContentDecision;
+  contentDecision: ContentDecision;
 }
 
 export interface AgentRunLog {
@@ -67,7 +67,7 @@ export function createContentDraftWorkflow(config?: {
   requireContentDecision?: boolean;
 }) {
   const requiredFreshnessDays = config?.requiredFreshnessDays ?? 30;
-  const requireContentDecision = config?.requireContentDecision ?? false;
+  const requireContentDecision = config?.requireContentDecision ?? true;
 
   return {
     run(input: ContentDraftWorkflowInput): ContentDraftWorkflowResult {

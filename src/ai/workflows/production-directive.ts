@@ -7,6 +7,9 @@ import { createContentDraftWorkflow, type ContentDraftDraft } from "./contentDra
 import type { OperatingCycle, ProductionDirectiveExecutionState } from "./operating-cycle";
 import type { PageBriefComplianceResult } from "../governance";
 import type { SemanticQualityEvaluation } from "../governance/content-quality-gate";
+import type { ContentDecision } from "../content-decision/contracts";
+import { contentDecisionToPageBrief } from "../content-decision/to-page-brief";
+import { contentDecisionVocabulary } from "../content-decision/vocabulary";
 
 const canonicalBottleneckSurfacePath = "/clusters/coach-for-engineering-managers-stuck-as-the-bottleneck";
 const canonicalBottleneckSurfaceTitle = "Coach for Engineering Managers Stuck as the Bottleneck";
@@ -48,6 +51,7 @@ export interface ProductionDirectiveRunInput {
   existingCanonicalPaths: string[];
   cycle: OperatingCycle;
   now: string;
+  contentDecisions: ContentDecision[];
 }
 
 export interface ProductionDirectiveRunResult {
@@ -314,6 +318,15 @@ export function runProductionDirective(input: ProductionDirectiveRunInput): Prod
         : [insight];
     const asset = convertApprovedInsightToKnowledgeAsset(directive.cluster, insight);
     const pageBrief = buildPageBrief(insight, asset, supportingInsights);
+    const contentDecision = input.contentDecisions.find((candidate) => candidate.canonicalPath === pageBrief.canonicalPath);
+    if (!contentDecision) {
+      blockedCandidates.push({ insightId: insight.id, reason: "content_decision_required" });
+      continue;
+    }
+    const governedPageBrief = contentDecisionToPageBrief(contentDecision, contentDecisionVocabulary, {
+      base: pageBrief,
+      priorityQueries: pageBrief.searchIntent.priorityQueries,
+    });
     const revisesApprovedCanonicalOwner =
       insight.id === draft05InsightId && pageBrief.canonicalPath === canonicalBottleneckSurfacePath;
     if (canonicalPaths.has(pageBrief.canonicalPath) && !revisesApprovedCanonicalOwner) {
@@ -321,12 +334,12 @@ export function runProductionDirective(input: ProductionDirectiveRunInput): Prod
       continue;
     }
 
-    const draft = toDraft(insight, asset, pageBrief, supportingInsights);
+    const draft = toDraft(insight, asset, governedPageBrief, supportingInsights);
     const workflow = createContentDraftWorkflow();
     const workflowResult = workflow.run({
       job: {
         id: `directive-job-${insight.id}`,
-        goal: pageBrief.pagePromise,
+        goal: governedPageBrief.pagePromise,
         targetEntity: insight.entityTags[0] ?? "tech_leadership_coach",
         targetRecommendationQueries: insight.targetRecommendationQueries,
         intentStage: "coach_intent",
@@ -355,10 +368,11 @@ export function runProductionDirective(input: ProductionDirectiveRunInput): Prod
         targetRecommendationQueries: draft.targetRecommendationQueries,
       },
       candidateNodes: [],
-      pageBrief,
+      pageBrief: governedPageBrief,
+      contentDecision,
       now: input.now,
       semanticQualityEvaluation: insight.id === draft05InsightId ? buildDraft05SemanticQualityEvaluation() : undefined,
-      canonicalOwnerPath: pageBrief.canonicalPath,
+      canonicalOwnerPath: governedPageBrief.canonicalPath,
       knownCollidingIntentKeys: [],
     });
 
@@ -369,11 +383,11 @@ export function runProductionDirective(input: ProductionDirectiveRunInput): Prod
 
     knowledgeAssets.push(asset);
     consumedInsightIds.push(insight.id);
-    canonicalPaths.add(pageBrief.canonicalPath);
+    canonicalPaths.add(governedPageBrief.canonicalPath);
     drafts.push({
       id: `authority-draft-${insight.id}`,
       sourceInsightId: insight.id,
-      pageBrief,
+      pageBrief: governedPageBrief,
       draft: workflowResult.draft,
       saveStatus: workflowResult.saveStatus,
       compliance: workflowResult.compliance!,

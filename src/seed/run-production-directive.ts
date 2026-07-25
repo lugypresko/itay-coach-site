@@ -75,6 +75,7 @@ const result = runProductionDirective({
   ],
   cycle,
   now,
+  contentDecisions: [],
 });
 
 const reportPath = path.resolve(process.cwd(), "TASK_061_MANUAL_PRODUCTION_DIRECTIVE_RUN.md");
