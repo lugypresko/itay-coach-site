@@ -2,6 +2,9 @@ import { createHash } from "node:crypto";
 
 import { getSiteUrl } from "../../lib/site-url";
 import { createContentRevisionHash } from "./content-revision-hash";
+import { validatePublishingProvenance } from "../content-decision/integration-gates";
+import type { ContentDecision } from "../content-decision/contracts";
+import type { ContentDecisionVocabulary } from "../content-decision/vocabulary";
 
 export interface PublicationApprovalValidationInput {
   approval: unknown;
@@ -11,6 +14,13 @@ export interface PublicationApprovalValidationInput {
   slug?: unknown;
   publicationRevision?: string;
   canonicalOrigin?: string;
+  contentDecisionProvenance?: {
+    decision?: ContentDecision;
+    artifactDecisionId?: string;
+    artifactDecisionVersion?: number;
+    vocabulary: ContentDecisionVocabulary;
+    now?: string;
+  };
 }
 
 export type PublicationApprovalFailureCode =
@@ -26,7 +36,8 @@ export type PublicationApprovalFailureCode =
   | "canonical_path_not_approved"
   | "canonical_slug_mismatch"
   | "revision_hash_mismatch"
-  | "publication_revision_hash_mismatch";
+  | "publication_revision_hash_mismatch"
+  | "content_decision_provenance_invalid";
 
 export interface PublicationApprovalValidationResult {
   valid: boolean;
@@ -53,8 +64,13 @@ export function validatePublicationApproval({
   slug,
   publicationRevision,
   canonicalOrigin = getSiteUrl(),
+  contentDecisionProvenance,
 }: PublicationApprovalValidationInput): PublicationApprovalValidationResult {
   const failureCodes: PublicationApprovalFailureCode[] = [];
+  if (contentDecisionProvenance) {
+    const provenance = validatePublishingProvenance(contentDecisionProvenance);
+    if (!provenance.allowed) failureCodes.push("content_decision_provenance_invalid");
+  }
   if (!approval || typeof approval !== "object") {
     return { valid: false, failureCodes: ["approval_missing"] };
   }

@@ -137,6 +137,7 @@ Verification notes:
 - Build: completed successfully; existing warnings remain and static route generation reports the known local Postgres connection warning.
 - Coverage verifier: passed with 11 mapped complete pages, one explicit `/contact` exclusion, no failures.
 - Authority Graph verifier: blocked by local Postgres unavailable at `127.0.0.1:5432`; rerun with the repository database available before merge.
+- Publishing approval now rejects supplied ContentDecision provenance when the decision is stale, invalid, or version-mismatched.
 
 ## Task Sequence
 
