@@ -101,8 +101,6 @@ Release decision:
 
 ### Task 094 - Content Decision Phase 1 Integration Gates
 
-### Task 094 - Content Decision Phase 1 Integration Gates
-
 State: `completed`
 Lane: `content-governance`
 Owner: Codex
