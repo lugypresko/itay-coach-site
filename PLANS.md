@@ -74,6 +74,51 @@ Do not expand the system with new agents, collections, or workflows while the re
 
 The release target after verification is `Authority Engine Alpha`.
 
+### Task 095 - Engineering Manager Coach Canonical Content Chain
+
+State: `in_progress`
+Lane: `content-governance`, `generation`, `publication`
+Owner: Codex
+
+Goal:
+Move `/engineering-manager-coach` from the legacy static PageBrief path to one
+canonical ContentDecision-derived chain, stopping before publication until a
+human approves the new artifact hash.
+
+Scope:
+- Revalidate the page ContentDecision.
+- Compare and retire the static PageBrief as a competing source of truth.
+- Derive the canonical PageBrief projection.
+- Generate and validate a new reader-facing artifact from the approved decision and historical page input.
+- Prepare hash-bound human approval and current publication provenance gates.
+
+Out of scope:
+- No automatic human approval.
+- No production publication before approval.
+- No Payload collection or migration.
+- No sitemap, `llms.txt`, or analytics changes before publication passes.
+
+Validation steps:
+- Focused canonical-chain tests first (RED, then GREEN).
+- Full tests, typecheck, build, and coverage verifier.
+- Human review gate remains the final blocker before publication.
+
+Acceptance criteria:
+- ContentDecision is `valid` and current.
+- PageBrief is a canonical projection, with the old brief retained only as historical input.
+- Generated artifact is valid and evidence-gated.
+- Human approval is hash-bound.
+- Provenance and publishing gates pass only after approval.
+
+Verification notes:
+- Revalidated `decision-engineering-manager-coach` at `2026-07-26T00:00:00.000Z`; `decisionVersion=1`, `validationStatus=valid`.
+- The legacy PageBrief remains exported only as `engineeringManagerCoachHistoricalPageBrief`; the authority launch config now uses the ContentDecision projection.
+- Generated deterministic draft artifact `artifact-engineering-manager-coach` has hash `b051e2c3c11fc716628c024e184854b3abfe4a9817df5b8af17a3c7075d44063` and provenance generated at `2026-07-26T00:03:00.000Z`.
+- Deterministic, internal-language, completeness, focused chain, full test suite (`72` files / `372` tests), typecheck, and build passed.
+- ContentDecision coverage verifier exited `0`.
+- Authority Graph verifier was attempted but blocked by unavailable local Postgres (`ECONNREFUSED` on `localhost:5432`); no database state was changed.
+- Human semantic review and hash-bound approval are still required. No publication record, sitemap, `llms.txt`, or analytics changes were made.
+
 ### Task 093 - ContentDecision Canonical Contract and Decision Graph
 
 State: `completed`

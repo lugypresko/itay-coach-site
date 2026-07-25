@@ -49,7 +49,11 @@ export const contentDecisionPageDecisions: ContentDecision[] = [
   decision("decision-about", "/about"),
   decision("decision-the-push", "/the-push-methodology"),
   decision("decision-faq", "/faq"),
-  decision("decision-engineering-manager-coach", "/engineering-manager-coach"),
+  {
+    ...decision("decision-engineering-manager-coach", "/engineering-manager-coach"),
+    lastValidatedAt: "2026-07-26T00:00:00.000Z",
+    validationStatus: "valid",
+  },
   decision("decision-leadership-coach-em", "/leadership-coach-for-engineering-managers"),
   decision("decision-tech-leaders", "/leadership-coaching-for-tech-leaders"),
   decision("decision-strategic-leadership", "/strategic-leadership"),

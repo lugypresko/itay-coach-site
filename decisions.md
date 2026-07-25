@@ -241,3 +241,13 @@ This file is the project’s single append-only decision record. New decisions a
 - Context: `PLANS.md` Task 094; `docs/plans/2026-07-25-content-decision-graph.md`; Phase 0 ContentDecision implementation on `codex/content-decision-graph`.
 - Rationale: The model must first prove that explicit IDs govern content decisions and fail safely on CTA conflicts, missing evidence, stale validation, and provenance mismatch before persistence or generation wiring expands.
 - Consequences: `/cto-coach` is mapped explicitly, `/contact` is an intentional exclusion, and callers opt into the ContentDecision generation gate until a later approved schema/pipeline phase.
+
+## DEC-20260726-01 - Engineering Manager Coach uses one canonical content chain
+
+- Date: `2026-07-26`
+- Status: `implementation`
+- Scope: `/engineering-manager-coach` ContentDecision, PageBrief projection, reader-facing artifact generation, validation, and publication provenance.
+- Decision: Revalidate the explicit ContentDecision, derive the PageBrief from it, and treat the legacy PageBrief only as historical input. Generate a new hash-bound reader-facing artifact from the canonical chain. Human approval remains required before publication and provenance can become current.
+- Context: User-approved chain order on `2026-07-26`; `PLANS.md` Task 095; `DEC-20260713-04`; `DEC-20260725-01`.
+- Rationale: Keeping the static PageBrief as a parallel authority would recreate the two-source-of-truth problem. A deterministic projection makes the decision, artifact, validation, approval, and publication identities auditable.
+- Consequences: The generated artifact is a draft until a human reviews and approves its exact hash. No publication record, sitemap, `llms.txt`, or analytics update is produced by this implementation step.
