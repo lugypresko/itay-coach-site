@@ -115,6 +115,8 @@ Verification notes:
 - The legacy PageBrief remains exported only as `engineeringManagerCoachHistoricalPageBrief`; the authority launch config now uses the ContentDecision projection.
 - Generated deterministic draft artifact `artifact-engineering-manager-coach` has hash `b051e2c3c11fc716628c024e184854b3abfe4a9817df5b8af17a3c7075d44063` and provenance generated at `2026-07-26T00:03:00.000Z`.
 - ContentDecision provenance now explicitly includes `contentDecisionId=decision-engineering-manager-coach` and `contentDecisionVersion=1`; the publishing gate passes for the matching pair and fails on a version mismatch.
+- The local preview now renders the complete `ReaderFacingPageArtifact` through `ReaderFacingArtifactPage` at `/preview/artifacts/artifact-engineering-manager-coach`; the draft is rejected in production and the public route remains fail-closed until approval.
+- Regression coverage proves the exact artifact hash, reader-facing sections, CTA, related links, and absence of PageBrief/ContentDecision metadata. Full suite now passes with `72` files / `374` tests.
 - Deterministic, internal-language, completeness, focused chain, full test suite (`72` files / `372` tests), typecheck, and build passed.
 - ContentDecision coverage verifier exited `0`.
 - Authority Graph verifier was attempted but blocked by unavailable local Postgres (`ECONNREFUSED` on `localhost:5432`); no database state was changed.

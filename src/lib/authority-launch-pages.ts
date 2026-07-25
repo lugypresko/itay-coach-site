@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 import type { PageBrief } from "@/ai/agents";
-import { buildCanonicalContentChain } from "@/ai/content-decision/canonical-page-chain";
+import { buildCanonicalContentChain, generateEngineeringManagerCoachArtifact } from "@/ai/content-decision/canonical-page-chain";
 import { contentDecisionPageDecisions } from "@/seed/content-decision-page-mapping";
 import { contentDecisionVocabulary } from "@/ai/content-decision/vocabulary";
 import { getSiteUrl } from "@/lib/site-url";
@@ -2205,3 +2205,9 @@ export function buildAuthorityLaunchMetadata(page: AuthorityLaunchPageConfig): M
 export function isAuthorityLaunchPageKey(value: string): value is AuthorityLaunchPageKey {
   return value in authorityLaunchPages;
 }
+
+export const engineeringManagerCoachReaderFacingArtifact = generateEngineeringManagerCoachArtifact({
+  chain: engineeringManagerCoachCanonicalChain,
+  historicalPage: authorityLaunchPages.engineeringManagerCoach,
+  createdAt: "2026-07-26T00:01:00.000Z",
+});

@@ -1,17 +1,19 @@
+import React from "react";
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 
-import { AuthorityLaunchPage } from "@/components/authority-launch-page";
-import { PageBriefLaunchPage } from "@/components/page-brief-launch-page";
-import { buildAuthorityLaunchMetadata, getAuthorityLaunchPage } from "@/lib/authority-launch-pages";
+import { ReaderFacingArtifactPage } from "@/components/reader-facing-artifact-page";
+import {
+  buildAuthorityLaunchMetadata,
+  engineeringManagerCoachReaderFacingArtifact,
+  getAuthorityLaunchPage,
+} from "@/lib/authority-launch-pages";
 
 const page = getAuthorityLaunchPage("engineeringManagerCoach");
 
 export const metadata: Metadata = buildAuthorityLaunchMetadata(page);
 
 export default function EngineeringManagerCoachPage() {
-  if (page.pageSource === "page_brief" && page.pageBrief) {
-    return <PageBriefLaunchPage brief={page.pageBrief} />;
-  }
-
-  return <AuthorityLaunchPage page={page} />;
+  if (process.env.NODE_ENV === "production") notFound();
+  return <ReaderFacingArtifactPage artifact={engineeringManagerCoachReaderFacingArtifact} />;
 }

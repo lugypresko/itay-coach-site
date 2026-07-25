@@ -1,8 +1,12 @@
 import { describe, expect, it } from "vitest";
+import { renderToStaticMarkup } from "react-dom/server";
 
 import { contentDecisionPageDecisions } from "../../src/seed/content-decision-page-mapping";
 import { contentDecisionVocabulary } from "../../src/ai/content-decision/vocabulary";
-import { authorityLaunchPages } from "../../src/lib/authority-launch-pages";
+import {
+  authorityLaunchPages,
+  engineeringManagerCoachReaderFacingArtifact,
+} from "../../src/lib/authority-launch-pages";
 import {
   buildCanonicalContentChain,
   buildEngineeringManagerCoachArtifactProvenance,
@@ -15,6 +19,8 @@ import {
   validateReaderFacingArtifactDeterministically,
 } from "../../src/ai/governance/reader-facing-artifact-governance";
 import { validatePublishingProvenance } from "../../src/ai/content-decision/integration-gates";
+import EngineeringManagerCoachPage from "../../src/app/(site)/engineering-manager-coach/page";
+import EngineeringManagerCoachPreview from "../../src/app/(site)/preview/artifacts/[artifactId]/page";
 
 describe("Engineering Manager Coach canonical content chain", () => {
   it("revalidates the decision and makes its projection the only PageBrief source", () => {
@@ -84,5 +90,34 @@ describe("Engineering Manager Coach canonical content chain", () => {
       vocabulary: contentDecisionVocabulary,
       now: "2026-07-26T00:04:00.000Z",
     }).failureCodes).toContain("provenance_version_mismatch");
+  });
+
+  it("renders the reader-facing artifact in the protected preview without internal PageBrief metadata", async () => {
+    const html = renderToStaticMarkup(
+      await EngineeringManagerCoachPreview({
+        params: Promise.resolve({ artifactId: "artifact-engineering-manager-coach" }),
+      }),
+    );
+
+    expect(engineeringManagerCoachReaderFacingArtifact.artifactHash).toBe(
+      "b051e2c3c11fc716628c024e184854b3abfe4a9817df5b8af17a3c7075d44063",
+    );
+    expect(html).toContain("A recommendation-intent landing page for people searching for a coach for Engineering Managers.");
+    expect(html).toContain("Engineering Manager coaching");
+    expect(html).toContain("Specific symptoms");
+    expect(html).toContain("Framework explanation");
+    expect(html).toContain("Book a fit call");
+    expect(html).toContain("Why Engineering Managers Become Bottlenecks");
+    expect(html).not.toContain("INTERNAL BRIEF PREVIEW");
+    expect(html).not.toContain("PAGE-BRIEF-DECISION-ENGINEERING-MANAGER-COACH");
+    expect(html).not.toContain("execution-bottleneck");
+    expect(html).not.toContain("invisible-executor-framework");
+    expect(html).not.toContain("ContentDecision");
+  });
+
+  it("uses the same artifact renderer on the local Engineering Manager Coach route", () => {
+    const html = renderToStaticMarkup(EngineeringManagerCoachPage());
+    expect(html).toContain("Engineering Manager coaching");
+    expect(html).not.toContain("INTERNAL BRIEF PREVIEW");
   });
 });
