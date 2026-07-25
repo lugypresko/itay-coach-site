@@ -143,7 +143,8 @@ Acceptance criteria:
 Verification notes:
 - Revalidated `decision-engineering-manager-coach` at `2026-07-26T00:00:00.000Z`; `decisionVersion=1`, `validationStatus=valid`.
 - The legacy PageBrief remains exported only as `engineeringManagerCoachHistoricalPageBrief`; the authority launch config now uses the ContentDecision projection.
-- The pre-Page-Pattern artifact hash `b051e2c3c11fc716628c024e184854b3abfe4a9817df5b8af17a3c7075d44063` is superseded and must not be approved. The regenerated `conversion_landing_page` draft is version 2 with hash `9080366c4cfaeac6b2f8e575c1770e885ce7cdaccd510bf16f152f31a6f0c5c9`.
+- The pre-Page-Pattern artifact hash `b051e2c3c11fc716628c024e184854b3abfe4a9817df5b8af17a3c7075d44063` is superseded and must not be approved. The version 2 `conversion_landing_page` draft hash `9080366c4cfaeac6b2f8e575c1770e885ce7cdaccd510bf16f152f31a6f0c5c9` is also superseded by the minor-copy-revision version 3 draft hash `28b0ea1c56e8a8e527851ed1fa00077095c5eb904c3d8293d4a22565aa944788`.
+- Version 3 changes artifact copy only: stronger Why The Push / Why Itay, concrete outcomes, a fit section, and a sharper Engineering Manager CTA. ContentDecision and Page Pattern are unchanged; no approval or publication was created.
 - ContentDecision provenance now explicitly includes `contentDecisionId=decision-engineering-manager-coach` and `contentDecisionVersion=1`; the publishing gate passes for the matching pair and fails on a version mismatch.
 - The local preview now renders the complete `ReaderFacingPageArtifact` through `ReaderFacingArtifactPage` at `/preview/artifacts/artifact-engineering-manager-coach`; the draft is rejected in production and the public route remains fail-closed until approval.
 - Regression coverage proves the exact artifact hash, reader-facing sections, CTA, related links, and absence of PageBrief/ContentDecision metadata. Full suite now passes with `72` files / `374` tests.

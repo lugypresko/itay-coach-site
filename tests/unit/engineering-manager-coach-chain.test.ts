@@ -71,13 +71,16 @@ describe("Engineering Manager Coach canonical content chain", () => {
     const artifact = generateEngineeringManagerCoachArtifact({ chain, historicalPage, createdAt: "2026-07-26T00:01:00.000Z" });
 
     expect(artifact.lifecycle).toBe("draft");
-    expect(artifact.artifactHash).toBe("9080366c4cfaeac6b2f8e575c1770e885ce7cdaccd510bf16f152f31a6f0c5c9");
-    expect(artifact.artifactVersion).toBe(2);
+    expect(artifact.artifactHash).toBe("28b0ea1c56e8a8e527851ed1fa00077095c5eb904c3d8293d4a22565aa944788");
+    expect(artifact.artifactVersion).toBe(3);
     expect(artifact.title).toBe("Stop Being the Bottleneck as an Engineering Manager");
     expect(artifact.description).toContain("Build a team that can make progress without waiting for you");
     expect(artifact.body.find((section) => section.sectionId === "symptoms")?.bullets).toContain("You are pulled into every review because nobody knows where your judgment should stop.");
     expect(artifact.body.find((section) => section.sectionId === "mechanism")?.paragraphs[0]).toContain("Invisible Executor");
-    expect(artifact.body.find((section) => section.sectionId === "cta")?.paragraphs[0]).toContain("Book a fit call");
+    expect(artifact.body.find((section) => section.sectionId === "outcomes")?.bullets).toContain("Your team knows which decisions it owns and when to bring you in.");
+    expect(artifact.body.find((section) => section.sectionId === "why-itay")?.paragraphs[0]).toContain("Itay Foyerstein");
+    expect(artifact.body.find((section) => section.sectionId === "fit")?.heading).toBe("Is this a fit?");
+    expect(artifact.body.find((section) => section.sectionId === "cta")?.paragraphs[0]).toContain("Bring one recurring bottleneck");
     expect(artifact.artifactHash).toMatch(/^[a-f0-9]{64}$/);
     expect(validateReaderFacingArtifactDeterministically(artifact, "2026-07-26T00:02:00.000Z").passed).toBe(true);
     expect(validateArtifactInternalLanguage(artifact, "2026-07-26T00:02:00.000Z").passed).toBe(true);
@@ -117,18 +120,21 @@ describe("Engineering Manager Coach canonical content chain", () => {
       }),
     );
 
-    expect(engineeringManagerCoachReaderFacingArtifact.artifactVersion).toBe(2);
+    expect(engineeringManagerCoachReaderFacingArtifact.artifactVersion).toBe(3);
     expect(engineeringManagerCoachReaderFacingArtifact.artifactHash).not.toBe(
       "b051e2c3c11fc716628c024e184854b3abfe4a9817df5b8af17a3c7075d44063",
     );
     expect(engineeringManagerCoachReaderFacingArtifact.artifactHash).toBe(
-      "9080366c4cfaeac6b2f8e575c1770e885ce7cdaccd510bf16f152f31a6f0c5c9",
+      "28b0ea1c56e8a8e527851ed1fa00077095c5eb904c3d8293d4a22565aa944788",
     );
     expect(html).toContain("Stop Being the Bottleneck as an Engineering Manager");
     expect(html).toContain("Engineering Manager coaching");
     expect(html).toContain("When execution becomes dependency");
     expect(html).toContain("The Invisible Executor pattern");
-    expect(html).toContain("Book a fit call");
+    expect(html).toContain("Book your Engineering Manager fit call");
+    expect(html).toContain("What you can change");
+    expect(html).toContain("Why Itay");
+    expect(html).toContain("Is this a fit?");
     expect(html).toContain("Why Engineering Managers Become Bottlenecks");
     expect(html).not.toContain("INTERNAL BRIEF PREVIEW");
     expect(html).not.toContain("PAGE-BRIEF-DECISION-ENGINEERING-MANAGER-COACH");

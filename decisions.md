@@ -281,3 +281,13 @@ This file is the project’s single append-only decision record. New decisions a
 - Context: User review instruction on `2026-07-26`; `PLANS.md` Task 095 and Task 096; `DEC-20260726-03`.
 - Rationale: The prior artifact predates the canonical Page Pattern contract and did not satisfy the required semantic/copy quality bar.
 - Consequences: Only the new draft artifact version 2/hash `9080366c4cfaeac6b2f8e575c1770e885ce7cdaccd510bf16f152f31a6f0c5c9` may proceed to future human review; neither version is approved or published.
+
+## DEC-20260726-05 - Engineering Manager artifact minor copy revision
+
+- Date: `2026-07-26`
+- Status: `implementation`
+- Scope: `/engineering-manager-coach` reader-facing artifact only.
+- Decision: Keep the ContentDecision and `conversion_landing_page` Page Pattern unchanged. Generate artifact version 3 with stronger Why The Push / Why Itay copy, concrete outcomes, a fit section, and a sharper CTA.
+- Context: User minor-revision request on `2026-07-26`; `PLANS.md` Task 095; `DEC-20260726-03`; `DEC-20260726-04`.
+- Rationale: Improve semantic and conversion clarity without changing canonical meaning or governed page structure.
+- Consequences: Version 2/hash `9080366c4cfaeac6b2f8e575c1770e885ce7cdaccd510bf16f152f31a6f0c5c9` is superseded by draft version 3/hash `28b0ea1c56e8a8e527851ed1fa00077095c5eb904c3d8293d4a22565aa944788`; no approval or publication is granted.

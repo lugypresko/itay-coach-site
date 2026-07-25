@@ -101,7 +101,7 @@ export function generateEngineeringManagerCoachArtifact(input: {
 
   const artifact = createReaderFacingArtifactDraft({
     artifactId: "artifact-engineering-manager-coach",
-    artifactVersion: 2,
+    artifactVersion: 3,
     schemaVersion: "1.0.0",
     createdAt: input.createdAt,
     pageType: "cluster",
@@ -136,20 +136,32 @@ export function generateEngineeringManagerCoachArtifact(input: {
         bullets: ["Find the decisions that keep returning to you.", "Name the hidden load and clarify decision rights.", "Build an operating model that lets the team progress with appropriate autonomy."],
       },
       { sectionId: "next-step", heading: "What changes", paragraphs: ["The goal is not to become less technical or less available. It is to stop being the only reliable route for progress, so your leadership time can move toward direction, leverage, and strategic work."] },
-      { sectionId: "why-help", heading: "Why The Push", paragraphs: ["The Push works with the operating pattern underneath the visible workload: how decisions are owned, how escalation works, and how technical leaders create leverage without abandoning delivery responsibility."] },
+      {
+        sectionId: "outcomes",
+        heading: "What you can change",
+        paragraphs: ["The work is practical: turn the bottleneck into an operating problem you can see, discuss, and change."],
+        bullets: [
+          "Your team knows which decisions it owns and when to bring you in.",
+          "You spend more leadership time on direction and leverage, not repeated rescue work.",
+          "Escalations become clearer because the team has a shared way to handle judgment and exceptions.",
+        ],
+      },
+      { sectionId: "why-help", heading: "Why The Push", paragraphs: ["The Push is a Leadership OS for technical leaders who need operating clarity, not generic management advice. It turns recurring decisions, escalation patterns, and hidden dependencies into a system you and your team can work with."] },
+      { sectionId: "why-itay", heading: "Why Itay", paragraphs: ["Itay Foyerstein coaches from inside the technical leadership context: the pressure to stay close to delivery, the instinct to solve the hard problem yourself, and the need to create leverage without losing credibility with the team. The Invisible Executor framework gives that coaching a shared language and a practical path forward."] },
+      { sectionId: "fit", heading: "Is this a fit?", paragraphs: ["This is for Engineering Managers who are carrying too many decisions, reviews, or escalations and want to build a team that can move with more ownership. It is a better fit when you are ready to examine the operating pattern behind the workload, not just add another productivity tactic."] },
       {
         sectionId: "cta",
-        heading: "Decide what needs to change first",
-        paragraphs: ["Book a fit call to discuss the bottleneck pattern you are seeing and whether this coaching approach fits your situation."],
+        heading: "Book your Engineering Manager fit call",
+        paragraphs: ["Bring one recurring bottleneck, review queue, or escalation pattern. We will identify what is keeping progress dependent on you and decide whether coaching is the right next step."],
       },
     ],
     primaryCta: {
-      label: "Book a fit call",
+      label: "Book your Engineering Manager fit call",
       href: "/book-a-fit-call",
-      context: "Discuss the operating change that will help you lead beyond execution bottlenecks.",
+      context: "Identify the operating change that will help you lead beyond execution bottlenecks.",
     },
     internalLinks: links,
-    seo: { title: "Stop Being the Bottleneck as an Engineering Manager | The Push", description: "Build a team that can make progress without waiting for you to approve every important decision." },
+    seo: { title: "Stop Being the Bottleneck as an Engineering Manager | The Push", description: "Clarify decision ownership, reduce repeated escalations, and build a team that can make progress without waiting for you." },
     structuredDataInput: { type: "Article", authorName: "Itay Foyerstein" },
   });
   const patternValidation = validateArtifactAgainstPagePattern(artifact, chain.pagePattern.id);
