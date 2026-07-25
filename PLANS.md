@@ -74,9 +74,36 @@ Do not expand the system with new agents, collections, or workflows while the re
 
 The release target after verification is `Authority Engine Alpha`.
 
+### Task 093 - ContentDecision Canonical Contract and Decision Graph
+
+State: `completed`
+Lane: `architecture`, `contracts`, `governance`, `content`, `qa`
+Owner: Codex
+
+Goal:
+Establish and verify the separate, canonical, versioned ContentDecision layer
+without replacing the Authority Graph or violating the Release Freeze.
+
+Completed scope:
+- Defined the explicit-ID ContentDecision contract, vocabulary, resolver, validator, and read-only page mapping.
+- Verified 11 complete mapped pages and one explicit `/contact` exclusion.
+- Preserved the Authority Graph as the source of truth for canonical entities and relationships.
+- Kept Payload schema, migrations, autonomous publishing, and collection changes out of Phase 0.
+
+Verification:
+- Phase 0 focused tests and coverage verifier passed.
+- Authority Graph verified against Supabase development/staging: 9 entities, 8 relationships, no duplicates/orphans, idempotent seed.
+- Phase 0 merged in PR #3 with merge commit `a55a22acfdc487101b9a668cd11c27d8968ddd30`.
+
+Release decision:
+- Release Freeze respected during implementation.
+- Human approval retained as a publication requirement.
+
 ### Task 094 - Content Decision Phase 1 Integration Gates
 
-State: `review`
+### Task 094 - Content Decision Phase 1 Integration Gates
+
+State: `completed`
 Lane: `content-governance`
 Owner: Codex
 Branch: `codex/content-decision-phase1`
@@ -139,6 +166,11 @@ Verification notes:
 - Authority Graph verifier: blocked by local Postgres unavailable at `127.0.0.1:5432`; rerun with the repository database available before merge.
 - Publishing approval now rejects supplied ContentDecision provenance when the decision is stale, invalid, or version-mismatched.
 - Generation enforcement is unconditional: `ContentDraftWorkflowInput.contentDecision` is required, the workflow always evaluates the gate, and `ProductionDirective` requires an explicit decision matching the canonical path.
+- Final review verdict: `APPROVE` after the generation bypass was removed.
+- Integration: `GO`.
+- Release: `GO`.
+- Phase 1 merged after Phase 0 in PR #4 with merge commit `d9a184345615aa38ffd268dad1dd2a0d8450d9ef`.
+- Approved merge order: PR #3 (`a55a22acfdc487101b9a668cd11c27d8968ddd30`) then PR #4 (`d9a184345615aa38ffd268dad1dd2a0d8450d9ef`).
 
 ## Task Sequence
 
