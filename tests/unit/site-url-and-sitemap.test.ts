@@ -108,6 +108,7 @@ describe("robots and sitemap", () => {
     expect(body).toContain("Public routes:");
     expect(body).not.toContain("Canonical authority sprint targets:");
     expect(body).toContain("https://itayfoyerstein.com/pillars/tech-leadership-coaching");
+    expect(body).toContain("https://itayfoyerstein.com/faq");
     expect(body).toContain("https://itayfoyerstein.com/problems/cto-becomes-the-bottleneck");
     expect(body).toContain("https://itayfoyerstein.com/problems/vp-rnd-losing-execution-control");
   });

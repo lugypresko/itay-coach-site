@@ -78,7 +78,7 @@ p:last-child {
   font-weight: var(--weight-semibold);
   letter-spacing: var(--tracking-wide);
   text-transform: uppercase;
-  color: var(--color-text-muted);
+  color: var(--color-text-secondary);
 }
 
 .content-list {

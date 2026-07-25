@@ -1,4 +1,5 @@
 import type { PublicContentPageModel } from "./public-content";
+import { stripMarkdownLinks } from "./markdown-links";
 
 const ITAY_LINKEDIN = "https://www.linkedin.com/in/itayfoyerstein/";
 
@@ -16,10 +17,10 @@ function buildFaqJsonLd(page: PublicContentPageModel) {
     "@type": "FAQPage",
     mainEntity: page.record.faq.map((entry) => ({
       "@type": "Question",
-      name: entry.question,
+      name: stripMarkdownLinks(entry.question),
       acceptedAnswer: {
         "@type": "Answer",
-        text: entry.answer,
+        text: stripMarkdownLinks(entry.answer),
       },
     })),
   };

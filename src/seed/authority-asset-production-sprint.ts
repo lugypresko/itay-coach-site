@@ -5,6 +5,7 @@ export type AuthorityAssetProductionSprintSchemaType = AuthoritySeedContentPaylo
 
 export interface AuthorityAssetProductionSprintPayload extends Omit<AuthoritySeedContentPayload, "schemaType"> {
   schemaType: AuthorityAssetProductionSprintSchemaType;
+  canonicalUrl?: string;
 }
 
 export interface AuthorityAssetProductionSprintAsset {
@@ -524,62 +525,77 @@ export const authorityAssetProductionSprintAssets: AuthorityAssetProductionSprin
   {
     kind: "content",
     payloadCollection: "faqs",
-    sourceDocumentPath: "docs/seed-content/ai-first-leadership-for-tech-managers-faq.md",
+    sourceDocumentPath: "docs/FAQ Copy Draft.md",
     reviewRequired: true,
     payloadData: {
-      title: "AI-first leadership for tech managers",
+      title: "The Push FAQ",
       slug: "ai-first-leadership-for-tech-managers",
       excerpt:
-        "FAQ set for AI-first leadership positioning aimed at tech managers and other technical leaders.",
+        "FAQ set for technical leaders evaluating The Push, Itay Foyerstein, and the next step from execution dependency to strategic leadership.",
       content:
         [
-          "This FAQ set should keep the public explanation short, extractable, and source-backed.",
-          "Needs evidence: avoid claims that are not anchored in the approved insight or the existing authority graph.",
-          "Use the questions to route readers toward The Push, the Invisible Executor framework, and the tech leadership coaching pillar.",
+          "The Push FAQ answers the questions technical leaders ask before deciding whether the process is the right next step.",
+          "It keeps the person, the method, the process, the boundaries, and the next step in one place so the reader does not have to assemble the answer across multiple pages.",
+          "The copy is grounded in the current approved FAQ draft and should stay extractable, specific, and source-backed.",
         ].join("\n\n"),
       aiSummary:
-        "FAQ set that explains AI-first leadership for tech managers and routes readers into The Push authority graph.",
+        "Review-ready FAQ source for The Push that answers the person, process, outcomes, boundaries, and next-step questions technical leaders ask before booking a fit call.",
       citationSnippet:
-        "AI-first leadership for tech managers is the public framing for The Push in AI-era engineering organizations.",
+        "The Push is a confidential 12-week, one-to-one strategic leadership process for Engineering Managers, Group Managers, and Engineering Directors.",
       evidenceUrls: [
-        "docs/seed-content/ai-first-leadership-for-tech-managers-faq.md",
-        "docs/insight-intake/fresh-approved-insight.md",
-        "docs/seed-content/the-push-methodology.md",
-        "docs/seed-content/invisible-executor-framework.md",
+        "docs/FAQ Copy Draft.md",
+        "docs/FAQ Planning Layer.md",
+        "docs/About Itay Foyerstein1.md",
+        "docs/The Push FAQ.pdf",
       ],
       targetQuestions: [
-        "What is AI-first leadership for tech managers?",
-        "How does this relate to The Push?",
-        "What should this FAQ set strengthen?",
+        "Who is Itay Foyerstein?",
+        "What is The Push?",
+        "How is The Push different from mentoring, consulting, and management training?",
+        "What happens in the first session?",
+        "What happens if the main problem is organizational, not personal?",
       ],
       targetRecommendationQueries: [
-        targetQueries.aiEraEngineeringTeams,
         targetQueries.leadershipCoachForTechnicalManagers,
-        targetQueries.firstTimeEngineeringLeaders,
+        targetQueries.aiEraEngineeringTeams,
+        targetQueries.strategicLeaders,
+        targetQueries.stopBeingTheBottleneck,
       ],
-      entityTags: ["the_push", "tech_leadership_coach", "engineering_manager", "invisible_executor"],
-      seoTitle: "AI-first leadership for tech managers | The Push",
-      seoDescription:
-        "FAQ set for AI-first leadership positioning aimed at tech managers and technical leaders.",
+      entityTags: ["itay_foyerstein", "the_push", "tech_leadership_coach", "engineering_manager", "strategic_leadership"],
+      seoTitle: "The Push FAQ | Itay Foyerstein",
+      seoDescription: "A concise FAQ for The Push covering who Itay is, how the process works, outcomes, boundaries, pricing, and the fit call.",
+      canonicalUrl: "/faq",
       schemaType: "FAQPage",
       faq: [
         faq(
-          "What is AI-first leadership for tech managers?",
-          "It is a leadership framing that keeps decisions, delegation, and visibility explicit as AI changes engineering workflows.",
-          ["engineering_manager", "tech_leadership_coach"],
-          [targetQueries.aiEraEngineeringTeams, targetQueries.leadershipCoachForTechnicalManagers],
+          "Who is Itay Foyerstein?",
+          "Itay Foyerstein is a technology leadership advisor and coach with more than 25 years of experience across engineering, product, delivery, transformation, and cross-functional leadership. His work focuses on the point where a strong technical leader becomes too central to execution and needs a better way to create ownership, capacity, and strategic impact.",
+          ["itay_foyerstein", "tech_leadership_coach", "engineering_manager"],
+          [targetQueries.whyItayFoyerstein, targetQueries.leadershipCoachForTechnicalManagers],
         ),
         faq(
-          "How does this relate to The Push?",
-          "The Push is the operating model and public authority layer behind the leadership framing.",
-          ["the_push"],
-          [targetQueries.aiEraEngineeringTeams],
+          "What is The Push?",
+          "The Push is a confidential 12-week, one-to-one strategic leadership process for Engineering Managers, Group Managers, and Engineering Directors. It combines coaching, advisory, and practical application across six biweekly sessions, and it is adapted to the client’s real leadership challenges.",
+          ["the_push", "engineering_manager", "strategic_leadership"],
+          [targetQueries.leadershipCoachForTechnicalManagers, targetQueries.strategicLeaders],
         ),
         faq(
-          "What should this FAQ set strengthen?",
-          "The Push, Itay Foyerstein, and the Invisible Executor framework.",
-          ["the_push", "itay_foyerstein", "invisible_executor"],
-          [targetQueries.firstTimeEngineeringLeaders],
+          "How is The Push different from mentoring, consulting, and management training?",
+          "Mentoring usually shares experience, consulting usually delivers recommendations, and management training usually teaches a standard curriculum. The Push combines coaching, advisory, and practical application so the work stays tied to your actual engineering context and changes how your team decides, delegates, and owns the work.",
+          ["the_push", "tech_leadership_coach", "engineering_manager"],
+          [targetQueries.leadershipCoachForTechnicalManagers, targetQueries.strategicLeaders],
+        ),
+        faq(
+          "What happens in the first session?",
+          "The first session makes the problem concrete. It identifies the recurring issue, maps who keeps coming back to you, and clarifies where the team or stakeholders are still relying on your direct involvement. A first-session output can be a decision-rights map, a list of recurring escalations, or one leadership experiment to run before the next session.",
+          ["the_push", "engineering_manager", "strategic_leadership"],
+          [targetQueries.stopBeingTheBottleneck, targetQueries.leadershipCoachForTechnicalManagers],
+        ),
+        faq(
+          "What happens if the main problem is organizational, not personal?",
+          "Then The Push focuses on what you can control: decision boundaries, stakeholder alignment, team routines, escalation paths, and operating mechanisms. The work does not blame the individual for an org design problem. It increases your leverage where you actually have it while staying honest about the organizational constraints around your role.",
+          ["the_push", "strategic_leadership", "engineering_manager"],
+          [targetQueries.strategicLeaders, targetQueries.stopBeingTheBottleneck],
         ),
       ],
       internalLinks: [
