@@ -74,6 +74,70 @@ Do not expand the system with new agents, collections, or workflows while the re
 
 The release target after verification is `Authority Engine Alpha`.
 
+### Task 094 - Content Decision Phase 1 Integration Gates
+
+State: `review`
+Lane: `content-governance`
+Owner: Codex
+Branch: `codex/content-decision-phase1`
+
+Goal:
+Prove that the canonical ContentDecision contract can govern PageBrief projection,
+generation readiness, revalidation, and publishing provenance without adding a
+Payload collection, migration, or autonomous publishing workflow.
+
+Scope:
+- Enforce CTA compatibility with journey stage.
+- Make `/contact` an explicit excluded surface and map `/cto-coach`.
+- Project a valid PageBrief from explicit ContentDecision IDs.
+- Add deterministic generation and publishing gates for missing, invalid, stale,
+  or changed-version decisions.
+- Add negative and public-boundary tests.
+
+Out of scope:
+- No Payload collection or schema migration.
+- No publishing automation or human-approval bypass.
+- No broad page migration beyond `/cto-coach` and `/contact` mapping.
+
+Files expected to change:
+- `src/ai/content-decision/*`
+- `src/ai/workflows/contentDraftWorkflow.ts`
+- `src/seed/content-decision-page-mapping.ts`
+- `src/seed/verify-content-decision-coverage.ts`
+- focused unit tests and coverage report
+- `PLANS.md`
+- `decisions.md`
+
+Data contracts affected:
+- Internal ContentDecision vocabulary and deterministic gate contracts only.
+- No persisted Payload contract.
+
+Agent permissions affected:
+- None. Existing human review and publication boundaries remain in force.
+
+Validation steps:
+- Run focused ContentDecision, PageBrief, workflow, and publication-gate tests.
+- Run `npm test`, `npm run typecheck`, `npm run build`, and
+  `npm run verify:authority-graph`.
+- Confirm public projection contains no internal decision metadata.
+
+Acceptance criteria:
+- Incompatible CTA fails deterministically.
+- `/contact` is explicitly excluded with a reason; `/cto-coach` has a complete decision.
+- PageBrief output changes when an explicit decision ID changes.
+- Generation blocks missing/invalid decisions and revalidation is required after version changes.
+- Publishing provenance blocks stale or version-mismatched decisions.
+- Existing release freeze, human approval, public boundary, and 9/8 Authority Graph checks remain intact.
+
+Verification notes:
+- ContentDecision Phase 1 focused tests: passed (12 tests).
+- Full test suite: passed (71 files, 370 tests).
+- Typecheck: passed.
+- Targeted ESLint: passed.
+- Build: completed successfully; existing warnings remain and static route generation reports the known local Postgres connection warning.
+- Coverage verifier: passed with 11 mapped complete pages, one explicit `/contact` exclusion, no failures.
+- Authority Graph verifier: blocked by local Postgres unavailable at `127.0.0.1:5432`; rerun with the repository database available before merge.
+
 ## Task Sequence
 
 ### Task 055A - Canonical Authority Sprint Documentation Update

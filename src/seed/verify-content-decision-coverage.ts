@@ -13,6 +13,7 @@ export interface ContentDecisionCoverageReport {
   completePages: number;
   incompletePages: number;
   unmappedPages: string[];
+  excludedPages: Array<{ canonicalPath: string; reason: string }>;
   failures: Array<{ canonicalPath: string; failureCodes: string[]; details: string[] }>;
   goMetrics: {
     decisionCoverage: boolean;
@@ -35,9 +36,14 @@ function calculateReport(input: ContentDecisionCoverageInput): Omit<ContentDecis
   const batchValidation = validateContentDecisions(input.decisions, { vocabulary: input.vocabulary });
   const failures: ContentDecisionCoverageReport["failures"] = [];
   const unmappedPages: string[] = [];
+  const excludedPages: Array<{ canonicalPath: string; reason: string }> = [];
   let completePages = 0;
 
   for (const page of input.pages) {
+    if (page.mappingStatus === "excluded") {
+      excludedPages.push({ canonicalPath: page.canonicalPath, reason: page.exclusionReason ?? "No reason supplied." });
+      continue;
+    }
     if (!page.decisionId) {
       unmappedPages.push(page.canonicalPath);
       continue;
@@ -72,8 +78,9 @@ function calculateReport(input: ContentDecisionCoverageInput): Omit<ContentDecis
     totalPages: input.pages.length,
     mappedPages: input.pages.filter((page) => Boolean(page.decisionId)).length,
     completePages,
-    incompletePages: input.pages.length - completePages - unmappedPages.length,
+    incompletePages: input.pages.length - completePages - unmappedPages.length - excludedPages.length,
     unmappedPages,
+    excludedPages,
     failures,
   };
 }
@@ -83,7 +90,7 @@ export function buildContentDecisionCoverageReport(input: ContentDecisionCoverag
   const repeated = calculateReport(input);
   const deterministicRepeatability = JSON.stringify(base) === JSON.stringify(repeated);
   const goMetrics = {
-    decisionCoverage: base.completePages >= 10,
+    decisionCoverage: base.completePages >= 11,
     explicitSubgraphResolution: base.mappedPages > 0 && base.completePages === base.mappedPages,
     graphCleanliness: !base.failures.some((failure) => failure.failureCodes.some((code) => ["orphan_reference", "duplicate_canonical_path", "conflicting_active_version"].includes(code))),
     evidenceCoverage: !base.failures.some((failure) => failure.failureCodes.includes("missing_evidence")),
@@ -102,6 +109,7 @@ export function buildContentDecisionCoverageReportMarkdown(report: ContentDecisi
     `- complete pages: ${report.completePages}`,
     `- incomplete pages: ${report.incompletePages}`,
     `- unmapped pages: ${report.unmappedPages.length === 0 ? "none" : report.unmappedPages.join(", ")}`,
+    `- explicitly excluded pages: ${report.excludedPages.length === 0 ? "none" : report.excludedPages.map((page) => `${page.canonicalPath} (${page.reason})`).join(", ")}`,
     "",
     "## GO metrics",
     `- decision coverage: ${report.goMetrics.decisionCoverage ? "pass" : "fail"}`,

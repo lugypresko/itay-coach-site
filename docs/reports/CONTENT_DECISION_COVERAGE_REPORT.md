@@ -1,10 +1,11 @@
 # ContentDecision Coverage Report
 
 - total pages: 12
-- mapped pages: 10
-- complete pages: 10
+- mapped pages: 11
+- complete pages: 11
 - incomplete pages: 0
-- unmapped pages: /cto-coach, /contact
+- unmapped pages: none
+- explicitly excluded pages: /contact (Routing surface only; it is not a canonical authority or content-decision owner.)
 
 ## GO metrics
 - decision coverage: pass

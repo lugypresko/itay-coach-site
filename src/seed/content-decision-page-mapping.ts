@@ -4,6 +4,8 @@ export interface ContentDecisionPageMapping {
   canonicalPath: string;
   pageType: "entity" | "methodology" | "framework" | "pillar" | "problem" | "faq" | "conversion";
   decisionId?: string;
+  mappingStatus?: "mapped" | "excluded";
+  exclusionReason?: string;
   note?: string;
 }
 
@@ -39,8 +41,8 @@ export const contentDecisionPageMappings: ContentDecisionPageMapping[] = [
   { canonicalPath: "/why-engineering-managers-become-bottlenecks", pageType: "problem", decisionId: "decision-em-bottleneck" },
   { canonicalPath: "/from-star-player-to-strategic-leader", pageType: "problem", decisionId: "decision-star-player" },
   { canonicalPath: "/why-smart-managers-burn-out", pageType: "problem", decisionId: "decision-manager-burnout" },
-  { canonicalPath: "/cto-coach", pageType: "conversion", note: "No explicit ContentDecision vocabulary for this surface yet." },
-  { canonicalPath: "/contact", pageType: "conversion", note: "Contact is a routing surface, not yet assigned a canonical decision." },
+  { canonicalPath: "/cto-coach", pageType: "conversion", decisionId: "decision-cto-coach", mappingStatus: "mapped" },
+  { canonicalPath: "/contact", pageType: "conversion", mappingStatus: "excluded", exclusionReason: "Routing surface only; it is not a canonical authority or content-decision owner." },
 ];
 
 export const contentDecisionPageDecisions: ContentDecision[] = [
@@ -54,4 +56,5 @@ export const contentDecisionPageDecisions: ContentDecision[] = [
   decision("decision-em-bottleneck", "/why-engineering-managers-become-bottlenecks"),
   decision("decision-star-player", "/from-star-player-to-strategic-leader"),
   decision("decision-manager-burnout", "/why-smart-managers-burn-out"),
+  decision("decision-cto-coach", "/cto-coach", "vp-engineering"),
 ];

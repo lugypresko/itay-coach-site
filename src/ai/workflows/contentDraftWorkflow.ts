@@ -3,6 +3,9 @@ import { evaluateContentQuality, type ContentQualityCandidate, type SemanticQual
 import { suggestInternalLinks, type ContentNode, type InternalLinkSuggestion } from "../linking";
 import type { ContentGenerationReadiness } from "../governance";
 import type { PageBrief } from "../agents";
+import type { ContentDecision } from "../content-decision/contracts";
+import { contentDecisionVocabulary } from "../content-decision/vocabulary";
+import { evaluateContentDecisionGeneration } from "../content-decision/integration-gates";
 
 export interface ContentDraftJob {
   id: string;
@@ -31,6 +34,7 @@ export interface ContentDraftWorkflowInput {
   semanticQualityEvaluation?: SemanticQualityEvaluation;
   canonicalOwnerPath?: string;
   knownCollidingIntentKeys?: string[];
+  contentDecision?: ContentDecision;
 }
 
 export interface AgentRunLog {
@@ -60,8 +64,10 @@ export interface ContentDraftWorkflowResult {
 
 export function createContentDraftWorkflow(config?: {
   requiredFreshnessDays?: number;
+  requireContentDecision?: boolean;
 }) {
   const requiredFreshnessDays = config?.requiredFreshnessDays ?? 30;
+  const requireContentDecision = config?.requireContentDecision ?? false;
 
   return {
     run(input: ContentDraftWorkflowInput): ContentDraftWorkflowResult {
@@ -70,6 +76,13 @@ export function createContentDraftWorkflow(config?: {
         now: input.now,
         requiredFreshnessDays,
       });
+      const decisionGate = requireContentDecision
+        ? evaluateContentDecisionGeneration({ decision: input.contentDecision, pageBrief: input.pageBrief, vocabulary: contentDecisionVocabulary, now: input.now })
+        : null;
+      if (decisionGate && !decisionGate.allowed) {
+        readiness.canGenerate = false;
+        readiness.reason = decisionGate.details.join(" ");
+      }
 
       const agentRuns: AgentRunLog[] = [
         {
