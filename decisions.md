@@ -271,3 +271,13 @@ This file is the project’s single append-only decision record. New decisions a
 - Context: User-approved Page Pattern requirement on `2026-07-26`; `PLANS.md` Task 096; `DEC-20260713-04`; `DEC-20260726-01`.
 - Rationale: A shared structural contract prevents conversion, framework, problem, FAQ, and other surfaces from drifting into generic or incomplete artifacts while keeping operational metadata out of public output.
 - Consequences: Artifacts missing pattern-required sections or containing internal vocabulary IDs are rejected. Preview and publication continue to use the same renderer, and no draft becomes publishable without the existing hash-bound approval chain.
+
+## DEC-20260726-04 - Pre-pattern Engineering Manager artifact is superseded
+
+- Date: `2026-07-26`
+- Status: `implementation`
+- Scope: `/engineering-manager-coach` reader-facing artifact generation and preview.
+- Decision: Do not approve hash `b051e2c3c11fc716628c024e184854b3abfe4a9817df5b8af17a3c7075d44063`. Regenerate the artifact through `conversion_landing_page` with a new version/hash and review the new reader-facing copy before any approval or publication.
+- Context: User review instruction on `2026-07-26`; `PLANS.md` Task 095 and Task 096; `DEC-20260726-03`.
+- Rationale: The prior artifact predates the canonical Page Pattern contract and did not satisfy the required semantic/copy quality bar.
+- Consequences: Only the new draft artifact version 2/hash `9080366c4cfaeac6b2f8e575c1770e885ce7cdaccd510bf16f152f31a6f0c5c9` may proceed to future human review; neither version is approved or published.

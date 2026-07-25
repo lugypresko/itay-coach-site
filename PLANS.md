@@ -143,7 +143,7 @@ Acceptance criteria:
 Verification notes:
 - Revalidated `decision-engineering-manager-coach` at `2026-07-26T00:00:00.000Z`; `decisionVersion=1`, `validationStatus=valid`.
 - The legacy PageBrief remains exported only as `engineeringManagerCoachHistoricalPageBrief`; the authority launch config now uses the ContentDecision projection.
-- Generated deterministic draft artifact `artifact-engineering-manager-coach` has hash `b051e2c3c11fc716628c024e184854b3abfe4a9817df5b8af17a3c7075d44063` and provenance generated at `2026-07-26T00:03:00.000Z`.
+- The pre-Page-Pattern artifact hash `b051e2c3c11fc716628c024e184854b3abfe4a9817df5b8af17a3c7075d44063` is superseded and must not be approved. The regenerated `conversion_landing_page` draft is version 2 with hash `9080366c4cfaeac6b2f8e575c1770e885ce7cdaccd510bf16f152f31a6f0c5c9`.
 - ContentDecision provenance now explicitly includes `contentDecisionId=decision-engineering-manager-coach` and `contentDecisionVersion=1`; the publishing gate passes for the matching pair and fails on a version mismatch.
 - The local preview now renders the complete `ReaderFacingPageArtifact` through `ReaderFacingArtifactPage` at `/preview/artifacts/artifact-engineering-manager-coach`; the draft is rejected in production and the public route remains fail-closed until approval.
 - Regression coverage proves the exact artifact hash, reader-facing sections, CTA, related links, and absence of PageBrief/ContentDecision metadata. Full suite now passes with `72` files / `374` tests.
@@ -151,6 +151,8 @@ Verification notes:
 - ContentDecision coverage verifier exited `0`.
 - Authority Graph verifier was attempted but blocked by unavailable local Postgres (`ECONNREFUSED` on `localhost:5432`); no database state was changed.
 - Human semantic review and hash-bound approval are still required. No publication record, sitemap, `llms.txt`, or analytics changes were made.
+- Semantic review: pass for explicit audience, concrete Engineering Manager situations, causal Invisible Executor mechanism, outcome promise, and decision-oriented CTA; no unsupported metrics or internal identifiers.
+- Copy review: pass for reader-facing language and scan hierarchy; design review: pass for readable hierarchy, contrast, spacing, CTA visibility, and shared renderer output. The only local browser console error is the pre-existing `/favicon.ico` 404.
 
 ### Task 093 - ContentDecision Canonical Contract and Decision Graph
 

@@ -101,30 +101,46 @@ export function generateEngineeringManagerCoachArtifact(input: {
 
   const artifact = createReaderFacingArtifactDraft({
     artifactId: "artifact-engineering-manager-coach",
-    artifactVersion: chain.decision.decisionVersion,
+    artifactVersion: 2,
     schemaVersion: "1.0.0",
     createdAt: input.createdAt,
     pageType: "cluster",
     canonicalPath: chain.decision.canonicalPath,
     locale: "en",
-    title: historicalPage.title,
-    description: historicalPage.description,
+    title: "Stop Being the Bottleneck as an Engineering Manager",
+    description: "Build a team that can make progress without waiting for you to approve every important decision.",
     body: [
-      { sectionId: "answer", heading: "Engineering Manager coaching", paragraphs: [historicalPage.shortAnswer] },
-      { sectionId: "role-context", heading: historicalPage.definitionTitle, paragraphs: [historicalPage.definitionBody] },
-      { sectionId: "symptoms", heading: historicalPage.symptomsTitle, bullets: historicalPage.symptoms },
+      {
+        sectionId: "answer",
+        heading: "Lead beyond execution bottlenecks",
+        paragraphs: ["Engineering Manager coaching helps you move from being the final reviewer and escalation path to leading a team that can make sound decisions without waiting for you."],
+      },
+      {
+        sectionId: "role-context",
+        heading: "The problem is not that you care too much",
+        paragraphs: ["You were promoted because you could solve hard technical problems. The same habit becomes a constraint when every review, exception, and stalled decision still comes back to you."],
+      },
+      {
+        sectionId: "symptoms",
+        heading: "When execution becomes dependency",
+        bullets: [
+          "You are pulled into every review because nobody knows where your judgment should stop.",
+          "A developer waits for permission instead of making a reversible decision.",
+          "Planning time disappears into rescue work, escalations, and context switching.",
+        ],
+      },
       {
         sectionId: "mechanism",
-        heading: historicalPage.frameworkTitle,
-        paragraphs: [historicalPage.frameworkBody],
-        bullets: historicalPage.frameworkSteps,
+        heading: "The Invisible Executor pattern",
+        paragraphs: ["The Invisible Executor is the leader who looks effective because work keeps moving, while the team quietly depends on that leader for judgment, permission, and exception handling. The shift is to make decision ownership visible and reusable."],
+        bullets: ["Find the decisions that keep returning to you.", "Name the hidden load and clarify decision rights.", "Build an operating model that lets the team progress with appropriate autonomy."],
       },
-      { sectionId: "next-step", heading: historicalPage.uncomfortableTruthTitle, paragraphs: [historicalPage.uncomfortableTruth] },
-      { sectionId: "why-help", heading: "Why The Push", paragraphs: [historicalPage.citationSnippet] },
+      { sectionId: "next-step", heading: "What changes", paragraphs: ["The goal is not to become less technical or less available. It is to stop being the only reliable route for progress, so your leadership time can move toward direction, leverage, and strategic work."] },
+      { sectionId: "why-help", heading: "Why The Push", paragraphs: ["The Push works with the operating pattern underneath the visible workload: how decisions are owned, how escalation works, and how technical leaders create leverage without abandoning delivery responsibility."] },
       {
         sectionId: "cta",
-        heading: "A practical next step",
-        paragraphs: ["If this pattern is familiar, a fit call can help you decide what needs to change first."],
+        heading: "Decide what needs to change first",
+        paragraphs: ["Book a fit call to discuss the bottleneck pattern you are seeing and whether this coaching approach fits your situation."],
       },
     ],
     primaryCta: {
@@ -133,7 +149,7 @@ export function generateEngineeringManagerCoachArtifact(input: {
       context: "Discuss the operating change that will help you lead beyond execution bottlenecks.",
     },
     internalLinks: links,
-    seo: { title: historicalPage.title, description: historicalPage.description },
+    seo: { title: "Stop Being the Bottleneck as an Engineering Manager | The Push", description: "Build a team that can make progress without waiting for you to approve every important decision." },
     structuredDataInput: { type: "Article", authorName: "Itay Foyerstein" },
   });
   const patternValidation = validateArtifactAgainstPagePattern(artifact, chain.pagePattern.id);
