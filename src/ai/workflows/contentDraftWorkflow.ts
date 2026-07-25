@@ -62,12 +62,8 @@ export interface ContentDraftWorkflowResult {
   draft: ContentDraftDraft | null;
 }
 
-export function createContentDraftWorkflow(config?: {
-  requiredFreshnessDays?: number;
-  requireContentDecision?: boolean;
-}) {
+export function createContentDraftWorkflow(config?: { requiredFreshnessDays?: number }) {
   const requiredFreshnessDays = config?.requiredFreshnessDays ?? 30;
-  const requireContentDecision = config?.requireContentDecision ?? true;
 
   return {
     run(input: ContentDraftWorkflowInput): ContentDraftWorkflowResult {
@@ -76,10 +72,13 @@ export function createContentDraftWorkflow(config?: {
         now: input.now,
         requiredFreshnessDays,
       });
-      const decisionGate = requireContentDecision
-        ? evaluateContentDecisionGeneration({ decision: input.contentDecision, pageBrief: input.pageBrief, vocabulary: contentDecisionVocabulary, now: input.now })
-        : null;
-      if (decisionGate && !decisionGate.allowed) {
+      const decisionGate = evaluateContentDecisionGeneration({
+        decision: input.contentDecision,
+        pageBrief: input.pageBrief,
+        vocabulary: contentDecisionVocabulary,
+        now: input.now,
+      });
+      if (!decisionGate.allowed) {
         readiness.canGenerate = false;
         readiness.reason = decisionGate.details.join(" ");
       }
