@@ -42,6 +42,17 @@ describe("Engineering Manager Coach canonical content chain", () => {
     expect(validated.lastValidatedAt).toBe("2026-07-26T00:00:00.000Z");
     expect(chain.pageBrief.canonicalPath).toBe("/engineering-manager-coach");
     expect(chain.pageBrief.sourceInsightIds).toEqual(validated.sourceInsightIds);
+    expect(chain.pageBrief.pagePatternId).toBe("conversion_landing_page");
+    expect(chain.pageBrief.contentArchetype).toBe("conversion");
+    expect(chain.pageBrief.contentPlan.map((item) => item.sectionTitle)).toEqual([
+      "answer",
+      "role-context",
+      "symptoms",
+      "mechanism",
+      "next-step",
+      "why-help",
+      "cta",
+    ]);
     expect(chain.historicalPageBrief).toBe(historicalPageBrief);
     expect(chain.pageBrief).not.toBe(historicalPageBrief);
   });
@@ -63,7 +74,7 @@ describe("Engineering Manager Coach canonical content chain", () => {
     expect(artifact.artifactHash).toMatch(/^[a-f0-9]{64}$/);
     expect(validateReaderFacingArtifactDeterministically(artifact, "2026-07-26T00:02:00.000Z").passed).toBe(true);
     expect(validateArtifactInternalLanguage(artifact, "2026-07-26T00:02:00.000Z").passed).toBe(true);
-    expect(validateArtifactCompleteness(artifact, "2026-07-26T00:02:00.000Z").passed).toBe(true);
+    expect(validateArtifactCompleteness(artifact, "2026-07-26T00:02:00.000Z", chain.pagePattern.id).passed).toBe(true);
 
     const provenance = buildEngineeringManagerCoachArtifactProvenance({
       artifact,

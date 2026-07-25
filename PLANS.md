@@ -74,6 +74,36 @@ Do not expand the system with new agents, collections, or workflows while the re
 
 The release target after verification is `Authority Engine Alpha`.
 
+### Task 096 - Canonical Page Pattern Layer
+
+State: `review`
+Lane: `content-governance`, `generation`, `renderer`
+Owner: Codex
+
+Goal:
+Ensure governed content uses an explicit Page Pattern for structure while ContentDecision remains the source of meaning.
+
+Scope:
+- Add `pagePatternId` and `contentArchetype` to ContentDecision and PageBrief projection.
+- Define and validate the ten canonical patterns, required sections, journey stages, and CTA compatibility.
+- Validate artifacts against the selected pattern and reject internal identifiers in reader-facing prose.
+- Keep preview/publication on the shared ReaderFacingArtifact renderer and preserve approval/publication gates.
+
+Out of scope:
+- No artifact approval or publication.
+- No Payload collection or migration.
+- No visual renderer redesign.
+
+Validation steps:
+- Pattern unit tests for all ten patterns and one cross-pattern negative case.
+- Full tests, typecheck, build, and ContentDecision coverage verifier.
+
+Acceptance criteria:
+- All canonical seeded decisions have an explicit pattern and archetype.
+- PageBrief projection uses the selected pattern's required structure.
+- Pattern, journey-stage, CTA, completeness, and internal-language gates are deterministic.
+- Human approval and publication governance remain unchanged.
+
 ### Task 095 - Engineering Manager Coach Canonical Content Chain
 
 State: `in_progress`

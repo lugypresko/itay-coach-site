@@ -5,6 +5,8 @@ import { contentDecisionSchema } from "../../src/ai/content-decision/contracts";
 const validDecision = {
   id: "decision-em-bottleneck",
   decisionVersion: 1,
+  pagePatternId: "problem_page" as const,
+  contentArchetype: "problem" as const,
   primaryAudienceEntityId: "engineering-manager",
   primaryProblemId: "execution-bottleneck",
   symptomIds: ["approval-dependency", "strategic-time-collapse"],

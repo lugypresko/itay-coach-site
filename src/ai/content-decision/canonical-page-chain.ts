@@ -8,6 +8,7 @@ import {
   type ContentDecisionArtifactProvenance,
 } from "../governance/reader-facing-artifact-governance";
 import { contentDecisionSchema, type ContentDecision } from "./contracts";
+import { pagePatterns, validateArtifactAgainstPagePattern, validatePagePatternDecision, type PagePattern } from "./page-patterns";
 import { contentDecisionToPageBrief } from "./to-page-brief";
 import { validateContentDecision } from "./validate-content-decision";
 import type { ContentDecisionVocabulary } from "./vocabulary";
@@ -36,6 +37,7 @@ export interface CanonicalContentChain {
   decision: ContentDecision;
   pageBrief: PageBrief;
   historicalPageBrief: PageBrief;
+  pagePattern: PagePattern;
 }
 
 export function buildCanonicalContentChain(input: {
@@ -46,8 +48,14 @@ export function buildCanonicalContentChain(input: {
   if (input.decision.canonicalPath !== input.historicalPageBrief.canonicalPath) {
     throw new Error("Historical PageBrief and ContentDecision canonical paths must match.");
   }
+  const patternValidation = validatePagePatternDecision(input.decision);
+  if (!patternValidation.valid) {
+    throw new Error(`ContentDecision ${input.decision.id} has an invalid Page Pattern: ${patternValidation.details.join(" ")}`);
+  }
+  const pagePattern = pagePatterns[input.decision.pagePatternId];
 
   const pageBrief = contentDecisionToPageBrief(input.decision, input.vocabulary, {
+    pattern: pagePattern,
     title: "Engineering Manager Coach",
     priorityQueries: [
       "Engineering Manager coach",
@@ -60,6 +68,7 @@ export function buildCanonicalContentChain(input: {
     decision: input.decision,
     pageBrief,
     historicalPageBrief: input.historicalPageBrief,
+    pagePattern,
   };
 }
 
@@ -90,7 +99,7 @@ export function generateEngineeringManagerCoachArtifact(input: {
     .filter((link) => link.href !== chain.decision.canonicalPath)
     .map(({ href, label }) => ({ href, label }));
 
-  return createReaderFacingArtifactDraft({
+  const artifact = createReaderFacingArtifactDraft({
     artifactId: "artifact-engineering-manager-coach",
     artifactVersion: chain.decision.decisionVersion,
     schemaVersion: "1.0.0",
@@ -127,6 +136,11 @@ export function generateEngineeringManagerCoachArtifact(input: {
     seo: { title: historicalPage.title, description: historicalPage.description },
     structuredDataInput: { type: "Article", authorName: "Itay Foyerstein" },
   });
+  const patternValidation = validateArtifactAgainstPagePattern(artifact, chain.pagePattern.id);
+  if (!patternValidation.valid) {
+    throw new Error(`Artifact does not satisfy ${chain.pagePattern.id}: ${patternValidation.details.join(" ")}`);
+  }
+  return artifact;
 }
 
 export function buildEngineeringManagerCoachArtifactProvenance(input: {

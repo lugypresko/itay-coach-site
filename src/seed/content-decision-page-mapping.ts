@@ -1,4 +1,14 @@
 import type { ContentDecision } from "../ai/content-decision/contracts";
+import type { ContentDecisionArchetype, PagePatternId } from "../ai/content-decision/contracts";
+
+function patternForPath(canonicalPath: string): { pagePatternId: PagePatternId; contentArchetype: ContentDecisionArchetype } {
+  if (canonicalPath === "/about") return { pagePatternId: "about_page", contentArchetype: "about" };
+  if (canonicalPath === "/faq") return { pagePatternId: "faq_page", contentArchetype: "faq" };
+  if (canonicalPath === "/the-push-methodology" || canonicalPath === "/strategic-leadership") return { pagePatternId: "framework_page", contentArchetype: "framework" };
+  if (canonicalPath === "/leadership-coaching-for-tech-leaders") return { pagePatternId: "pillar_page", contentArchetype: "pillar" };
+  if (canonicalPath === "/cto-coach" || canonicalPath === "/engineering-manager-coach" || canonicalPath === "/leadership-coach-for-engineering-managers") return { pagePatternId: "conversion_landing_page", contentArchetype: "conversion" };
+  return { pagePatternId: "problem_page", contentArchetype: "problem" };
+}
 
 export interface ContentDecisionPageMapping {
   canonicalPath: string;
@@ -10,16 +20,18 @@ export interface ContentDecisionPageMapping {
 }
 
 function decision(id: string, canonicalPath: string, primaryAudienceEntityId = "engineering-manager"): ContentDecision {
+  const selectedPattern = patternForPath(canonicalPath);
   return {
     id,
     decisionVersion: 1,
+    ...selectedPattern,
+    journeyStage: selectedPattern.pagePatternId === "conversion_landing_page" ? "coach_intent" : "consideration",
     primaryAudienceEntityId,
     primaryProblemId: "execution-bottleneck",
     symptomIds: ["approval-dependency", "strategic-time-collapse"],
     primaryFrameworkEntityId: "invisible-executor-framework",
     primaryOfferId: "the-push-coaching",
     primaryCtaId: "book-fit-call",
-    journeyStage: "coach_intent",
     claimIds: ["claim-leaders-become-default-route"],
     evidenceIds: ["evidence-approved-insight-player-trap"],
     canonicalPath,

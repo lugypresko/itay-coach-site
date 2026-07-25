@@ -19,6 +19,8 @@ const passingSemanticEvaluation: SemanticQualityEvaluation = {
 const testContentDecision = {
   id: "decision-workflow-test",
   decisionVersion: 1,
+  pagePatternId: "conversion_landing_page" as const,
+  contentArchetype: "conversion" as const,
   primaryAudienceEntityId: "engineering-manager",
   primaryProblemId: "execution-bottleneck",
   symptomIds: ["approval-dependency"],

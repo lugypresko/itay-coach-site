@@ -279,6 +279,8 @@ export const pageBriefSchema = z
   .object({
     id: nonEmptyStringSchema,
     sourceInsightIds: nonEmptyStringArraySchema,
+    pagePatternId: nonEmptyStringSchema.optional(),
+    contentArchetype: nonEmptyStringSchema.optional(),
     title: nonEmptyStringSchema,
     canonicalPath: z.string().trim().startsWith("/"),
     reviewStatus: z.enum(reviewStatusOptions),

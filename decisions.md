@@ -261,3 +261,13 @@ This file is the project’s single append-only decision record. New decisions a
 - Context: User review correction on `2026-07-26`; `PLANS.md` Task 095; `src/ai/content-decision/integration-gates.ts`; `DEC-20260726-01`.
 - Rationale: Artifact approval must not be detached from the exact ContentDecision revision that produced it.
 - Consequences: Existing historical artifact provenance remains compatible as legacy provenance; newly generated ContentDecision artifacts cannot be considered publication-ready without the explicit decision binding.
+
+## DEC-20260726-03 - Page Pattern owns governed page structure
+
+- Date: `2026-07-26`
+- Status: `implementation`
+- Scope: ContentDecision, PageBrief projection, ReaderFacingPageArtifact completeness, renderer input, and governance validation.
+- Decision: Every governed ContentDecision selects a canonical `pagePatternId` and `contentArchetype`. Page Patterns own required sections and journey/CTA compatibility; ContentDecision owns meaning and canonical IDs; the reader-facing renderer owns presentation.
+- Context: User-approved Page Pattern requirement on `2026-07-26`; `PLANS.md` Task 096; `DEC-20260713-04`; `DEC-20260726-01`.
+- Rationale: A shared structural contract prevents conversion, framework, problem, FAQ, and other surfaces from drifting into generic or incomplete artifacts while keeping operational metadata out of public output.
+- Consequences: Artifacts missing pattern-required sections or containing internal vocabulary IDs are rejected. Preview and publication continue to use the same renderer, and no draft becomes publishable without the existing hash-bound approval chain.
