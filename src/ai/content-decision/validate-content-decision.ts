@@ -7,7 +7,9 @@ export type ContentDecisionFailureCode =
   | "missing_evidence"
   | "duplicate_canonical_path"
   | "conflicting_active_version"
-  | "stale_validation";
+  | "stale_validation"
+  | "cta_conflict"
+  | "revalidation_required";
 
 export interface ContentDecisionValidationResult {
   valid: boolean;
@@ -19,6 +21,7 @@ export interface ContentDecisionValidationOptions {
   vocabulary: ContentDecisionVocabulary;
   now?: string;
   maxAgeDays?: number;
+  previouslyValidatedDecisionVersion?: number;
 }
 
 function hasItem(items: VocabularyItem[], id: string) {
@@ -74,6 +77,20 @@ export function validateContentDecision(
   if (decision.lastValidatedAt && isStale(decision.lastValidatedAt, options.now ?? new Date().toISOString(), options.maxAgeDays ?? 30)) {
     failureCodes.push("stale_validation");
     details.push("lastValidatedAt is outside the allowed validation window.");
+  }
+
+  const cta = vocabulary.ctas.find((item) => item.id === decision.primaryCtaId);
+  if (cta && !cta.compatibleJourneyStages.includes(decision.journeyStage)) {
+    failureCodes.push("cta_conflict");
+    details.push(`CTA ${decision.primaryCtaId} is not compatible with journey stage ${decision.journeyStage}.`);
+  }
+
+  if (
+    options.previouslyValidatedDecisionVersion !== undefined &&
+    options.previouslyValidatedDecisionVersion !== decision.decisionVersion
+  ) {
+    failureCodes.push("revalidation_required");
+    details.push(`Decision version ${decision.decisionVersion} differs from previously validated version ${options.previouslyValidatedDecisionVersion}.`);
   }
 
   return { valid: failureCodes.length === 0, failureCodes, details };

@@ -13,7 +13,8 @@ describe("ContentDecision coverage report", () => {
     });
 
     expect(report.totalPages).toBe(12);
-    expect(report.completePages).toBe(10);
+    expect(report.completePages).toBe(11);
+    expect(report.excludedPages).toEqual([{ canonicalPath: "/contact", reason: "Routing surface only; it is not a canonical authority or content-decision owner." }]);
     expect(report.goMetrics).toEqual({
       decisionCoverage: true,
       explicitSubgraphResolution: true,

@@ -4,6 +4,33 @@ import { approvedInsightRepository } from "../../src/ai/insights";
 import { buildSystemSnapshot, buildOperatingCycle } from "../../src/ai/workflows/operating-cycle";
 import { runProductionDirective } from "../../src/ai/workflows/production-directive";
 
+const bottleneckDecision = {
+  id: "decision-production-bottleneck",
+  decisionVersion: 1,
+  primaryAudienceEntityId: "engineering-manager",
+  primaryProblemId: "execution-bottleneck",
+  symptomIds: ["approval-dependency"],
+  primaryFrameworkEntityId: "invisible-executor-framework",
+  primaryOfferId: "the-push-coaching",
+  primaryCtaId: "book-fit-call",
+  journeyStage: "coach_intent" as const,
+  claimIds: ["claim-leaders-become-default-route"],
+  evidenceIds: ["evidence-approved-insight-player-trap"],
+  canonicalPath: "/clusters/coach-for-engineering-managers-stuck-as-the-bottleneck",
+  sourceInsightIds: [
+    "approved-insight-player-trap-01",
+    "approved-insight-player-trap-02",
+    "approved-insight-player-trap-03",
+    "approved-insight-player-trap-04",
+    "approved-insight-player-trap-05",
+    "approved-insight-player-trap-06",
+    "approved-insight-player-trap-07",
+  ],
+  status: "active" as const,
+  lastValidatedAt: "2026-07-12T00:00:00.000Z",
+  validationStatus: "valid" as const,
+};
+
 function baseCycle() {
   const observedAt = "2026-07-12T00:00:00.000Z";
   const snapshot = buildSystemSnapshot({
@@ -68,6 +95,7 @@ describe("bounded ProductionDirective executor", () => {
       existingCanonicalPaths: ["/clusters/coach-for-engineering-managers-stuck-as-the-bottleneck"],
       cycle: baseCycle(),
       now: "2026-07-12T00:00:00.000Z",
+      contentDecisions: [bottleneckDecision],
     });
 
     expect(result.selectedCluster).toBe("Player Trap");
@@ -107,6 +135,7 @@ describe("bounded ProductionDirective executor", () => {
       existingCanonicalPaths: [],
       cycle: baseCycle(),
       now: "2026-07-12T00:00:00.000Z",
+      contentDecisions: [],
     });
 
     expect(result.knowledgeAssets).toHaveLength(0);
@@ -140,6 +169,7 @@ describe("bounded ProductionDirective executor", () => {
       existingCanonicalPaths: [],
       cycle: baseCycle(),
       now: "2026-07-12T00:00:00.000Z",
+      contentDecisions: [],
     });
 
     expect(result.knowledgeAssets).toHaveLength(0);

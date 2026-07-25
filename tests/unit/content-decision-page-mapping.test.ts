@@ -5,8 +5,9 @@ import { contentDecisionPageMappings, contentDecisionPageDecisions } from "../..
 describe("ContentDecision page mapping", () => {
   it("maps 12 representative pages without changing existing content records", () => {
     expect(contentDecisionPageMappings).toHaveLength(12);
-    expect(contentDecisionPageDecisions).toHaveLength(10);
-    expect(contentDecisionPageMappings.filter((page) => page.decisionId)).toHaveLength(10);
+    expect(contentDecisionPageDecisions).toHaveLength(11);
+    expect(contentDecisionPageMappings.filter((page) => page.decisionId)).toHaveLength(11);
+    expect(contentDecisionPageMappings.find((page) => page.canonicalPath === "/contact")).toMatchObject({ mappingStatus: "excluded" });
   });
 
   it("uses explicit decision IDs for every mapped page", () => {
@@ -14,5 +15,10 @@ describe("ContentDecision page mapping", () => {
       expect(page.decisionId).toMatch(/^decision-/);
       expect(page.canonicalPath).toMatch(/^\//);
     }
+  });
+
+  it("maps CTO Coach explicitly and records Contact as an intentional exclusion", () => {
+    expect(contentDecisionPageMappings.find((page) => page.canonicalPath === "/cto-coach")).toMatchObject({ decisionId: "decision-cto-coach", mappingStatus: "mapped" });
+    expect(contentDecisionPageMappings.find((page) => page.canonicalPath === "/contact")?.exclusionReason).toBeTruthy();
   });
 });

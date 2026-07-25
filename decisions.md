@@ -231,3 +231,13 @@ This file is the project’s single append-only decision record. New decisions a
 - Rationale: The FAQ now functions as a canonical question-answer surface for discovery, comparison, and conversion. Keeping it discoverable improves search engine indexing and LLM retrieval without weakening the noindex boundary on other authority-launch pages.
 - Rejected alternatives: Leave the FAQ `noindex`; make all authority-launch pages indexable by default; add a separate FAQ-only route outside the governed discovery surfaces.
 - Consequences: `/faq` becomes a searchable public authority asset and a first-class LLM-facing discovery surface. Tests must cover both the robots output and `llms.txt` inclusion so the policy does not drift.
+
+## DEC-20260725-01 - Phase 1 ContentDecision integration remains code-only
+
+- Date: `2026-07-25`
+- Status: `implementation`
+- Scope: ContentDecision projection, generation readiness, revalidation, and publishing provenance.
+- Decision: Keep ContentDecision as a separate versioned internal contract. Phase 1 may add deterministic validators, PageBrief projection, and governance gates, but must not add a Payload collection, migration, or autonomous publishing workflow while the release freeze is active.
+- Context: `PLANS.md` Task 094; `docs/plans/2026-07-25-content-decision-graph.md`; Phase 0 ContentDecision implementation on `codex/content-decision-graph`.
+- Rationale: The model must first prove that explicit IDs govern content decisions and fail safely on CTA conflicts, missing evidence, stale validation, and provenance mismatch before persistence or generation wiring expands.
+- Consequences: `/cto-coach` is mapped explicitly, `/contact` is an intentional exclusion, and callers opt into the ContentDecision generation gate until a later approved schema/pipeline phase.

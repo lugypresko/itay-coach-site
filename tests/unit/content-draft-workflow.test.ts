@@ -16,6 +16,25 @@ const passingSemanticEvaluation: SemanticQualityEvaluation = {
   ],
 };
 
+const testContentDecision = {
+  id: "decision-workflow-test",
+  decisionVersion: 1,
+  primaryAudienceEntityId: "engineering-manager",
+  primaryProblemId: "execution-bottleneck",
+  symptomIds: ["approval-dependency"],
+  primaryFrameworkEntityId: "invisible-executor-framework",
+  primaryOfferId: "the-push-coaching",
+  primaryCtaId: "book-fit-call",
+  journeyStage: "coach_intent" as const,
+  claimIds: ["claim-leaders-become-default-route"],
+  evidenceIds: ["evidence-approved-insight-player-trap"],
+  canonicalPath: "/clusters/tech-leadership-coaching",
+  sourceInsightIds: ["approved-insight-player-trap-05"],
+  status: "active" as const,
+  lastValidatedAt: "2026-06-05T00:00:00.000Z",
+  validationStatus: "valid" as const,
+};
+
 describe("content draft workflow", () => {
   it("blocks content generation without a fresh approved insight", () => {
     const workflow = createContentDraftWorkflow();
@@ -64,7 +83,7 @@ describe("content draft workflow", () => {
           riskNotes: ["Do not write generic leadership advice."],
         },
         audiencePain: {
-          summary: "The leader is still the default escalation path.",
+          summary: "execution-bottleneck",
           painThemes: ["execution dependency"],
           workarounds: ["more process"],
           triggerEvents: ["the team waits for the leader"],
@@ -106,6 +125,7 @@ describe("content draft workflow", () => {
       semanticQualityEvaluation: passingSemanticEvaluation,
       canonicalOwnerPath: "/clusters/tech-leadership-coaching",
       knownCollidingIntentKeys: [],
+      contentDecision: testContentDecision,
     });
 
     expect(result.saveStatus).toBe("blocked");
@@ -207,7 +227,7 @@ describe("content draft workflow", () => {
           riskNotes: ["Keep the claim bounded."],
         },
         audiencePain: {
-          summary: "The team still depends on one leader.",
+          summary: "execution-bottleneck",
           painThemes: ["hidden load"],
           workarounds: ["more reviews"],
           triggerEvents: ["the leader becomes the final reviewer"],
@@ -249,6 +269,7 @@ describe("content draft workflow", () => {
       semanticQualityEvaluation: passingSemanticEvaluation,
       canonicalOwnerPath: "/clusters/invisible-executor",
       knownCollidingIntentKeys: [],
+      contentDecision: { ...testContentDecision, canonicalPath: "/clusters/invisible-executor" },
     });
 
     expect(result.readiness.canGenerate).toBe(true);
