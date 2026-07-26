@@ -74,6 +74,87 @@ Do not expand the system with new agents, collections, or workflows while the re
 
 The release target after verification is `Authority Engine Alpha`.
 
+### Task 096 - Canonical Page Pattern Layer
+
+State: `review`
+Lane: `content-governance`, `generation`, `renderer`
+Owner: Codex
+
+Goal:
+Ensure governed content uses an explicit Page Pattern for structure while ContentDecision remains the source of meaning.
+
+Scope:
+- Add `pagePatternId` and `contentArchetype` to ContentDecision and PageBrief projection.
+- Define and validate the ten canonical patterns, required sections, journey stages, and CTA compatibility.
+- Validate artifacts against the selected pattern and reject internal identifiers in reader-facing prose.
+- Keep preview/publication on the shared ReaderFacingArtifact renderer and preserve approval/publication gates.
+
+Out of scope:
+- No artifact approval or publication.
+- No Payload collection or migration.
+- No visual renderer redesign.
+
+Validation steps:
+- Pattern unit tests for all ten patterns and one cross-pattern negative case.
+- Full tests, typecheck, build, and ContentDecision coverage verifier.
+
+Acceptance criteria:
+- All canonical seeded decisions have an explicit pattern and archetype.
+- PageBrief projection uses the selected pattern's required structure.
+- Pattern, journey-stage, CTA, completeness, and internal-language gates are deterministic.
+- Human approval and publication governance remain unchanged.
+
+### Task 095 - Engineering Manager Coach Canonical Content Chain
+
+State: `in_progress`
+Lane: `content-governance`, `generation`, `publication`
+Owner: Codex
+
+Goal:
+Move `/engineering-manager-coach` from the legacy static PageBrief path to one
+canonical ContentDecision-derived chain, stopping before publication until a
+human approves the new artifact hash.
+
+Scope:
+- Revalidate the page ContentDecision.
+- Compare and retire the static PageBrief as a competing source of truth.
+- Derive the canonical PageBrief projection.
+- Generate and validate a new reader-facing artifact from the approved decision and historical page input.
+- Prepare hash-bound human approval and current publication provenance gates.
+
+Out of scope:
+- No automatic human approval.
+- No production publication before approval.
+- No Payload collection or migration.
+- No sitemap, `llms.txt`, or analytics changes before publication passes.
+
+Validation steps:
+- Focused canonical-chain tests first (RED, then GREEN).
+- Full tests, typecheck, build, and coverage verifier.
+- Human review gate remains the final blocker before publication.
+
+Acceptance criteria:
+- ContentDecision is `valid` and current.
+- PageBrief is a canonical projection, with the old brief retained only as historical input.
+- Generated artifact is valid and evidence-gated.
+- Human approval is hash-bound.
+- Provenance and publishing gates pass only after approval.
+
+Verification notes:
+- Revalidated `decision-engineering-manager-coach` at `2026-07-26T00:00:00.000Z`; `decisionVersion=1`, `validationStatus=valid`.
+- The legacy PageBrief remains exported only as `engineeringManagerCoachHistoricalPageBrief`; the authority launch config now uses the ContentDecision projection.
+- The pre-Page-Pattern artifact hash `b051e2c3c11fc716628c024e184854b3abfe4a9817df5b8af17a3c7075d44063` is superseded and must not be approved. The version 2 `conversion_landing_page` draft hash `9080366c4cfaeac6b2f8e575c1770e885ce7cdaccd510bf16f152f31a6f0c5c9` is also superseded by the minor-copy-revision version 3 draft hash `28b0ea1c56e8a8e527851ed1fa00077095c5eb904c3d8293d4a22565aa944788`.
+- Version 3 changes artifact copy only: stronger Why The Push / Why Itay, concrete outcomes, a fit section, and a sharper Engineering Manager CTA. ContentDecision and Page Pattern are unchanged; no approval or publication was created.
+- ContentDecision provenance now explicitly includes `contentDecisionId=decision-engineering-manager-coach` and `contentDecisionVersion=1`; the publishing gate passes for the matching pair and fails on a version mismatch.
+- The local preview now renders the complete `ReaderFacingPageArtifact` through `ReaderFacingArtifactPage` at `/preview/artifacts/artifact-engineering-manager-coach`; the draft is rejected in production and the public route remains fail-closed until approval.
+- Regression coverage proves the exact artifact hash, reader-facing sections, CTA, related links, and absence of PageBrief/ContentDecision metadata. Full suite now passes with `72` files / `374` tests.
+- Deterministic, internal-language, completeness, focused chain, full test suite (`72` files / `372` tests), typecheck, and build passed.
+- ContentDecision coverage verifier exited `0`.
+- Authority Graph verifier was attempted but blocked by unavailable local Postgres (`ECONNREFUSED` on `localhost:5432`); no database state was changed.
+- Human semantic review and hash-bound approval are still required. No publication record, sitemap, `llms.txt`, or analytics changes were made.
+- Semantic review: pass for explicit audience, concrete Engineering Manager situations, causal Invisible Executor mechanism, outcome promise, and decision-oriented CTA; no unsupported metrics or internal identifiers.
+- Copy review: pass for reader-facing language and scan hierarchy; design review: pass for readable hierarchy, contrast, spacing, CTA visibility, and shared renderer output. The only local browser console error is the pre-existing `/favicon.ico` 404.
+
 ### Task 093 - ContentDecision Canonical Contract and Decision Graph
 
 State: `completed`

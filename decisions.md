@@ -241,3 +241,53 @@ This file is the project’s single append-only decision record. New decisions a
 - Context: `PLANS.md` Task 094; `docs/plans/2026-07-25-content-decision-graph.md`; Phase 0 ContentDecision implementation on `codex/content-decision-graph`.
 - Rationale: The model must first prove that explicit IDs govern content decisions and fail safely on CTA conflicts, missing evidence, stale validation, and provenance mismatch before persistence or generation wiring expands.
 - Consequences: `/cto-coach` is mapped explicitly, `/contact` is an intentional exclusion, and callers opt into the ContentDecision generation gate until a later approved schema/pipeline phase.
+
+## DEC-20260726-01 - Engineering Manager Coach uses one canonical content chain
+
+- Date: `2026-07-26`
+- Status: `implementation`
+- Scope: `/engineering-manager-coach` ContentDecision, PageBrief projection, reader-facing artifact generation, validation, and publication provenance.
+- Decision: Revalidate the explicit ContentDecision, derive the PageBrief from it, and treat the legacy PageBrief only as historical input. Generate a new hash-bound reader-facing artifact from the canonical chain. Human approval remains required before publication and provenance can become current.
+- Context: User-approved chain order on `2026-07-26`; `PLANS.md` Task 095; `DEC-20260713-04`; `DEC-20260725-01`.
+- Rationale: Keeping the static PageBrief as a parallel authority would recreate the two-source-of-truth problem. A deterministic projection makes the decision, artifact, validation, approval, and publication identities auditable.
+- Consequences: The generated artifact is a draft until a human reviews and approves its exact hash. No publication record, sitemap, `llms.txt`, or analytics update is produced by this implementation step.
+
+## DEC-20260726-02 - ContentDecision provenance is explicit for publication binding
+
+- Date: `2026-07-26`
+- Status: `implementation`
+- Scope: ContentDecision-generated artifact provenance and publishing validation.
+- Decision: ContentDecision-generated provenance must include both `contentDecisionId` and `contentDecisionVersion` in addition to the artifact and PageBrief bindings. Publishing validation consumes those explicit fields and fails on any mismatch.
+- Context: User review correction on `2026-07-26`; `PLANS.md` Task 095; `src/ai/content-decision/integration-gates.ts`; `DEC-20260726-01`.
+- Rationale: Artifact approval must not be detached from the exact ContentDecision revision that produced it.
+- Consequences: Existing historical artifact provenance remains compatible as legacy provenance; newly generated ContentDecision artifacts cannot be considered publication-ready without the explicit decision binding.
+
+## DEC-20260726-03 - Page Pattern owns governed page structure
+
+- Date: `2026-07-26`
+- Status: `implementation`
+- Scope: ContentDecision, PageBrief projection, ReaderFacingPageArtifact completeness, renderer input, and governance validation.
+- Decision: Every governed ContentDecision selects a canonical `pagePatternId` and `contentArchetype`. Page Patterns own required sections and journey/CTA compatibility; ContentDecision owns meaning and canonical IDs; the reader-facing renderer owns presentation.
+- Context: User-approved Page Pattern requirement on `2026-07-26`; `PLANS.md` Task 096; `DEC-20260713-04`; `DEC-20260726-01`.
+- Rationale: A shared structural contract prevents conversion, framework, problem, FAQ, and other surfaces from drifting into generic or incomplete artifacts while keeping operational metadata out of public output.
+- Consequences: Artifacts missing pattern-required sections or containing internal vocabulary IDs are rejected. Preview and publication continue to use the same renderer, and no draft becomes publishable without the existing hash-bound approval chain.
+
+## DEC-20260726-04 - Pre-pattern Engineering Manager artifact is superseded
+
+- Date: `2026-07-26`
+- Status: `implementation`
+- Scope: `/engineering-manager-coach` reader-facing artifact generation and preview.
+- Decision: Do not approve hash `b051e2c3c11fc716628c024e184854b3abfe4a9817df5b8af17a3c7075d44063`. Regenerate the artifact through `conversion_landing_page` with a new version/hash and review the new reader-facing copy before any approval or publication.
+- Context: User review instruction on `2026-07-26`; `PLANS.md` Task 095 and Task 096; `DEC-20260726-03`.
+- Rationale: The prior artifact predates the canonical Page Pattern contract and did not satisfy the required semantic/copy quality bar.
+- Consequences: Only the new draft artifact version 2/hash `9080366c4cfaeac6b2f8e575c1770e885ce7cdaccd510bf16f152f31a6f0c5c9` may proceed to future human review; neither version is approved or published.
+
+## DEC-20260726-05 - Engineering Manager artifact minor copy revision
+
+- Date: `2026-07-26`
+- Status: `implementation`
+- Scope: `/engineering-manager-coach` reader-facing artifact only.
+- Decision: Keep the ContentDecision and `conversion_landing_page` Page Pattern unchanged. Generate artifact version 3 with stronger Why The Push / Why Itay copy, concrete outcomes, a fit section, and a sharper CTA.
+- Context: User minor-revision request on `2026-07-26`; `PLANS.md` Task 095; `DEC-20260726-03`; `DEC-20260726-04`.
+- Rationale: Improve semantic and conversion clarity without changing canonical meaning or governed page structure.
+- Consequences: Version 2/hash `9080366c4cfaeac6b2f8e575c1770e885ce7cdaccd510bf16f152f31a6f0c5c9` is superseded by draft version 3/hash `28b0ea1c56e8a8e527851ed1fa00077095c5eb904c3d8293d4a22565aa944788`; no approval or publication is granted.

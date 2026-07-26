@@ -1,4 +1,5 @@
 import { contentDecisionSchema, type ContentDecision } from "./contracts";
+import { validatePagePatternDecision } from "./page-patterns";
 import type { ContentDecisionVocabulary, VocabularyItem } from "./vocabulary";
 
 export type ContentDecisionFailureCode =
@@ -9,6 +10,7 @@ export type ContentDecisionFailureCode =
   | "conflicting_active_version"
   | "stale_validation"
   | "cta_conflict"
+  | "page_pattern_conflict"
   | "revalidation_required";
 
 export interface ContentDecisionValidationResult {
@@ -83,6 +85,12 @@ export function validateContentDecision(
   if (cta && !cta.compatibleJourneyStages.includes(decision.journeyStage)) {
     failureCodes.push("cta_conflict");
     details.push(`CTA ${decision.primaryCtaId} is not compatible with journey stage ${decision.journeyStage}.`);
+  }
+
+  const patternValidation = validatePagePatternDecision(decision);
+  if (!patternValidation.valid) {
+    failureCodes.push("page_pattern_conflict");
+    details.push(...patternValidation.details);
   }
 
   if (

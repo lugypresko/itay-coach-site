@@ -5,6 +5,8 @@ import {
   validateReaderFacingArtifactHash,
   type ReaderFacingPageArtifact,
 } from "../../domain/reader-facing-page-artifact";
+import { validateArtifactAgainstPagePattern } from "../content-decision/page-patterns";
+import type { PagePatternId } from "../content-decision/contracts";
 
 const nonEmpty = z.string().trim().min(1);
 const isoDate = z.string().datetime();
@@ -57,6 +59,11 @@ export const artifactProvenanceSchema = artifactBindingSchema.extend({
   generatedAt: isoDate,
 }).strict();
 
+export const contentDecisionArtifactProvenanceSchema = artifactProvenanceSchema.extend({
+  contentDecisionId: nonEmpty,
+  contentDecisionVersion: z.number().int().positive(),
+}).strict();
+
 export const publicationRecordSchema = artifactBindingSchema.extend({
   publicationState: z.enum(["draft", "published", "archived"]),
   indexable: z.boolean(),
@@ -75,6 +82,7 @@ export type ArtifactValidationResult = z.infer<typeof artifactValidationResultSc
 export type ArtifactSemanticReview = z.infer<typeof artifactSemanticReviewSchema>;
 export type ArtifactHumanApproval = z.infer<typeof artifactHumanApprovalSchema>;
 export type ArtifactProvenance = z.infer<typeof artifactProvenanceSchema>;
+export type ContentDecisionArtifactProvenance = z.infer<typeof contentDecisionArtifactProvenanceSchema>;
 export type PublicationRecord = z.infer<typeof publicationRecordSchema>;
 
 export interface ArtifactPublicationEvaluation {
@@ -153,6 +161,9 @@ export function validateArtifactInternalLanguage(
   // 6. Raw internal URLs in prose (fail closed)
   const prose = artifact.body.flatMap((section) => [section.heading, ...section.paragraphs, ...(section.bullets ?? [])]).filter(Boolean).join("\n");
   if (/(?:^|[\s(])\/(?!\/)[a-z0-9][a-z0-9/_-]*(?:$|[\s).,])/im.test(prose)) failureCodes.push("raw_internal_url_in_prose");
+  if (/\b(?:contentdecision|pagebrief|content-archetype|page-pattern-id|journey-stage|source-insight|validation-status|provenance|execution-bottleneck|invisible-executor-framework|approval-dependency|strategic-time-collapse)\b/i.test(prose)) {
+    failureCodes.push("internal_identifier_in_prose");
+  }
 
   return artifactValidationResultSchema.parse({
     artifactId: artifact.artifactId,
@@ -173,8 +184,14 @@ function hasSections(artifact: ReaderFacingPageArtifact, requiredIds: string[]):
 export function validateArtifactCompleteness(
   artifact: ReaderFacingPageArtifact,
   validatedAt: string,
+  pagePatternId?: PagePatternId,
 ): ArtifactValidationResult {
   const failureCodes: string[] = [];
+
+  if (pagePatternId) {
+    const patternValidation = validateArtifactAgainstPagePattern(artifact, pagePatternId);
+    if (!patternValidation.valid) failureCodes.push(...patternValidation.failureCodes);
+  }
 
   if (artifact.pageType === "framework") {
     if (!hasSections(artifact, ["definition", "problem", "symptoms", "stages", "interpretation", "limits", "next-step"])) {

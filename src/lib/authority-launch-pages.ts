@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 
 import type { PageBrief } from "@/ai/agents";
+import { buildCanonicalContentChain, generateEngineeringManagerCoachArtifact } from "@/ai/content-decision/canonical-page-chain";
+import { contentDecisionPageDecisions } from "@/seed/content-decision-page-mapping";
+import { contentDecisionVocabulary } from "@/ai/content-decision/vocabulary";
 import { getSiteUrl } from "@/lib/site-url";
 
 export type AuthorityLaunchLink = {
@@ -388,6 +391,20 @@ export const engineeringManagerCoachPageBrief: PageBrief = {
     rationale: "Move the reader from recognition to a direct decision conversation.",
   },
 };
+
+const engineeringManagerCoachDecision = contentDecisionPageDecisions.find(
+  (decision) => decision.canonicalPath === "/engineering-manager-coach",
+);
+if (!engineeringManagerCoachDecision) throw new Error("Missing canonical Engineering Manager Coach ContentDecision.");
+
+const engineeringManagerCoachCanonicalChain = buildCanonicalContentChain({
+  decision: engineeringManagerCoachDecision,
+  historicalPageBrief: engineeringManagerCoachPageBrief,
+  vocabulary: contentDecisionVocabulary,
+});
+
+export const engineeringManagerCoachHistoricalPageBrief = engineeringManagerCoachCanonicalChain.historicalPageBrief;
+export const engineeringManagerCoachCanonicalPageBrief = engineeringManagerCoachCanonicalChain.pageBrief;
 
 export const ctoCoachPageBrief: PageBrief = {
   id: "page-brief-cto-coach",
@@ -1713,7 +1730,7 @@ export const authorityLaunchPages = {
         description: "Move from diagnosis to conversation.",
       },
     ],
-    pageBrief: engineeringManagerCoachPageBrief,
+    pageBrief: engineeringManagerCoachCanonicalPageBrief,
   },
   ctoCoach: {
     pageSource: "page_brief",
@@ -2188,3 +2205,9 @@ export function buildAuthorityLaunchMetadata(page: AuthorityLaunchPageConfig): M
 export function isAuthorityLaunchPageKey(value: string): value is AuthorityLaunchPageKey {
   return value in authorityLaunchPages;
 }
+
+export const engineeringManagerCoachReaderFacingArtifact = generateEngineeringManagerCoachArtifact({
+  chain: engineeringManagerCoachCanonicalChain,
+  historicalPage: authorityLaunchPages.engineeringManagerCoach,
+  createdAt: "2026-07-26T00:01:00.000Z",
+});

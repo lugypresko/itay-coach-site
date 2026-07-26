@@ -6,6 +6,8 @@ import { contentDecisionVocabulary } from "../../src/ai/content-decision/vocabul
 const decision = {
   id: "decision-em-bottleneck",
   decisionVersion: 1,
+  pagePatternId: "conversion_landing_page" as const,
+  contentArchetype: "conversion" as const,
   primaryAudienceEntityId: "engineering-manager",
   primaryProblemId: "execution-bottleneck",
   symptomIds: ["approval-dependency", "strategic-time-collapse"],
