@@ -794,6 +794,24 @@
   text-underline-offset: 0.18em;
 }
 
+/* Player Trap runs on a dark canvas, so the global light-theme button tokens
+   need an explicit contrast and hierarchy here. */
+.player-trap-shell .primary-link {
+  border-color: var(--color-accent);
+  background: var(--color-accent);
+  color: var(--color-bg);
+}
+
+.player-trap-shell .primary-link:hover {
+  background: #e5c34a;
+  color: var(--color-bg);
+}
+
+.player-trap-shell .secondary-link {
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+
 .hero-highlight {
   position: relative;
   display: inline-block;
@@ -1166,6 +1184,42 @@
 }
 
 @media (max-width: 640px) {
+  .player-trap-hero,
+  .player-trap-section {
+    padding-inline: var(--space-2);
+  }
+
+  .player-trap-hero-copy h1 {
+    max-width: none;
+    font-size: clamp(2.5rem, 11vw, 3.5rem);
+    line-height: 0.98;
+    overflow-wrap: anywhere;
+  }
+
+  .player-trap-shell .content-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .player-trap-shell .content-actions > a {
+    width: 100%;
+    min-height: 48px;
+    text-align: center;
+  }
+
+  .player-trap-hero-panel {
+    padding: var(--space-4);
+  }
+
+  .assessment-result {
+    position: static;
+  }
+
+  .form-submit {
+    width: 100%;
+    min-height: 48px;
+  }
+
   .site-footer {
     flex-direction: column-reverse;
     gap: var(--space-4);
