@@ -49,6 +49,7 @@ export type AuthorityLaunchPageConfig = {
   faqEntries?: AuthorityFaqEntry[];
   faqSections?: AuthorityFaqSection[];
   pageBrief?: PageBrief;
+  showConversionCta?: boolean;
 };
 
 function faq(question: string, answer: string): AuthorityFaqEntry {

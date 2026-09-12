@@ -110,6 +110,18 @@ describe("canonical authority sprint", () => {
     }
   });
 
+  it("routes the The Push offer to the runnable Player Trap diagnostic", () => {
+    const spec = getPublicContentSectionSpec("entities");
+    const record = getStaticPublicContentCatalogEntry("entities", "the-push");
+    expect(spec).toBeTruthy();
+    expect(record).toBeTruthy();
+
+    const page = buildPublicContentPageModel({ spec: spec!, record: record!, origin: "https://itayfoyerstein.com" });
+    const publicPage = toReaderFacingPublicContentPage(page);
+
+    expect(publicPage.relatedLinks).toContainEqual(expect.objectContaining({ href: "/player-trap" }));
+  });
+
   it("gives problem target pages breadcrumbs, evidence, one CTA, related pages, and proof blocks", () => {
     for (const slug of ["cto-becomes-the-bottleneck", "vp-rnd-losing-execution-control"]) {
       const record = getProblemPageCatalogEntry(slug);

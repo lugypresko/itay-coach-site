@@ -231,11 +231,13 @@ export function AuthorityLaunchPage({ page }: { page: AuthorityLaunchPageConfig 
           </article>
         ) : null}
 
-        <article className="content-panel content-panel-wide">
-          <h2>Continue the conversation</h2>
-          <p>Bring one current leadership situation to a fit call. We can decide whether the next step belongs in coaching, a diagnostic route, or no engagement.</p>
-          <Link className="primary-link" href="/book-a-fit-call">Book a fit call</Link>
-        </article>
+        {page.showConversionCta !== false ? (
+          <article className="content-panel content-panel-wide">
+            <h2>Continue the conversation</h2>
+            <p>Bring one current leadership situation to a fit call. We can decide whether the next step belongs in coaching, a diagnostic route, or no engagement.</p>
+            <Link className="primary-link" href="/book-a-fit-call">Book a fit call</Link>
+          </article>
+        ) : null}
       </section>
     </main>
   );

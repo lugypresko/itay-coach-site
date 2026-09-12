@@ -50,8 +50,9 @@ export interface ReaderFacingProblemPage {
   jsonLd: Array<Record<string, unknown>>;
 }
 
-function hrefForInternalLink(targetSlug: string): string {
+function hrefForInternalLink(targetSlug: string, sourcePath?: string): string {
   if (targetSlug === "tech-leadership-coaching") return "/pillars/tech-leadership-coaching";
+  if (targetSlug === "player-trap" && sourcePath === "/entities/the-push") return "/player-trap";
   if (targetSlug === "player-trap" || targetSlug === "invisible-executor") return `/frameworks/${targetSlug}`;
   if (targetSlug === "the-push") return "/entities/the-push";
   if (targetSlug === "itay-foyerstein") return "/entities/itay-foyerstein";
@@ -87,7 +88,7 @@ export function toReaderFacingPublicContentPage(page: PublicContentPageModel): R
     primaryCta: publicContentCta(page),
     relatedLinks: page.relatedLinks.map((link) => ({
       label: link.anchorText,
-      href: hrefForInternalLink(link.targetSlug),
+      href: hrefForInternalLink(link.targetSlug, page.pathname),
     })),
     // Non-public content emits no schema. FAQ schema is fail-closed until FAQ
     // records distinguish reader-facing questions from CMS/editorial prompts.

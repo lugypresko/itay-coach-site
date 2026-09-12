@@ -69,7 +69,7 @@ export const aboutPage = {
     }
   ]
 } satisfies AuthorityLaunchPageConfig;
-export const thePushMethodologyPage = {
+const legacyThePushMethodologyPage = {
   "pageSource": "legacy_static_page",
   "pageType": "Methodology",
   "title": "The Push Methodology",
@@ -142,6 +142,69 @@ export const thePushMethodologyPage = {
       "answer": "Progress is reviewed through concrete working hypotheses, observable behavior, decision patterns, and experiments in the leader’s real context."
     }
   ]
+} satisfies AuthorityLaunchPageConfig;
+
+// Methodology snapshot: the reasoning model behind the engagement. This page
+// explains how to inspect a leadership problem; the offer page explains what
+// a buyer purchases.
+export const thePushMethodologyPage = {
+  pageSource: "legacy_static_page",
+  pageType: "Methodology",
+  title: "The Push Methodology: How to Diagnose Leadership Bottlenecks",
+  description: "The Push methodology is a reasoning model for technical leadership: start with a real incident, test competing explanations, and change the decision path with one reversible experiment.",
+  canonicalPath: "/the-push-methodology",
+  query: "How do you diagnose a leadership bottleneck?",
+  shortAnswer: "The Push methodology helps a technical leader examine one recurring incident before naming a framework. It separates authority, context, capability, and risk; tests which explanation fits the evidence; and uses a small reversible experiment to see whether judgment moves without creating a new dependency.",
+  keyTakeaways: [
+    "Start with what happened, not with a label.",
+    "Separate authority, context, capability, and risk before choosing an intervention.",
+    "A healthy intervention transfers judgment and makes the next decision easier to own.",
+  ],
+  definitionTitle: "Start with the incident",
+  definitionBody: "A useful diagnosis begins with a specific moment: a decision returned for approval, a review that could not move, or an escalation that skipped the person closest to the work. One incident is evidence to investigate, not proof of a pattern.",
+  frameworkTitle: "Four explanations to test",
+  frameworkBody: "The same escalation can have different causes. The work is to test the explanation against what the team was told, what it knew, what it could do, and what risk it was carrying.",
+  frameworkSteps: [
+    "Authority: did the person actually have the right to decide?",
+    "Context: did they have the judgment, standards, or information needed?",
+    "Capability: could they perform the work or make the decision yet?",
+    "Risk: was escalation genuinely required by safety, compliance, or organizational constraint?",
+  ],
+  symptomsTitle: "What a dependent pattern looks like",
+  symptoms: [
+    "The same decision returns after delegation.",
+    "The manager is invited to meetings just in case an answer is needed.",
+    "A review queue grows because judgment remains concentrated at the top.",
+  ],
+  uncomfortableTruthTitle: "A healthy intervention changes the next decision",
+  uncomfortableTruth: "Moving a task is not the same as moving judgment. An intervention is healthy when the person who owns the work can make the next comparable decision with clearer boundaries and less rescue. It is becoming dependency when every experiment creates another approval step for the same manager.",
+  targetQuestions: [
+    "How do I stop being a leadership bottleneck?",
+    "How can I delegate without creating dependency?",
+    "What are decision rights in engineering leadership?",
+    "How do I transfer judgment, not just tasks?",
+  ],
+  citationSnippet: "The Push methodology starts with a real leadership incident, tests authority, context, capability, and risk, and uses a reversible experiment to see whether judgment can move without creating dependency.",
+  entityFocus: ["The Push methodology", "Decision rights", "Delegation", "Leadership bottleneck"],
+  relatedLinks: [
+    { href: "/entities/the-push", label: "See The Push engagement", description: "See how this reasoning model is applied in the 12-week coaching and advisory engagement." },
+    { href: "/player-trap", label: "Run the leadership diagnostic", description: "Use the diagnostic when you want to inspect your own pattern." },
+  ],
+  showConversionCta: false,
+  faqEntries: [
+    {
+      question: "What makes an intervention healthy rather than dependency-forming?",
+      answer: "A healthy intervention makes the next comparable decision easier for the owner to make. It clarifies the boundary, the evidence required, and the risk that warrants escalation. If the intervention only adds another approval step, it has moved work without moving judgment.",
+    },
+    {
+      question: "How do I distinguish authority from capability?",
+      answer: "Ask whether the person was allowed to decide and whether they had the context and skill to decide. If authority was missing, clarify the boundary. If capability was missing, training, pairing, or hiring may be the right response. Do not treat every escalation as a confidence or coaching issue.",
+    },
+    {
+      question: "What is a reversible experiment?",
+      answer: "It is a small change to one decision path that can be observed and rolled back. For example, define which decisions a manager owns for one week, record exceptions, and review the evidence at a set time. The experiment should change behavior while preserving a safe route for genuine risk.",
+    },
+  ],
 } satisfies AuthorityLaunchPageConfig;
 const legacyFaqPage = {
   "pageSource": "legacy_static_page",
