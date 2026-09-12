@@ -75,6 +75,7 @@
     .scene p{margin:0;color:#595951}
 
     .proof{background:var(--ink);color:var(--white);border-radius:44px;width:min(1260px,calc(100% - 24px));margin:24px auto;padding:80px 0}
+    .proof h2,.proof h3{color:var(--white)}
     .proof .section-head p{color:#bdbdb6}
     .proof .eyebrow{color:#9d9d96}
     .proof-grid{display:grid;grid-template-columns:1.25fr .75fr .75fr;gap:14px}
