@@ -25,6 +25,14 @@ export const metadata: Metadata = {
   description:
     "Tech Leadership Coach for Engineering Managers, Tech Leads, R&D Managers, and VP Engineering candidates. The Push is the Leadership OS for Tech Leaders.",
   metadataBase: new URL(getSiteUrl()),
+  openGraph: {
+    title: "Itay Foyerstein | Technical Leadership Coaching",
+    description: "Technical leadership coaching for Engineering Managers, Group Managers, and Directors.",
+    url: getSiteUrl(),
+    siteName: "The Push",
+    type: "website",
+    images: [{ url: "/itay-home-photo.jpg", width: 896, height: 1195, alt: "Itay Foyerstein" }],
+  },
 };
 
 export default function SiteLayout({ children }: SiteLayoutProps) {

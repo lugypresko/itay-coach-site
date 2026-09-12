@@ -15,12 +15,21 @@ type PlayerTrapPageProps = {
 };
 
 export const metadata: Metadata = {
-  title: "Player Trap Test",
+  title: "Player Trap Diagnostic",
   description:
-    "A 3-minute Player Trap test for tech managers who want to build a team that moves without waiting for them.",
+    "Bring one current leadership case and get a working hypothesis, evidence against it, and one reversible experiment.",
+  alternates: { canonical: "/player-trap" },
+  openGraph: {
+    title: "Player Trap Diagnostic | The Push",
+    description: "Bring one current leadership case and get a working hypothesis plus one reversible experiment.",
+    url: "https://itayfoyerstein.com/player-trap",
+    siteName: "The Push",
+    type: "website",
+    images: [{ url: "/itay-home-photo.jpg", width: 896, height: 1195, alt: "Itay Foyerstein" }],
+  },
   robots: {
-    index: false,
-    follow: false,
+    index: true,
+    follow: true,
   },
 };
 

@@ -54,7 +54,7 @@ describe("player trap conversion infrastructure", () => {
     expect(playerTrapNurtureSequence[0].slug).toBe("diagnostic-report");
 
     expect(english.hero.headline).toBe("Build a team that moves without waiting for you.");
-    expect(english.hero.cta).toBe("Take the 3-Minute Test");
+    expect(english.hero.cta).toBe("Bring one current case");
     expect(english.wrongFix.lines).toEqual([
       "You tried delegating more.",
       "You tried clearer priorities.",
@@ -99,7 +99,7 @@ describe("player trap conversion infrastructure", () => {
 
   it("keeps the campaign framework, authority, and diagnostic contracts", () => {
     expect(playerTrapHeroCopy.headline).toBe("Build a team that moves without waiting for you.");
-    expect(playerTrapHeroCopy.cta).toBe("Take the 3-Minute Test");
+    expect(playerTrapHeroCopy.cta).toBe("Bring one current case");
     expect(playerTrapDiagnosticSigns.map((sign) => sign.title)).toEqual([
       "The team waits for you too often.",
       "You solve problems faster than the system can.",

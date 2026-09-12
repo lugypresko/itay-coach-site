@@ -24,8 +24,10 @@ export async function generateMetadata({ params }: ProblemPageProps): Promise<Me
     return {};
   }
 
+  const title = page.record.seoTitle.replace(/\s*\|\s*The Push\s*$/i, "");
+
   return {
-    title: page.record.seoTitle,
+    title,
     description: page.record.seoDescription,
     alternates: { canonical: page.canonicalUrl },
     robots: page.publicationDecision.indexable ? { index: true, follow: true } : { index: false, follow: false },

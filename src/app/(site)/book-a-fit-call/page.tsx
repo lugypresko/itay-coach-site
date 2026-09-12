@@ -28,6 +28,7 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "/book-a-fit-call",
   },
+  robots: { index: false, follow: true },
 };
 
 export default function BookAFitCallPage() {

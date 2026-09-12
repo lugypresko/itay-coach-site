@@ -86,7 +86,7 @@ describe("robots and sitemap", () => {
       .split("\n")
       .filter((line) => line.startsWith("- "))
       .map((line) => new URL(line.slice(2)).pathname);
-    for (const pathname of ["/", "/about", "/the-push-methodology", "/faq", "/book-a-fit-call"]) {
+    for (const pathname of ["/", "/about", "/the-push-methodology", "/faq", "/player-trap"]) {
       expect(sitemapPathnames).toContain(pathname);
       expect(llmsRoutes).toContain(pathname);
     }

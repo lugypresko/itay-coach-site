@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Terms of Use | The Push",
+  title: "Terms of Use",
   description: "Terms of Use for The Push and Itay Foyerstein. Read our terms and conditions for using our website and services.",
   alternates: {
     canonical: "/terms",

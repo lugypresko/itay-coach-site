@@ -32,13 +32,15 @@ export async function generateMetadata({ params }: ContentPageProps): Promise<Me
     return {};
   }
 
+  const title = page.record.seoTitle.replace(/\s*\|\s*The Push\s*$/i, "");
+
   return {
-    title: page.record.seoTitle,
+    title,
     description: page.record.seoDescription,
     alternates: { canonical: page.canonicalUrl },
     robots: page.publicationDecision.indexable ? { index: true, follow: true } : { index: false, follow: false },
     openGraph: {
-      title: page.record.seoTitle,
+      title: `${title} | The Push`,
       description: page.record.seoDescription,
       url: page.canonicalUrl,
       type: "article",

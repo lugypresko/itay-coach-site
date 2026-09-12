@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy | The Push",
+  title: "Privacy Policy",
   description: "Privacy Policy for The Push and Itay Foyerstein. Learn how we collect, use, and protect your personal information.",
   alternates: {
     canonical: "/privacy",

@@ -70,7 +70,7 @@ export const indexableFixedPathnames = new Set([
   "/about",
   "/the-push-methodology",
   "/faq",
-  "/book-a-fit-call",
+  "/player-trap",
 ]);
 
 // Keep llms.txt aligned with the same publication boundary as metadata and the

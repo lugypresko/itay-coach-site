@@ -396,10 +396,10 @@ const playerTrapFunnelCopy: Record<PlayerTrapLanguage, PlayerTrapFunnelCopy> = {
       headline: "Build a team that moves without waiting for you.",
       subheadline: "See whether your operating model still routes too many decisions through you.",
       description:
-        "A 3-minute diagnostic for tech managers who want less dependency, clearer ownership, and more room to lead at the next level.",
-      cta: "Take the 3-Minute Test",
+        "Bring one current leadership case. Get a working hypothesis, evidence against it, and one reversible experiment before deciding whether coaching is the right next step.",
+      cta: "Bring one current case",
       secondaryCta: "See the dependency pattern",
-      microcopy: "3 minutes. For tech managers. No fluff.",
+      microcopy: "One real case. One useful hypothesis. One reversible experiment.",
     },
     dailyScenes: {
       label: "Daily dependency scenes",

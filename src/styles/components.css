@@ -794,6 +794,16 @@
   text-underline-offset: 0.18em;
 }
 
+/* The diagnostic is a focused conversion flow and owns its own header. */
+body:has(.player-trap-shell) .site-frame > .site-header,
+body:has(.player-trap-shell) .site-frame > .site-footer {
+  display: none;
+}
+
+body:has(.player-trap-shell) .site-frame {
+  padding: 0;
+}
+
 /* Player Trap runs on a dark canvas, so the global light-theme button tokens
    need an explicit contrast and hierarchy here. */
 .player-trap-shell .primary-link {
