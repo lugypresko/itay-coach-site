@@ -71,6 +71,8 @@ export const indexableFixedPathnames = new Set([
   "/the-push-methodology",
   "/faq",
   "/player-trap",
+  "/artifacts/minimum-viable-decision-brief",
+  "/he/problems/product-engineering-misalignment",
 ]);
 
 // Keep llms.txt aligned with the same publication boundary as metadata and the
@@ -102,6 +104,8 @@ export const fixedPublicationSurfaceRoutes: FixedPublicationSurfaceRoute[] = [
   "/faqs",
   "/glossary",
   "/player-trap",
+  "/artifacts/minimum-viable-decision-brief",
+  "/he/problems/product-engineering-misalignment",
 ].map((pathname) => ({ pathname, llmsTxtEligible: llmsFixedPathnames.has(pathname) }));
 
 export function buildPublicationSurfaceProjection(entries: PublicationSurfaceEntry[]): PublicationSurfaceProjection {
