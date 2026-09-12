@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { track } from "@vercel/analytics";
 import { useRouter } from "next/navigation";
 
@@ -59,9 +59,13 @@ export function PlayerTrapAssessmentClient({
   const [consentAccepted, setConsentAccepted] = useState(false);
   const [status, setStatus] = useState<"idle" | "submitting" | "error">("idle");
   const [error, setError] = useState<string | null>(null);
+  const [reportToken] = useState(() => crypto.randomUUID());
+  const assessmentStarted = useRef(false);
   const complete = isComplete(answers, questions);
   const utm = useMemo(() => normalizeUtmAttribution(initialUtm), [initialUtm]);
   useEffect(() => {
+    if (assessmentStarted.current) return;
+    assessmentStarted.current = true;
     track("assessment_start", {
       assessment: "player-trap",
       page_language: pageLanguage,
@@ -99,6 +103,7 @@ export function PlayerTrapAssessmentClient({
         body: JSON.stringify({
           email,
           name,
+          reportToken,
           answers: buildAnswerRecord(answers, questions),
           pageLanguage,
           contentConsentAccepted: consentAccepted,

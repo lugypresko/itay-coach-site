@@ -10,6 +10,8 @@ export type PlayerTrapQuestionId =
 export type PlayerTrapTier = "trusted-operator" | "invisible-executor" | "execution-bottleneck";
 export type PlayerTrapLanguage = "en" | "he";
 
+const PLAYER_TRAP_MAX_TEXT_LENGTH = 500;
+
 export interface PlayerTrapChoice {
   label: string;
   score: number;
@@ -20,6 +22,23 @@ export interface PlayerTrapQuestion {
   prompt: string;
   help: string;
   choices: PlayerTrapChoice[];
+}
+
+/** Validate that a submission contains exactly the answer values offered by the selected language. */
+export function validatePlayerTrapAnswers(
+  answers: Partial<Record<PlayerTrapQuestionId, string>>,
+  questions: PlayerTrapQuestion[] = playerTrapQuestions,
+): string[] {
+  const errors: string[] = [];
+  for (const question of questions) {
+    const answer = answers[question.id];
+    if (!answer || !question.choices.some((choice) => choice.label === answer)) {
+      errors.push(question.id);
+    } else if (answer.length > PLAYER_TRAP_MAX_TEXT_LENGTH) {
+      errors.push(question.id);
+    }
+  }
+  return errors;
 }
 
 export interface PlayerTrapResult {

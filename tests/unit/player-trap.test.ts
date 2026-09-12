@@ -27,9 +27,23 @@ import {
   playerTrapQuestions,
   playerTrapQuestionsHebrew,
   scorePlayerTrap,
+  validatePlayerTrapAnswers,
 } from "../../src/lib/player-trap";
 
 describe("player trap conversion infrastructure", () => {
+  it("rejects incomplete or tampered diagnostic answers", () => {
+    expect(validatePlayerTrapAnswers({})).toHaveLength(5);
+    expect(
+      validatePlayerTrapAnswers({
+        final_reviewer: "made-up answer",
+        delegation_rules: "Mostly implicit.",
+        ai_review_load: "Constantly.",
+        leadership_visibility: "Mostly invisible.",
+        default_escalation: "Always.",
+      }),
+    ).toContain("final_reviewer");
+  });
+
   it("defines the campaign surfaces and Hebrew equivalents", () => {
     const english = getPlayerTrapFunnelCopy("en");
     const hebrew = getPlayerTrapFunnelCopy("he");

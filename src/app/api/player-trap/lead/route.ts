@@ -11,6 +11,7 @@ import {
   getPlayerTrapQuestions,
   normalizeUtmAttribution,
   normalizePlayerTrapLanguage,
+  validatePlayerTrapAnswers,
   playerTrapNurtureSequence,
   scorePlayerTrap,
 } from "@/lib/player-trap";
@@ -43,13 +44,14 @@ export async function POST(request: Request) {
 
 async function handleLeadPost(request: Request) {
   const body = (await request.json()) as LeadRequestBody;
-  const email = body.email?.trim();
+  const email = typeof body.email === "string" ? body.email.trim() : "";
 
   if (!email) {
     return NextResponse.json({ error: "Email is required." }, { status: 400 });
   }
 
-  if (!body.name?.trim()) {
+  const name = typeof body.name === "string" ? body.name.trim() : "";
+  if (!name) {
     return NextResponse.json({ error: "First name is required." }, { status: 400 });
   }
 
@@ -59,15 +61,51 @@ async function handleLeadPost(request: Request) {
 
   const normalizedEmail = normalizeEmail(email);
   const reportToken = body.reportToken?.trim() || crypto.randomUUID();
+  if (normalizedEmail.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
+    return NextResponse.json({ error: "Please enter a valid email address." }, { status: 400 });
+  }
+  if (reportToken.length > 128) {
+    return NextResponse.json({ error: "Invalid diagnostic submission." }, { status: 400 });
+  }
+  if (name.length > 120) {
+    return NextResponse.json({ error: "Name is too long." }, { status: 400 });
+  }
   const requestUrl = new URL(request.url);
   const requestBaseUrl = requestUrl.origin;
   const reportUrl = buildPlayerTrapReportUrl(reportToken, requestBaseUrl);
   const diagnosisCallUrl = buildPlayerTrapDiagnosisCallUrl(reportToken, requestBaseUrl);
   const utm = normalizeUtmAttribution(body.utm);
   const pageLanguage = normalizePlayerTrapLanguage(body.pageLanguage);
-  const result = scorePlayerTrap(body.answers ?? {}, getPlayerTrapQuestions(pageLanguage));
+  const questions = getPlayerTrapQuestions(pageLanguage);
+  const answerErrors = validatePlayerTrapAnswers(body.answers ?? {}, questions);
+  if (answerErrors.length) {
+    return NextResponse.json({ error: "Please answer every diagnostic question.", fields: answerErrors }, { status: 400 });
+  }
+  const result = scorePlayerTrap(body.answers ?? {}, questions);
   const now = new Date().toISOString();
   const payload = await getServerPayload();
+
+  // The browser reuses reportToken on retries. Return the original report instead of
+  // creating a second Payload record and sending another Resend email.
+  const existingByToken = await payload.find({
+    collection: "email-subscribers",
+    limit: 1,
+    overrideAccess: true,
+    where: { reportToken: { equals: reportToken } },
+  } as never);
+  const tokenRecord = existingByToken.docs[0] as unknown as { id?: string; email?: string; reportUrl?: string; diagnosisCallUrl?: string } | undefined;
+  if (tokenRecord?.id) {
+    if (tokenRecord.email !== normalizedEmail) {
+      return NextResponse.json({ error: "Invalid diagnostic submission." }, { status: 409 });
+    }
+    return NextResponse.json({
+      ok: true,
+      reportUrl: tokenRecord.reportUrl ?? reportUrl,
+      diagnosisCallUrl: tokenRecord.diagnosisCallUrl ?? diagnosisCallUrl,
+      email: normalizedEmail,
+      resendMode: "deduplicated",
+    });
+  }
   const reportSummary = buildPlayerTrapReport(result, {
     name: body.name?.trim() || undefined,
     reportUrl,
@@ -86,7 +124,7 @@ async function handleLeadPost(request: Request) {
   } as never);
 
   const submission = buildPlayerTrapSubmissionData({
-    name: body.name,
+    name,
     email: normalizedEmail,
     answers: body.answers ?? {},
     result,
@@ -117,7 +155,7 @@ async function handleLeadPost(request: Request) {
         });
 
   const firstEmail = buildPlayerTrapFollowUpEmail(playerTrapNurtureSequence[0], {
-    name: body.name?.trim() || undefined,
+    name: name || undefined,
     email: normalizedEmail,
     reportUrl,
     diagnosisCallUrl,
