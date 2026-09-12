@@ -33,3 +33,9 @@ Make the public site safe to crawl, reproducible to build, and usable on a mobil
 ## Rollback
 
 Each workstream is isolated in its own commit. Revert the relevant commit if a live check reveals a regression; do not roll back unrelated content or diagnostic changes.
+
+## Release status — 2026-09-12
+
+The indexability, sitemap projection, diagnostic metadata, homepage V3 integration, and CI/runtime workstreams have been implemented and deployed. The production release is `fccf4fa` (`dpl_EhMucLZRgYpz9merf4LFieo5r7Nr`). The LinkedIn profile is linked from the homepage About section, About page header, and global footer as a trust link.
+
+Remaining operational item: the Vercel production `DATABASE_URL` is invalid/empty in the pulled environment, so the Payload-backed diagnostic lead endpoint still requires a valid database connection before production health can be marked complete.
