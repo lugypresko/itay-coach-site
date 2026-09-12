@@ -54,3 +54,9 @@
   .v3-actions a { transition: none; }
   .v3-actions a:hover { transform: none; }
 }
+.home-v3 .v3-hero-image,
+.home-v3 .v3-about img { display: none; }
+@media (min-width: 801px) {
+  .home-v3 .v3-hero { grid-template-columns: 1fr; }
+  .home-v3 .v3-hero-copy { max-width: 44rem; }
+}
