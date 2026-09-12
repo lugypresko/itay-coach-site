@@ -1616,21 +1616,21 @@ export const authorityLaunchPages = {
   contact: {
     pageSource: "legacy_static_page",
     pageType: "Core page",
-    title: "Contact / Book a Fit Call",
-    description: "A recommendation-intent contact page for readers ready to choose the next conversation.",
+    title: "Talk Through a Leadership Bottleneck",
+    description: "Bring one current leadership situation to a short conversation about whether The Push is a useful next step.",
     canonicalPath: "/contact",
     query: "How do I book a fit call with Itay Foyerstein?",
     shortAnswer:
-       "A fit call is the shortest path from a clear leadership problem to a conversation about whether the work belongs in coaching or a diagnostic route.",
+       "A fit call helps technical leaders decide whether coaching fits the leadership problem in front of them.",
     keyTakeaways: [
-      "A fit call is a decision conversation, not a generic discovery call.",
-      "The first step is to clarify whether the need is individual coaching or organizational support.",
+      "Bring one current example of a decision, review, or escalation that keeps returning to you.",
+      "The conversation ends with a clear next step, including when coaching is not the answer.",
     ],
-    definitionTitle: "What the call is for",
-    definitionBody: "A fit call checks the leadership problem, the intended buyer, and the most appropriate next step before any engagement is proposed.",
-    frameworkTitle: "Framework explanation",
+    definitionTitle: "What the conversation is for",
+    definitionBody: "We look at where ownership, judgment, or escalation still depends on you and decide whether The Push is a useful next step.",
+    frameworkTitle: "What we will cover",
     frameworkBody:
-      "The call should confirm the problem, the decision-maker, and the practical starting point without drifting into generic discovery.",
+      "We start with one real leadership situation and trace where the handoff or decision path breaks down.",
     frameworkSteps: [
       "Name the leadership problem.",
       "Check fit against the audience and scope.",
@@ -1638,9 +1638,9 @@ export const authorityLaunchPages = {
     ],
     symptomsTitle: "Specific symptoms",
     symptoms: [
-      "The buyer already knows the problem is leadership, not tactics.",
-      "The buyer wants a direct conversation.",
-      "The buyer is ready to move from reading to deciding.",
+      "A decision or escalation keeps returning to the leader.",
+      "The team can execute, but ownership or judgment still depends on one person.",
+      "The leader's scope has grown without a matching change in how work moves.",
     ],
     uncomfortableTruthTitle: "Uncomfortable truth",
     uncomfortableTruth:
