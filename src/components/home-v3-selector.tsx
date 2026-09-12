@@ -1,53 +1,23 @@
 "use client";
 
-import Link from "next/link";
-import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { track } from "@vercel/analytics";
 
-import { buildDiagnosticHref } from "@/lib/target-page-analytics";
-
-const patterns = ["decision", "review", "escalation", "meeting"] as const;
+const choices = [
+  ["decision", "A decision", "“Can you make the final call?”"],
+  ["review", "A review", "“Can you take one last look?”"],
+  ["escalation", "An escalation", "“We need you in this one.”"],
+  ["meeting", "A meeting", "“You should probably be there.”"],
+] as const;
 
 export function HomeV3Selector() {
   const [selected, setSelected] = useState<string | null>(null);
-  const searchParams = useSearchParams();
-
-  return (
-    <section className="v3-section v3-selector" id="diagnostic" aria-labelledby="selector-title">
-      <div className="v3-two">
-        <div>
-          <p className="v3-eyebrow">Small commitment</p>
-          <h2 id="selector-title">What comes back to you most often?</h2>
-        </div>
-        <div>
-          <p>Choose the pattern that is closest. The diagnostic will use it as a starting point, not a score.</p>
-          <div className="v3-selector-options" role="group" aria-label="Choose a recurring pattern">
-            {patterns.map((pattern) => {
-              const label = pattern[0].toUpperCase() + pattern.slice(1);
-              return (
-                <button
-                  type="button"
-                  key={pattern}
-                  className={selected === pattern ? "is-selected" : ""}
-                  aria-pressed={selected === pattern}
-                  onClick={() => {
-                    setSelected(pattern);
-                    track("homepage_selector_choice", { pattern });
-                  }}
-                >
-                  {label}
-                </button>
-              );
-            })}
-          </div>
-          {selected ? (
-            <Link className="v3-primary v3-selector-cta" href={buildDiagnosticHref(searchParams.toString(), selected)}>
-              Bring this case to the diagnostic →
-            </Link>
-          ) : null}
-        </div>
-      </div>
-    </section>
-  );
+  return <div>
+    <div className="choices">
+      {choices.map(([value, label, hint]) => <button className={`choice${selected === value ? " selected" : ""}`} data-angle={value} aria-pressed={selected === value} type="button" key={value} onClick={() => { setSelected(value); const params = new URLSearchParams(window.location.search); params.set("pattern", value); window.history.replaceState(null, "", `${window.location.pathname}?${params.toString()}`); track("homepage_selector_choice", { pattern: value }); }}>
+        {label}<small>{hint}</small>
+      </button>)}
+    </div>
+    <div className="commit-status" id="commitStatus">{selected ? "Got it. We’ll carry this into the diagnostic — you can change it there." : "Pick one. Your selection will carry into the diagnostic."}</div>
+  </div>;
 }
