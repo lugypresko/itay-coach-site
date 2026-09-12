@@ -172,4 +172,7 @@
       .choices,.fit-grid,.artifacts{grid-template-columns:1fr}
       .footer{flex-direction:column}
     }
+    body:has(.home-v3-reference) .site-frame > .site-header,
+    body:has(.home-v3-reference) .site-frame > .site-footer{display:none}
+    body:has(.home-v3-reference) .site-frame{padding:0}
   
