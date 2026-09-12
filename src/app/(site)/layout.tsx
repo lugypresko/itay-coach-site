@@ -62,6 +62,7 @@ export default function SiteLayout({ children }: SiteLayoutProps) {
           <footer className="site-footer">
             <p>&copy; 2026 The Push. All rights reserved.</p>
             <nav className="site-footer-nav" aria-label="Footer">
+              <a href="https://www.linkedin.com/in/itayfoyerstein/" target="_blank" rel="noreferrer">LinkedIn</a>
               <Link href="/privacy">Privacy Policy</Link>
               <Link href="/terms">Terms of Use</Link>
             </nav>

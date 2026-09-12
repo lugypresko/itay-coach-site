@@ -102,6 +102,11 @@ export function AuthorityLaunchPage({ page }: { page: AuthorityLaunchPageConfig 
         <p className="description" style={{ marginTop: "1rem" }}>
           {page.shortAnswer}
         </p>
+        {isAbout ? (
+          <p style={{ marginTop: "1rem" }}>
+            <a href="https://www.linkedin.com/in/itayfoyerstein/" target="_blank" rel="noreferrer">Connect with Itay on LinkedIn</a>
+          </p>
+        ) : null}
       </header>
 
       {isFaq ? (
