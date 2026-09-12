@@ -199,9 +199,9 @@ const problemPages = [
     humanApproved: true,
   },
   {
-    title: "Engineering Managers Stuck in Firefighting",
+    title: "How to Stop Being the Bottleneck as an Engineering Manager",
     slug: "engineering-managers-stuck-in-firefighting",
-    painStatement: "The manager is spending more time rescuing work than building a system that can run without rescue.",
+    painStatement: "You delegated the work, but decisions, reviews, and rescue moves still come back to you.",
     dailyScenes: [
       "Every week starts with a new urgent escalation.",
       "The manager becomes the default reviewer and decoder.",
@@ -245,9 +245,10 @@ const problemPages = [
         reason: "Explains the AI-era pressure that amplifies the problem.",
       },
     ],
-    seoTitle: "Engineering Managers Stuck in Firefighting | The Push",
-    seoDescription: "A problem page for managers who keep rescuing work instead of leading a team that can move on its own.",
-    status: "draft" as const,
+    seoTitle: "How to Stop Being the Bottleneck as an Engineering Manager | The Push",
+    seoDescription: "A practical diagnosis for Engineering Managers who delegated work but remain the path for decisions, reviews, and rescue.",
+    status: "published" as const,
+    humanApproved: true,
   },
   {
     title: "Senior Developer Still Acting Like a Developer",

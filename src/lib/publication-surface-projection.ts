@@ -283,7 +283,14 @@ export async function loadPublicationSurfaceProjection(
     governedEntries = await loadPayloadEntries(payload, origin);
   } catch {
     if (!allowStaticFallback) {
-      return buildPublicationSurfaceProjection(buildFixedEntries(origin));
+      // Payload can be unavailable during a deploy or when the database is
+      // asleep. Keep the publication boundary fail-closed by exposing only
+      // static records that already carry an explicit published/approved
+      // decision; review and draft records remain absent from the surface.
+      const approvedStaticEntries = buildStaticFallbackEntries(origin).filter(
+        (entry) => entry.publicationDecision.indexable,
+      );
+      return buildPublicationSurfaceProjection([...buildFixedEntries(origin), ...approvedStaticEntries]);
     }
   }
 

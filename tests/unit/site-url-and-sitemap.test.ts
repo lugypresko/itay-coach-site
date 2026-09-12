@@ -72,6 +72,7 @@ describe("robots and sitemap", () => {
     expect(getPublishedProblemPagePathnames()).toEqual([
       "/problems/cto-becomes-the-bottleneck",
       "/problems/vp-rnd-losing-execution-control",
+      "/problems/engineering-managers-stuck-in-firefighting",
     ]);
     expect(getProblemPagePathnames()).toHaveLength(10);
     expect(aboutMetadata.robots).toEqual({ index: true, follow: true });

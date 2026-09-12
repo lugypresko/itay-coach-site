@@ -148,9 +148,10 @@ describe("shared publication surface projection", () => {
       allowStaticFallback: false,
     });
 
-    expect(projection.entries.every((entry) => entry.sourceKind === "fixed")).toBe(true);
-    expect(projection.sitemapPathnames).not.toContain("/problems/cto-becomes-the-bottleneck");
-    expect(projection.sitemapPathnames).not.toContain("/frameworks/player-trap");
+    expect(projection.entries.some((entry) => entry.sourceKind === "public_content")).toBe(true);
+    expect(projection.sitemapPathnames).toContain("/problems/cto-becomes-the-bottleneck");
+    expect(projection.sitemapPathnames).toContain("/pillars/tech-leadership-coaching");
+    expect(projection.sitemapPathnames).not.toContain("/problems/good-managers-burning-out-quietly");
   });
 
   it("excludes a published record without a valid approval envelope from every surface", () => {

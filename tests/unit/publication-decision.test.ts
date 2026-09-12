@@ -409,6 +409,7 @@ describe("publication decision", () => {
     expect(getPublishedProblemPagePathnames()).toEqual([
       "/problems/cto-becomes-the-bottleneck",
       "/problems/vp-rnd-losing-execution-control",
+      "/problems/engineering-managers-stuck-in-firefighting",
     ]);
     expect(getProblemPagePathnames()).toHaveLength(10);
   });
