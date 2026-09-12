@@ -19,6 +19,7 @@ import { toReaderFacingPublicContentPage } from "../../src/lib/reader-facing-pub
 import { buildPageJsonLd } from "../../src/lib/public-schema";
 import { getAuthorityProofBlocks } from "../../src/lib/evidence-mapping";
 import {
+  buildDiagnosticHref,
   buildTargetAnalyticsProperties,
   targetAnalyticsEventNames,
 } from "../../src/lib/target-page-analytics";
@@ -154,7 +155,19 @@ describe("canonical authority sprint", () => {
       ctaClick: "target_cta_click",
       diagnosticClick: "diagnostic_click",
       fitCallClick: "fit_call_click",
+      homepageCtaClick: "homepage_cta_click",
+      homepageSelectorChoice: "homepage_selector_choice",
     });
+
+    expect(
+      buildDiagnosticHref(
+        "?utm_source=linkedin&utm_medium=social&utm_campaign=push&utm_content=post-1&utm_term=manager&email=private",
+        "A decision",
+      ),
+    ).toBe(
+      "/player-trap?utm_source=linkedin&utm_medium=social&utm_campaign=push&utm_content=post-1&utm_term=manager&pattern=A+decision",
+    );
+    expect(buildDiagnosticHref("?ref=internal")).toBe("/player-trap");
 
     vi.stubGlobal("document", { referrer: "https://google.com/search" });
 
