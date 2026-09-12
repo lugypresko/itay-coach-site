@@ -12,6 +12,25 @@ This document prepares the first commercial pillar and problem page for the 90-d
 
 No public route is added by this document. The existing public content system must continue to enforce its human approval and publication gates.
 
+## Editorial gate applied from the Thought Leadership SOP
+
+Every public asset and LinkedIn post must pass this sequence before copy is finalized:
+
+`observation → contradiction → challenge → causal mechanism → “so what?” → tomorrow-morning action → story edit → voice/anti-slop edit`
+
+Working brief for this batch:
+
+- **Observation:** A manager is still pulled into recurring decisions, reviews, or escalations after work was delegated.
+- **Contradiction to test:** The organization says it wants ownership, while its decision rules or risk boundaries still make independent action unsafe.
+- **Competing explanations:** The operating model is implicit; or the manager’s intervention is currently necessary because of authority, risk, context, or capability.
+- **Mechanism:** Unclear boundaries make an independent decision feel like personal risk, so the next decision returns to the manager and the dependency becomes a habit.
+- **So what?:** Delegation is not complete when work moves away from the manager; it is complete when the next decision can stay with the named owner under visible guardrails.
+- **Tomorrow at 09:30:** Pick one recurring decision, name the owner, write the guardrail and escalation trigger, and review one cycle later.
+- **Story constraint:** Use one verified scene only. The current drafts do not claim a client result; the scene remains blocked until a speaker, wording, and permission are confirmed.
+- **Complexity budget:** One idea, one scene, one mechanism, one tool. Player Trap, Invisible Executor, and broader career themes are supporting context, not additional theses.
+
+No draft may use invented first-person experience, invented dialogue, unsupported metrics, or a dramatic LinkedIn hook. Read the final version aloud, remove 15–25% of excess explanation, and confirm that Itay would defend every claim in a 1:1 conversation with an executive.
+
 ## Content decision
 
 The first public content pair should be:
@@ -46,6 +65,10 @@ You can be the person everyone trusts and still be the path every decision, revi
 
 CTA: `Start with the leadership diagnostic`
 
+### Editorial note before publication
+
+This page is a commercial answer, not a thought-leadership post. Its single promise is to explain what the coaching is for and who it fits. It must link to one approved problem page and one working diagnostic. Do not add multiple competing frameworks or a case-study outcome here.
+
 ### Direct answer
 
 Tech leadership coaching is focused support for technical leaders who need to change how decisions, ownership, delegation, and strategic visibility work inside engineering organizations. It is a fit when execution strength has become a dependency path and the leader needs more leverage than personal availability can provide.
@@ -70,6 +93,10 @@ These labels describe operating patterns. They are not a score and they do not r
 ### What the 12-week engagement includes
 
 The Push is a 12-week 1:1 engagement with six biweekly conversations. Each cycle connects the leadership problem to one observable change in how the team decides, owns, escalates, or communicates. The next step is chosen after fit is established.
+
+### What to expect in the first conversation
+
+Bring one live situation: a decision that keeps returning to you, a review only you can complete, or an escalation your team cannot carry without you. We will separate what you know from what you assume, test whether the constraint is authority, context, risk, or capability, and choose one reversible experiment if the situation supports it.
 
 ### When coaching is not the answer
 
@@ -111,6 +138,10 @@ Primary CTA: `Run the leadership diagnostic`
 
 An Engineering Manager stops being the bottleneck by changing the routing of decisions, reviews, and escalations. Delegating more tasks is not enough if the team still does not know who can decide what, when to escalate, and which guardrails apply.
 
+### A scene to verify before publication
+
+Candidate scene: a manager describing the tension between “I am too involved” and “I have released them too much” while a newly promoted team lead begins taking responsibility ([S04](../research/transcripts-2026-09-12/S04.txt), 13:16–15:43). This is a source lead, not yet a publishable case. Before publication, verify the speaker, select one faithful moment, remove identifying details, and obtain permission for the final wording. Do not add a result that is not in the follow-up evidence.
+
 ### The pattern
 
 The Player Trap is the state where a manager's strongest execution habits become the team's default path for progress. Common signals include:
@@ -127,6 +158,10 @@ The Player Trap is the state where a manager's strongest execution habits become
 **Explanation 2: the intervention is currently necessary.** A new team member, high-risk decision, cross-functional dependency, or missing authority may require the manager's involvement. The same behavior can look like a bottleneck while serving a real constraint.
 
 The diagnostic should collect evidence for and against both explanations before recommending an experiment.
+
+### Why this matters
+
+The useful distinction is not “delegate everything” versus “stay involved.” It is whether the involvement is explicit, temporary, and proportional to the constraint. That is the mechanism this page explains; the practical artifact below is the one action the reader can try.
 
 ### Reversible experiment
 
@@ -147,6 +182,10 @@ If a new employee needs close support, or a decision genuinely carries risk the 
 ### Next step
 
 Use the diagnostic to identify whether the recurring pattern is a routing problem, a real context or risk constraint, an authority gap, or a capability gap. If the evidence shows a coaching fit, continue to a fit conversation about The Push.
+
+### Voice and anti-slop check
+
+Before publication, read this page aloud and cut repeated explanation. Keep the direct answer, one verified scene, the two explanations, the artifact, and the scope boundary. Remove generic advice, invented personal language, forced punchlines, and any claim that sounds stronger than its evidence.
 
 ## Evidence ledger
 
@@ -187,4 +226,3 @@ For each published asset, record one completed action in each surface:
 The operating loop is:
 
 `publish → distribute → drive to diagnostic → measure conversation quality`
-
