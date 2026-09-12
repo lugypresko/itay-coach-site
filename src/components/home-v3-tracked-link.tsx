@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { track } from "@vercel/analytics";
 import type { AnchorHTMLAttributes, ReactNode } from "react";
@@ -14,10 +13,14 @@ type Props = Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "href" | "onClick"> &
 };
 
 export function HomeV3TrackedLink({ children, className, href = "/player-trap", ...rest }: Props) {
-  const searchParams = useSearchParams();
-  const [pattern, setPattern] = useState(() => searchParams.get("pattern") || undefined);
+  const [search, setSearch] = useState("");
+  const [pattern, setPattern] = useState<string | undefined>(undefined);
 
   useEffect(() => {
+    const currentSearch = window.location.search;
+    setSearch(currentSearch);
+    setPattern(new URLSearchParams(currentSearch).get("pattern") || undefined);
+
     const handlePatternChange = (event: Event) => {
       const nextPattern = (event as CustomEvent<{ pattern?: string }>).detail?.pattern;
       setPattern(nextPattern || undefined);
@@ -26,6 +29,6 @@ export function HomeV3TrackedLink({ children, className, href = "/player-trap", 
     return () => window.removeEventListener("homepage-pattern-change", handlePatternChange);
   }, []);
 
-  const destination = href === "/player-trap" ? buildDiagnosticHref(searchParams.toString(), pattern) : href;
+  const destination = href === "/player-trap" ? buildDiagnosticHref(search, pattern) : href;
   return <Link {...rest} className={className} href={destination} onClick={() => track("homepage_cta_click", { destination })}>{children}</Link>;
 }
