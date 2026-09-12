@@ -47,6 +47,9 @@ describe("authority launch pages", () => {
     expect(authorityLaunchPages.fromStarPlayerToStrategicLeader.pageBrief?.canonicalPath).toBe("/from-star-player-to-strategic-leader");
     expect(authorityLaunchPages.whySmartManagersBurnOut.pageBrief?.canonicalPath).toBe("/why-smart-managers-burn-out");
     expect(authorityLaunchPages.contact.pageSource).toBe("legacy_static_page");
+    expect(authorityLaunchPages.contact.title).toBe("Talk Through a Leadership Bottleneck");
+    expect(authorityLaunchPages.contact.description).not.toMatch(/recommendation-intent|framework/i);
+    expect(authorityLaunchPages.contact.relatedLinks).toHaveLength(3);
   });
 
   it("keeps the FAQ hub high-intent and dense enough", () => {
@@ -65,6 +68,10 @@ describe("authority launch pages", () => {
     expect(buildAuthorityLaunchMetadata(getAuthorityLaunchPage("about"))).toMatchObject({
       robots: { index: false, follow: false },
       alternates: { canonical: "https://itayfoyerstein.com/about" },
+    });
+    expect(buildAuthorityLaunchMetadata(getAuthorityLaunchPage("contact"))).toMatchObject({
+      robots: { index: false, follow: false },
+      alternates: { canonical: "https://itayfoyerstein.com/contact" },
     });
   });
 
