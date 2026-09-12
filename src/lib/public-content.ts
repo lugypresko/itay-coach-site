@@ -249,6 +249,83 @@ export const canonicalAuthorityPages = [
 
 const staticPublicContentCatalog: PublicContentCandidate[] = [
   {
+    title: "The Push: Applied Leadership Coaching for Technical Leaders",
+    slug: "the-push",
+    excerpt:
+      "The Push is a 12-week, one-to-one coaching and advisory engagement for technical leaders working on a live leadership or operating problem.",
+    content:
+      `The Push is a 12-week, one-to-one coaching and advisory engagement for Engineering Managers, R&D Managers, and Engineering Directors working on a live leadership or operating problem. Across six biweekly sessions, the work connects what is happening in the team to practical experiments in the leader's actual role.
+
+Recognizable situations: final reviews still come to you; difficult decisions escalate upward; delegation moves tasks but not judgment; you attend meetings just in case; or operational work fills the day and strategic work happens afterward.
+
+What problem does The Push solve? The starting point is usually a recurring dependency: decisions, context, reviews, or escalations keep returning to the same leader. One incident is not automatically a pattern. The work tests competing explanations, including unclear authority, missing context or judgment, a capability gap, and a real risk or organizational constraint.
+
+How the work begins: bring one live situation and the evidence around it. We map what happened, what was expected to happen, and what came back to you. Then we choose one reversible experiment that can distinguish the likely cause. The goal is a clearer operating model that helps ownership, decisions, and escalation move through the team.
+
+What happens over 12 weeks: six biweekly one-to-one sessions combine coaching, advisory work, and practical application. Between sessions, you test a focused change in a real meeting, decision, review, delegation path, or stakeholder interaction. Established working outputs may include a decision log, bottleneck tracker, stakeholder map, sponsor update, 30/60/90 plan, and operating model.
+
+What changes: the intended change is visible in how work moves. Decision boundaries become clearer, delegation can include judgment, and recurring escalation paths become easier to inspect. The Push does not promise a fixed organizational outcome; the specific experiment and evidence determine what to change next.
+
+When is The Push not the right solution? Coaching is not a substitute for missing authority, a staffing gap, a role-design problem, a specialist technical gap, unresolved organizational conflict, or a capability gap better addressed through training or hiring. If the evidence points there, the fit conversation should say so.
+
+Coaching and advisory: The Push combines reflective coaching with practical advisory work because a live technical leadership problem often involves both the leader's choices and the operating conditions around them. The work does not start with a generic curriculum or a diagnosis imposed before the situation is understood.
+
+For a CTO or VP R&D sponsor: expect a focused 12-week engagement around one leader's live problem, with clear boundaries around confidentiality and any sponsor update agreed at the start. The sponsor conversation is about the operating change being tested and the evidence available, not a promise of a predetermined result.
+
+Start with the leadership diagnostic to examine the pattern. If the diagnostic or situation calls for a direct conversation, book a fit call with Itay Foyerstein.`,
+    aiSummary:
+      "The Push is Itay Foyerstein's 12-week, one-to-one coaching and advisory engagement for Engineering Managers, R&D Managers, and Engineering Directors working on a live leadership or operating problem.",
+    citationSnippet:
+      "The Push is a 12-week, one-to-one coaching and advisory engagement for technical leaders working on a live leadership or operating problem.",
+    evidenceUrls: ["docs/seed-content/the-push-methodology.md", "docs/About Itay Foyerstein.MD"],
+    targetQuestions: [
+      "What is The Push leadership coaching?",
+      "Who is The Push for?",
+      "What happens in 12 weeks of engineering leadership coaching?",
+      "When is leadership coaching not the right solution?",
+    ],
+    targetRecommendationQueries: [
+      "The Push by Itay Foyerstein",
+      "12-week engineering leadership coaching",
+      "Applied engineering leadership coaching",
+    ],
+    entityTags: [
+      "itay_foyerstein",
+      "the_push",
+      "leadership_os_for_tech_leaders",
+      "engineering_manager",
+      "rd_manager",
+      "strategic_leadership",
+    ],
+    seoTitle: "The Push | 12-Week Engineering Leadership Coaching",
+    seoDescription:
+      "The Push is Itay Foyerstein's 12-week, one-to-one coaching and advisory engagement for Engineering Managers, R&D Managers, and Directors.",
+    schemaType: "Article",
+    faq: [],
+    internalLinks: [
+      {
+        targetSlug: "tech-leadership-coaching",
+        anchorText: "technical leadership coaching",
+        reason: "Connect the branded offer to the broader commercial category.",
+      },
+      {
+        targetSlug: "player-trap",
+        anchorText: "leadership diagnostic",
+        reason: "Give readers a diagnostic entry point before a fit conversation.",
+      },
+      {
+        targetSlug: "itay-foyerstein",
+        anchorText: "Itay Foyerstein",
+        reason: "Connect the offer to the expert identity.",
+      },
+    ],
+    status: "published",
+    publishedAt: "2026-09-12T00:00:00.000Z",
+    lastReviewedAt: "2026-09-12T00:00:00.000Z",
+    updatedAt: "2026-09-12T00:00:00.000Z",
+    author: "Itay Foyerstein",
+  },
+  {
     title: "Tech Leadership Coaching for Engineering Managers, CTOs and VP R&D",
     slug: "tech-leadership-coaching",
     excerpt:
@@ -678,6 +755,10 @@ export function getStaticPublicContentCatalogEntry(section: string, slug: string
   return staticPublicContentCatalog.find((record) => {
     if (record.slug !== slug) {
       return false;
+    }
+
+    if (slug === "the-push") {
+      return section === "entities";
     }
 
     if (slug === "tech-leadership-coaching") {

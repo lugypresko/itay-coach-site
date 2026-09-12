@@ -64,6 +64,20 @@ describe("public content helpers", () => {
     expect(record.publishedAt).toBe("2026-06-07T00:00:00.000Z");
   });
 
+  it("provides a buyer-facing static fallback for The Push", () => {
+    const record = getStaticPublicContentCatalogEntry("entities", "the-push");
+
+    expect(record).toMatchObject({
+      title: "The Push: Applied Leadership Coaching for Technical Leaders",
+      slug: "the-push",
+      status: "published",
+      seoTitle: "The Push | 12-Week Engineering Leadership Coaching",
+    });
+    expect(record?.content).toContain("six biweekly one-to-one sessions");
+    expect(record?.content).toContain("When is The Push not the right solution?");
+    expect(record?.content).not.toContain("citation-worthy snippet");
+  });
+
   it("builds a person schema for Itay and FAQ schema for support pages", () => {
     const spec = getPublicContentSectionSpec("entities");
     expect(spec?.collectionSlug).toBe("entity-pages");
