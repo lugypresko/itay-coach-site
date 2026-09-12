@@ -50,18 +50,6 @@ export interface FixedPublicationSurfaceRoute {
   llmsTxtEligible: boolean;
 }
 
-const llmsFixedPathnames = new Set([
-  "/entities",
-  "/pillars",
-  "/clusters",
-  "/frameworks",
-  "/case-studies",
-  "/faqs",
-  "/faq",
-  "/glossary",
-  "/player-trap",
-]);
-
 // Keep the public sitemap limited to the small set of reader-facing routes that
 // have explicit metadata and a clear buyer or trust job. The rest of the fixed
 // routes remain available to the authority engine, but are not advertised to
@@ -73,6 +61,10 @@ export const indexableFixedPathnames = new Set([
   "/faq",
   "/book-a-fit-call",
 ]);
+
+// Keep llms.txt aligned with the same publication boundary as metadata and the
+// sitemap. A noindex route must not be advertised as a public authority source.
+const llmsFixedPathnames = indexableFixedPathnames;
 
 export const fixedPublicationSurfaceRoutes: FixedPublicationSurfaceRoute[] = [
   "/",

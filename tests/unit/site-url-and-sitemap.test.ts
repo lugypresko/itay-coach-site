@@ -77,6 +77,20 @@ describe("robots and sitemap", () => {
     expect(aboutMetadata.robots).toEqual({ index: true, follow: true });
     expect(faqMetadata.robots).toEqual({ index: true, follow: true });
     expect(methodologyMetadata.robots).toEqual({ index: true, follow: true });
+
+    const llmsBody = await (await getLlmsTxt()).text();
+    const llmsRoutes = llmsBody
+      .split("\n")
+      .filter((line) => line.startsWith("- "))
+      .map((line) => new URL(line.slice(2)).pathname);
+    for (const pathname of ["/", "/about", "/the-push-methodology", "/faq", "/book-a-fit-call"]) {
+      expect(sitemapPathnames).toContain(pathname);
+      expect(llmsRoutes).toContain(pathname);
+    }
+    for (const pathname of ["/entities", "/pillars", "/clusters", "/frameworks", "/case-studies", "/faqs", "/glossary"]) {
+      expect(sitemapPathnames).not.toContain(pathname);
+      expect(llmsRoutes).not.toContain(pathname);
+    }
   });
 
   it("keeps the full task asset registry available for audit purposes", () => {
