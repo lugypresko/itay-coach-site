@@ -57,6 +57,8 @@ describe("robots and sitemap", () => {
     expect(sitemapUrls.every((url) => url.startsWith("https://itayfoyerstein.com"))).toBe(true);
     expect(sitemapUrls.some((url) => url.includes("localhost"))).toBe(false);
     expect(robotsConfig.sitemap?.includes("localhost")).toBe(false);
+    expect(sitemapEntries.every((entry) => entry.lastModified instanceof Date)).toBe(true);
+    expect(new Set(sitemapEntries.map((entry) => String(entry.lastModified))).size).toBeGreaterThan(1);
 
     expect(sitemapPathnames).toEqual(expect.arrayContaining(getPublicAuthoritySitemapPathnames()));
 

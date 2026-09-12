@@ -50,6 +50,47 @@ describe("shared publication surface projection", () => {
     expect(projection.llmsTxtPathnames).not.toContain(reviewPath);
   });
 
+  it("keeps sitemap eligibility aligned with indexability and the canonical pathname", () => {
+    const pathname = "/clusters/canonical-surface";
+    const conflicting = buildPublicationDecision(
+      {
+        slug: "canonical-surface",
+        status: "published",
+        title: "Authority surface",
+        seoDescription: "A governed authority surface.",
+        painStatement: "A concrete leadership problem is diagnosed here.",
+        humanApproved: true,
+        canonicalUrl: `${origin}/clusters/other-surface`,
+      },
+      { origin, pathname },
+    );
+
+    const projection = buildPublicationSurfaceProjection([{ pathname, publicationDecision: conflicting }]);
+    expect(conflicting.indexable).toBe(true);
+    expect(conflicting.sitemapEligible).toBe(true);
+    expect(projection.sitemapPathnames).not.toContain(pathname);
+  });
+
+  it("carries source content dates into the publication surface", () => {
+    const entry = buildPublicContentSurfaceEntry({
+      spec: getPublicContentSectionSpec("clusters")!,
+      record: {
+        title: "Dated surface",
+        slug: "dated-surface",
+        excerpt: "A dated diagnosis.",
+        content: "Reader-facing content.",
+        seoDescription: "A dated authority surface.",
+        status: "published",
+        publishedAt: "2026-06-01T00:00:00.000Z",
+        updatedAt: "2026-09-10T00:00:00.000Z",
+        humanApproved: true,
+      },
+      origin,
+    });
+
+    expect(entry.lastModified?.toISOString()).toBe("2026-09-10T00:00:00.000Z");
+  });
+
   it("cannot let duplicate static state override a governed Payload decision", () => {
     const pathname = "/clusters/coach-for-engineering-managers-stuck-as-the-bottleneck";
 

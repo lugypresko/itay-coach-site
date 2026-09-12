@@ -24,6 +24,8 @@ import {
 export interface PublicationSurfaceEntry {
   pathname: string;
   publicationDecision: PublicationDecision;
+  /** The source record's last known content change, used by sitemap.xml. */
+  lastModified?: Date;
   sourceKind?: "fixed" | "public_content" | "problem_page";
   publicContentPage?: PublicContentPageModel;
   problemPage?: ProblemPageModel;
@@ -48,6 +50,15 @@ export interface LoadPublicationSurfaceProjectionOptions {
 export interface FixedPublicationSurfaceRoute {
   pathname: string;
   llmsTxtEligible: boolean;
+}
+
+const fixedPublicationLastModified = new Date("2026-09-12T00:00:00.000Z");
+
+function contentLastModified(record: { updatedAt?: string | Date | null; lastReviewedAt?: string | Date | null; publishedAt?: string | Date | null }) {
+  const value = record.updatedAt ?? record.lastReviewedAt ?? record.publishedAt;
+  if (!value) return undefined;
+  const date = value instanceof Date ? value : new Date(value);
+  return Number.isNaN(date.getTime()) ? undefined : date;
 }
 
 // Keep the public sitemap limited to the small set of reader-facing routes that
@@ -107,7 +118,13 @@ export function buildPublicationSurfaceProjection(entries: PublicationSurfaceEnt
   return {
     entries,
     byPathname,
-    sitemapPathnames: entries.filter((entry) => entry.publicationDecision.sitemapEligible).map((entry) => entry.pathname),
+    sitemapPathnames: entries
+      .filter((entry) => {
+        const decision = entry.publicationDecision;
+        const canonicalPathname = decision.canonicalUrl ? new URL(decision.canonicalUrl).pathname : null;
+        return decision.sitemapEligible && decision.indexable && canonicalPathname === entry.pathname;
+      })
+      .map((entry) => entry.pathname),
     llmsTxtPathnames: entries.filter((entry) => entry.publicationDecision.llmsTxtEligible).map((entry) => entry.pathname),
   };
 }
@@ -142,6 +159,7 @@ export function buildPublicContentSurfaceEntry(input: {
   return {
     pathname: page.pathname,
     publicationDecision,
+    lastModified: contentLastModified(basePage.record),
     sourceKind: "public_content",
     publicContentPage: page,
   };
@@ -166,13 +184,23 @@ export function buildProblemPageSurfaceEntry(input: {
     canonicalUrl: publicationDecision.canonicalUrl ?? new URL(pathname, input.origin).toString(),
     publicationDecision,
   };
-  return { pathname, publicationDecision, sourceKind: "problem_page", problemPage: page };
+  return {
+    pathname,
+    publicationDecision,
+    // Static catalog records are reviewed source material even when the legacy
+    // catalog predates the publishedAt field. Keep their deterministic review
+    // date; Payload records without a source date stay out of the sitemap.
+    lastModified: contentLastModified(normalized) ?? (input.trustStaticApproval ? fixedPublicationLastModified : undefined),
+    sourceKind: "problem_page",
+    problemPage: page,
+  };
 }
 
 function buildFixedEntries(origin: string): PublicationSurfaceEntry[] {
   return fixedPublicationSurfaceRoutes.map(({ pathname, llmsTxtEligible }) => ({
     pathname,
     sourceKind: "fixed",
+    lastModified: fixedPublicationLastModified,
     publicationDecision: buildPublicationDecision(
       {
         slug: pathname === "/" ? "home" : pathname.slice(1),
