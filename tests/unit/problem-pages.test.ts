@@ -22,8 +22,8 @@ describe("problem pages", () => {
   it("keeps the catalog entries explicit and draft-only", () => {
     const page = getProblemPageCatalogEntry("product-engineering-misalignment");
 
-    expect(page?.status).toBe("draft");
-    expect(page?.primaryCTA.href).toBe("/book-a-fit-call");
+    expect(page?.status).toBe("published");
+    expect(page?.primaryCTA.href).toBe("/player-trap");
     expect(page?.relatedFrameworks.length).toBeGreaterThan(0);
   });
 });

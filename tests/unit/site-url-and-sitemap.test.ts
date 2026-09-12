@@ -75,6 +75,7 @@ describe("robots and sitemap", () => {
       "/problems/cto-becomes-the-bottleneck",
       "/problems/vp-rnd-losing-execution-control",
       "/problems/engineering-managers-stuck-in-firefighting",
+      "/problems/product-engineering-misalignment",
     ]);
     expect(getProblemPagePathnames()).toHaveLength(10);
     expect(aboutMetadata.robots).toEqual({ index: true, follow: true });
