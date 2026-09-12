@@ -1,14 +1,17 @@
 import type { Metadata } from "next";
 
 import { AuthorityLaunchPage } from "@/components/authority-launch-page";
-import { PageBriefLaunchPage } from "@/components/page-brief-launch-page";
-import { buildAuthorityLaunchMetadata, getAuthorityLaunchPage } from "@/lib/authority-launch-pages";
+import { faqPage } from "@/lib/reader-facing-static-pages";
 
-const page = getAuthorityLaunchPage("faq");
+const page = faqPage;
 
-export const metadata: Metadata = buildAuthorityLaunchMetadata(page);
+export const metadata: Metadata = {
+  title: page.title,
+  description: page.description,
+  alternates: { canonical: page.canonicalPath },
+  robots: { index: true, follow: true },
+};
 
- export default function FaqHubPage() {
-   // RESTORED: Explicit reader-facing path only.
-   return <AuthorityLaunchPage page={page} />;
- }
+export default function FaqHubPage() {
+  return <AuthorityLaunchPage page={page} />;
+}

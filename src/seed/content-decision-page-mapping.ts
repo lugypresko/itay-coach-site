@@ -63,7 +63,7 @@ export const contentDecisionPageDecisions: ContentDecision[] = [
   decision("decision-faq", "/faq"),
   {
     ...decision("decision-engineering-manager-coach", "/engineering-manager-coach"),
-    lastValidatedAt: "2026-07-26T00:00:00.000Z",
+    lastValidatedAt: "2026-09-11T00:00:00.000Z",
     validationStatus: "valid",
   },
   decision("decision-leadership-coach-em", "/leadership-coach-for-engineering-managers"),

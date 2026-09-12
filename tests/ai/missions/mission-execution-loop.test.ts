@@ -5,6 +5,7 @@ import {
   ExecutionBoundary
 } from "@/ai/missions/mission-execution-loop";
 import { pilotMissionSpecRuntime } from "@/domain/missions/pilot-mission.spec";
+import type { Capability } from "@/domain/missions/types";
 
 test("Mission execution loop creates and initializes correctly", () => {
   const context: ExecutionContext = {
@@ -46,7 +47,7 @@ test("Mission execution loop handles execution boundaries", () => {
   };
   
   const [isAllowed, reason] = loop.capabilityRegistry.isAllowed(
-    deployCapability as any,
+    deployCapability as Capability,
     localContext
   );
   
@@ -65,9 +66,10 @@ test("Mission execution loop creates initial snapshot", () => {
     context
   );
   
-  // Access private method for testing - in real code we'd test through public interface
-  // @ts-ignore
-  const snapshot = (loop as any).createInitialSnapshot();
+  // Access the private method through a narrow test-only view.
+  const snapshot = (loop as unknown as {
+    createInitialSnapshot: () => { state: string; timestamp: unknown };
+  }).createInitialSnapshot();
   
   expect(snapshot).toBeDefined();
   expect(snapshot.state).toBe("PENDING");

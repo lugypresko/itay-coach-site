@@ -1,7 +1,7 @@
 import type { PublicContentSection } from "./public-content";
 import { canonicalAuthorityPages, publicContentSectionSpecs } from "./public-content";
 import { getPublishedProblemPagePathnames } from "./problem-pages";
-import { fixedPublicationSurfaceRoutes } from "./publication-surface-projection";
+import { fixedPublicationSurfaceRoutes, indexableFixedPathnames } from "./publication-surface-projection";
 
 export type PublicAuthorityAssetStatus = "draft" | "review" | "published";
 
@@ -225,9 +225,8 @@ export function getPublicAuthorityAssetPathnames(options?: { includeDrafts?: boo
 
 export function getPublicAuthoritySitemapPathnames(): string[] {
   return [
-    ...publicAuthorityLandingPathnames,
+    ...publicAuthorityLandingPathnames.filter((pathname) => indexableFixedPathnames.has(pathname)),
     ...getPublishedProblemPagePathnames(),
-    ...getPublicAuthoritySectionPathnames(),
     ...getPublicAuthorityCanonicalPathnames(),
     ...getPublicAuthorityAssetPathnames(),
   ].filter((pathname, index, values) => values.indexOf(pathname) === index);

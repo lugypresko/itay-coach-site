@@ -2,17 +2,27 @@ import { describe, it, expect, vi } from "vitest";
 
 // Mocking some dependencies to test the hook logic in isolation within the kernel
 const humanRoles = new Set(["admin", "editor", "human"]);
+type RequestLike = { user?: { role?: string; id?: unknown } };
+type InsightData = Record<string, unknown>;
 
-function roleOf(req: any) {
+function roleOf(req: RequestLike) {
   return req?.user?.role;
 }
-function userIdOf(req: any) {
+function userIdOf(req: RequestLike) {
   return req?.user?.id?.toString();
 }
 
-const enforceApprovedInsightBoundary = async ({ data, originalDoc, req }: any) => {
+const enforceApprovedInsightBoundary = async ({
+  data,
+  originalDoc,
+  req,
+}: {
+  data: InsightData;
+  originalDoc?: InsightData;
+  req: RequestLike;
+}) => {
   const next = { ...data };
-  const previous = (originalDoc ?? {}) as any;
+  const previous = originalDoc ?? {};
   const userRole = roleOf(req);
   const isHuman = humanRoles.has(userRole ?? "");
 

@@ -8,6 +8,9 @@ vi.mock("../../src/lib/payload", () => ({
 
 import robots from "../../src/app/robots";
 import sitemap from "../../src/app/sitemap";
+import { metadata as aboutMetadata } from "../../src/app/(site)/about/page";
+import { metadata as faqMetadata } from "../../src/app/(site)/faq/page";
+import { metadata as methodologyMetadata } from "../../src/app/(site)/the-push-methodology/page";
 import { GET as getLlmsTxt } from "../../src/app/llms.txt/route";
 import { publicAuthorityAssetRoutes, getPublicAuthorityAssetPathnames, getPublicAuthoritySitemapPathnames } from "../../src/lib/public-authority-routes";
 import { getProblemPagePathnames, getPublishedProblemPagePathnames } from "../../src/lib/problem-pages";
@@ -58,6 +61,7 @@ describe("robots and sitemap", () => {
     expect(sitemapPathnames).toEqual(expect.arrayContaining(getPublicAuthoritySitemapPathnames()));
 
     expect(sitemapPathnames).toContain("/");
+    expect(sitemapPathnames).not.toContain("/engineering-manager-coach");
     expect(sitemapPathnames).not.toContain("/problems/good-managers-burning-out-quietly");
     expect(sitemapPathnames).not.toContain("/case-studies/promoted-technical-manager-becomes-execution-bottleneck");
     expect(sitemapPathnames).not.toContain("/case-studies/case-study-new-engineering-manager");
@@ -70,6 +74,9 @@ describe("robots and sitemap", () => {
       "/problems/vp-rnd-losing-execution-control",
     ]);
     expect(getProblemPagePathnames()).toHaveLength(10);
+    expect(aboutMetadata.robots).toEqual({ index: true, follow: true });
+    expect(faqMetadata.robots).toEqual({ index: true, follow: true });
+    expect(methodologyMetadata.robots).toEqual({ index: true, follow: true });
   });
 
   it("keeps the full task asset registry available for audit purposes", () => {

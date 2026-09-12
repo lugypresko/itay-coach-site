@@ -62,13 +62,24 @@ const llmsFixedPathnames = new Set([
   "/player-trap",
 ]);
 
+// Keep the public sitemap limited to the small set of reader-facing routes that
+// have explicit metadata and a clear buyer or trust job. The rest of the fixed
+// routes remain available to the authority engine, but are not advertised to
+// crawlers until they have their own publication decision.
+export const indexableFixedPathnames = new Set([
+  "/",
+  "/about",
+  "/the-push-methodology",
+  "/faq",
+  "/book-a-fit-call",
+]);
+
 export const fixedPublicationSurfaceRoutes: FixedPublicationSurfaceRoute[] = [
   "/",
   "/about",
   "/the-push-methodology",
   "/faq",
   "/contact",
-  "/engineering-manager-coach",
   "/cto-coach",
   "/leadership-coach-for-engineering-managers",
   "/leadership-coaching-for-tech-leaders",
@@ -180,6 +191,8 @@ function buildFixedEntries(origin: string): PublicationSurfaceEntry[] {
         humanApproved: true,
         canonicalUrl: new URL(pathname, origin).toString(),
         llmsTxtEligible,
+        indexable: indexableFixedPathnames.has(pathname),
+        sitemapEligible: indexableFixedPathnames.has(pathname),
       },
       { origin, pathname },
     ),
