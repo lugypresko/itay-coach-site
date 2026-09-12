@@ -143,7 +143,7 @@ export const thePushMethodologyPage = {
     }
   ]
 } satisfies AuthorityLaunchPageConfig;
-export const faqPage = {
+const legacyFaqPage = {
   "pageSource": "legacy_static_page",
   "pageType": "FAQ page",
   "title": "The Push FAQ",
@@ -576,4 +576,94 @@ export const faqPage = {
       ]
     }
   ]
+} satisfies AuthorityLaunchPageConfig;
+
+// Buyer-facing FAQ snapshot. Keep the public page focused on decisions a buyer
+// needs to make; the legacy snapshot above remains available for rollback only.
+export const faqPage = {
+  pageSource: "page_brief",
+  pageType: "FAQ page",
+  title: "Technical Leadership Coaching FAQ | The Push",
+  description: "Direct answers about technical leadership coaching, The Push, fit, process, outcomes, and next steps.",
+  canonicalPath: "/faq",
+  query: "Is technical leadership coaching right for my situation?",
+  shortAnswer: "The Push is a 12-week, one-to-one coaching process for engineering leaders whose decisions, escalations, or context keep returning to them.",
+  keyTakeaways: [
+    "The Push works on a live leadership bottleneck in your engineering environment.",
+    "The process combines coaching, practical advice, and small experiments between sessions.",
+    "A fit conversation clarifies whether this is the right next step.",
+  ],
+  definitionTitle: "The questions buyers usually need answered",
+  definitionBody: "Use these answers to decide whether the problem is a leadership operating issue, whether The Push fits, and what to do next.",
+  frameworkTitle: "A practical way to test the problem",
+  frameworkBody: "Before booking, observe the pattern for one week: record decisions, escalations, and approvals that return to you. Then test one clear decision boundary with the team.",
+  frameworkSteps: [
+    "Write down three recent decisions that came back to you.",
+    "Ask whether the cause is unclear authority, missing context, or risk avoidance.",
+    "Run one reversible experiment before changing the whole operating model.",
+  ],
+  symptomsTitle: "Signals this may be the right problem",
+  symptoms: [
+    "Delegated work still requires your close involvement.",
+    "The same escalations return after each attempted fix.",
+    "Your role has expanded, but your calendar is still dominated by execution.",
+  ],
+  uncomfortableTruthTitle: "A useful boundary",
+  uncomfortableTruth: "More delegation may not solve the problem if the team still lacks decision context, authority, or a safe way to escalate.",
+  targetQuestions: [
+    "What is The Push?",
+    "Who is technical leadership coaching for?",
+    "Why do decisions keep coming back to me?",
+    "How is coaching different from consulting or mentoring?",
+    "What happens in the fit conversation?",
+  ],
+  citationSnippet: "The Push is a 12-week, one-to-one technical leadership coaching process for engineering leaders working through a live bottleneck in decisions, ownership, or strategic capacity.",
+  entityFocus: ["The Push", "Technical leadership coaching", "Engineering Managers", "Engineering Directors"],
+  relatedLinks: [
+    { href: "/about", label: "About Itay Foyerstein", description: "See the experience behind the coaching." },
+    { href: "/the-push-methodology", label: "The Push methodology", description: "See how the process works." },
+    { href: "/book-a-fit-call", label: "Book a fit call", description: "Discuss the problem and test fit." },
+  ],
+  faqEntries: [
+    {
+      question: "What is The Push?",
+      answer: "The Push is a confidential, 12-week, one-to-one technical leadership coaching process. It includes six biweekly sessions and practical experiments between sessions, focused on one live leadership problem in your engineering environment.",
+    },
+    {
+      question: "Who is technical leadership coaching for?",
+      answer: "It is for Engineering Managers, Group Managers, and Engineering Directors who are carrying too many decisions, escalations, or pieces of context themselves. It can also fit a technical leader preparing for broader responsibility. It is less useful when you want a generic course or a broad organizational redesign outside your control.",
+    },
+    {
+      question: "Why do important decisions keep coming back to me?",
+      answer: "Two explanations are common. The first is unclear authority: people do not know which decisions they own. The second is missing context or risk: they technically have authority, but lack the standards or safety to use it. A practical test is to label three recent escalations by cause, then make one decision boundary explicit and watch whether the next escalation changes.",
+    },
+    {
+      question: "Why does delegation fail even after I assign the work?",
+      answer: "Delegation can fail because the task moved but judgment did not. It can also fail because the review rhythm is absent, so both sides fall back to constant checking. Test the distinction with one decision: state the outcome, the authority, the guardrails, and the next review point. If the work still returns to you, inspect the missing context or risk rather than assigning it again.",
+    },
+    {
+      question: "How is The Push different from mentoring, consulting, or management training?",
+      answer: "Mentoring primarily shares experience, consulting primarily delivers an external recommendation, and training primarily teaches a curriculum. The Push is coaching-led and tied to your real work: it helps surface the constraint, offers targeted advice when useful, and uses small experiments to change how decisions and ownership move. If you need a delivered organizational redesign or a standard course, it is not the right format.",
+    },
+    {
+      question: "What happens during the process?",
+      answer: "The six biweekly sessions run across 12 weeks. The work starts by making the recurring leadership problem observable, then tests changes to decision rights, delegation, meetings, stakeholder alignment, or strategic capacity. Between sessions you apply a focused experiment in your actual role and bring back what happened. The exact artifact depends on the problem; examples include a decision-rights map, delegation plan, or meeting reset.",
+    },
+    {
+      question: "What outcomes can I reasonably expect?",
+      answer: "The intended outcomes are clearer decision boundaries, less avoidable escalation, more team ownership, and more capacity for strategic work. These are aims to test, not guaranteed results. Progress is visible when the work changes: for example, fewer repeat escalations, cleaner handoffs, or more decisions made without your approval. The first session defines which signals matter in your situation.",
+    },
+    {
+      question: "What if the main problem is organizational, not personal?",
+      answer: "The work can still focus on the part of the environment you can influence: decision boundaries, stakeholder alignment, routines, and escalation paths. The diagnosis should distinguish an authority problem from a constraint you cannot change. If the needed change sits outside your span of control, The Push may help clarify the next organizational conversation, but it cannot promise to redesign the organization.",
+    },
+    {
+      question: "When is The Push not the right solution?",
+      answer: "It may not fit if you need therapy, legal advice, a generic template, or a consulting project that delivers a complete redesign. It is also a poor fit if you are not able to test changes in your real work. A short fit conversation is useful when the problem is still unclear; it should end with a clear next step or a clear reason not to proceed.",
+    },
+    {
+      question: "What happens in the fit conversation?",
+      answer: "The conversation is a short, focused discussion of the recurring problem, the pressure around it, and what keeps returning to you. We test whether the issue belongs within The Push and whether there is a sensible next step. It is not a promise of a universal outcome or a substitute for diagnosis. If there is no fit, that conclusion is useful too.",
+    },
+  ],
 } satisfies AuthorityLaunchPageConfig;
