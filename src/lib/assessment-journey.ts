@@ -29,6 +29,17 @@ export type DiagnosticSignals = {
   intent: "talk_now" | "later" | "none";
 };
 
+export type DiagnosticAnswers = DiagnosticSignals;
+
+export function deriveDiagnosticSignals(input: Partial<DiagnosticAnswers> = {}): DiagnosticSignals {
+  return {
+    fit: input.fit === true,
+    pain: input.pain === true,
+    now: input.now === true,
+    intent: input.intent === "talk_now" || input.intent === "later" ? input.intent : "none",
+  };
+}
+
 const stateTransitions: Record<DiagnosticState, DiagnosticState | null> = {
   ROLE: "PAIN_RAW",
   PAIN_RAW: "PATTERN_HYPOTHESES",

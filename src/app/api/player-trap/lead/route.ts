@@ -18,6 +18,7 @@ import {
   scorePlayerTrap,
 } from "@/lib/player-trap";
 import { sendResendEmail } from "@/lib/resend";
+import { deriveDiagnosticSignals, routeDiagnostic, type DiagnosticSignals } from "@/lib/assessment-journey";
 
 type LeadRequestBody = {
   email?: string;
@@ -29,6 +30,7 @@ type LeadRequestBody = {
   contentConsentAccepted?: boolean;
   cookiesConsentAccepted?: boolean;
   utm?: Partial<Record<"utmSource" | "utmMedium" | "utmCampaign" | "utmContent" | "utmTerm", string>>;
+  dql?: Partial<DiagnosticSignals>;
 };
 
 function normalizeEmail(value: string) {
@@ -80,9 +82,14 @@ async function handleLeadPost(request: Request) {
   const utm = normalizeUtmAttribution(body.utm);
   const pageLanguage = normalizePlayerTrapLanguage(body.pageLanguage);
   const questions = getPlayerTrapQuestions(pageLanguage);
+  const dql = deriveDiagnosticSignals(body.dql);
+  const route = routeDiagnostic(dql);
   const answerErrors = validatePlayerTrapAnswers(body.answers ?? {}, questions);
   if (answerErrors.length) {
     return NextResponse.json({ error: "Please answer every diagnostic question.", fields: answerErrors }, { status: 400 });
+  }
+  if (typeof body.dql?.fit !== "boolean" || typeof body.dql?.pain !== "boolean" || typeof body.dql?.now !== "boolean" || !body.dql.intent) {
+    return NextResponse.json({ error: "Please complete the diagnostic routing questions." }, { status: 400 });
   }
   const result = scorePlayerTrap(body.answers ?? {}, questions);
   const { totalScore: _totalScore, maxScore: _maxScore, ...publicResult } = result;
@@ -107,6 +114,7 @@ async function handleLeadPost(request: Request) {
       reportUrl: tokenRecord.reportUrl ?? reportUrl,
       diagnosisCallUrl: tokenRecord.diagnosisCallUrl ?? diagnosisCallUrl,
       requestToTalkUrl,
+      route,
       email: normalizedEmail,
       resendMode: "deduplicated",
     });
@@ -198,5 +206,6 @@ async function handleLeadPost(request: Request) {
     resendMode: resendResult.mode,
     reportSummary,
     requestToTalkUrl,
+    route,
   });
 }

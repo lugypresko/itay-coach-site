@@ -12,6 +12,7 @@ import {
   type PlayerTrapQuestionId,
   type PlayerTrapUtmAttribution,
 } from "@/lib/player-trap";
+import { deriveDiagnosticSignals, routeDiagnostic, type DiagnosticSignals, type DiagnosticRoute } from "@/lib/assessment-journey";
 
 type PlayerTrapAssessmentClientProps = {
   questions: PlayerTrapQuestion[];
@@ -40,7 +41,7 @@ function parseLeadResponse(responseText: string) {
   }
 
   try {
-    return JSON.parse(responseText) as { error?: string; reportUrl?: string; result?: { tier?: string } };
+    return JSON.parse(responseText) as { error?: string; reportUrl?: string; route?: DiagnosticRoute; result?: { tier?: string } };
   } catch {
     return {};
   }
@@ -58,11 +59,14 @@ export function PlayerTrapAssessmentClient({
   const [email, setEmail] = useState("");
   const [consentAccepted, setConsentAccepted] = useState(false);
   const [contactEarned, setContactEarned] = useState(false);
+  const [dql, setDql] = useState<Partial<DiagnosticSignals>>({});
   const [status, setStatus] = useState<"idle" | "submitting" | "error">("idle");
   const [error, setError] = useState<string | null>(null);
   const [reportToken] = useState(() => crypto.randomUUID());
   const assessmentStarted = useRef(false);
   const complete = isComplete(answers, questions);
+  const dqlComplete = typeof dql.fit === "boolean" && typeof dql.pain === "boolean" && typeof dql.now === "boolean" && Boolean(dql.intent);
+  const route = dqlComplete ? routeDiagnostic(deriveDiagnosticSignals(dql)) : null;
   const utm = useMemo(() => normalizeUtmAttribution(initialUtm), [initialUtm]);
   useEffect(() => {
     if (assessmentStarted.current) return;
@@ -112,6 +116,7 @@ export function PlayerTrapAssessmentClient({
           name,
           reportToken,
           answers: buildAnswerRecord(answers, questions),
+          dql: deriveDiagnosticSignals(dql),
           pageLanguage,
           contentConsentAccepted: consentAccepted,
           cookiesConsentAccepted: consentAccepted,
@@ -209,10 +214,25 @@ export function PlayerTrapAssessmentClient({
             <>
               <h2>Your case points to a leadership pattern.</h2>
               <p className="authority-summary">The likely pattern is that decisions keep returning to the person with the most context. Test one decision this week by writing the decision rule before the next escalation and watching whether the team uses it without you.</p>
-              {!contactEarned ? (
-                <button className="form-submit" type="button" onClick={() => setContactEarned(true)}>
-                  This reflects my situation — continue
-                </button>
+              {!dqlComplete ? (
+                <div className="diagnostic-dql" aria-label="Qualify your situation">
+                  <fieldset className="assessment-question"><legend>Is this a technical leadership problem you own?</legend><div className="assessment-options">
+                    {[[true, "Yes, I own this"], [false, "No, this is outside my role"]].map(([value, label]) => <label className="assessment-option" key={String(value)}><input type="radio" name="fit" onChange={() => setDql((s) => ({ ...s, fit: value as boolean }))} /><span>{label}</span></label>)}
+                  </div></fieldset>
+                  <fieldset className="assessment-question"><legend>Is the pattern happening in a current case?</legend><div className="assessment-options">
+                    {[[true, "Yes, it is current"], [false, "No, it is hypothetical"]].map(([value, label]) => <label className="assessment-option" key={String(value)}><input type="radio" name="pain" onChange={() => setDql((s) => ({ ...s, pain: value as boolean }))} /><span>{label}</span></label>)}
+                  </div></fieldset>
+                  <fieldset className="assessment-question"><legend>Is there a reason to act now?</legend><div className="assessment-options">
+                    {[[true, "Yes, there is a trigger"], [false, "Not yet"]].map(([value, label]) => <label className="assessment-option" key={String(value)}><input type="radio" name="now" onChange={() => setDql((s) => ({ ...s, now: value as boolean }))} /><span>{label}</span></label>)}
+                  </div></fieldset>
+                  <fieldset className="assessment-question"><legend>What would be useful next?</legend><div className="assessment-options">
+                    {[['talk_now', "Request to talk"], ['later', "Send me the next step"], ['none', "I'll work on this myself"]].map(([value, label]) => <label className="assessment-option" key={value}><input type="radio" name="intent" onChange={() => setDql((s) => ({ ...s, intent: value as DiagnosticSignals["intent"] }))} /><span>{label}</span></label>)}
+                  </div></fieldset>
+                </div>
+              ) : route === "NO_FIT" || route === "INSUFFICIENT_EVIDENCE" ? (
+                <p className="authority-summary">{route === "NO_FIT" ? "This is outside the current coaching fit. Keep the experiment and use the result as a self-serve next step." : "There is not enough evidence for a confident diagnosis yet. Run the experiment and revisit the case when the pattern is clearer."}</p>
+              ) : !contactEarned ? (
+                <button className="form-submit" type="button" onClick={() => setContactEarned(true)}>This reflects my situation — continue</button>
               ) : (
                 <LeadCaptureForm
                   copy={copy}
