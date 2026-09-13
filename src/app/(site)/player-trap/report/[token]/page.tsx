@@ -5,6 +5,8 @@ import { notFound } from "next/navigation";
 import { getServerPayload } from "@/lib/payload";
 import {
   buildPlayerTrapReportLabels,
+  buildPlayerTrapRequestToTalkUrl,
+  isPlayerTrapReportWithinTtl,
   localizePlayerTrapResult,
   normalizePlayerTrapLanguage,
   type PlayerTrapResult,
@@ -70,10 +72,15 @@ export default async function PlayerTrapReportPage({ params }: PlayerTrapReportP
         pageLanguage?: string;
         reportViewedAt?: string;
         reportRequestedAt?: string;
+        createdAt?: string;
       }
     | undefined;
 
   if (!record) {
+    notFound();
+  }
+
+  if (!isPlayerTrapReportWithinTtl(record.createdAt)) {
     notFound();
   }
 
@@ -99,7 +106,7 @@ export default async function PlayerTrapReportPage({ params }: PlayerTrapReportP
     summary: "No diagnostic result was stored for this report.",
     diagnosis: "The report payload is incomplete, so the hidden cost could not be reconstructed.",
     primaryCTA: "Return to the diagnostic and capture a complete result.",
-    secondaryCTA: "Use the scorecard to re-check the pattern.",
+    secondaryCTA: "Re-check the pattern against your next decision.",
     nextStep: "Re-run the diagnostic to capture the missing leadership signals.",
   }, pageLanguage);
   return (
@@ -113,15 +120,6 @@ export default async function PlayerTrapReportPage({ params }: PlayerTrapReportP
       <section className="content-grid">
         <article className="content-panel-wide">
           <div className="result-stack">
-            <div className="result-card">
-              <p className="authority-label">{labels.score}</p>
-              <p className="result-score">
-                <strong>
-                  {report.totalScore}
-                </strong>{" "}
-                {labels.scoreConnector} {report.maxScore}
-              </p>
-            </div>
             <div className="result-card">
               <p className="authority-label">{labels.diagnosis}</p>
               <p className="authority-summary">{report.diagnosis}</p>
@@ -140,20 +138,14 @@ export default async function PlayerTrapReportPage({ params }: PlayerTrapReportP
           <p className="authority-summary">{labels.diagnosisCallSupport}</p>
 
           <div className="content-actions">
-            <form className="inline-form" action="/api/player-trap/diagnosis-call" method="post">
-              <input type="hidden" name="reportToken" value={record.reportToken ?? token} />
-              <button className="primary-link" type="submit">
-                {labels.diagnosisCallCta}
-              </button>
-            </form>
-            <Link className="secondary-link" href="/tech-leadership-visibility-scorecard">
-              {labels.scorecardCta}
+            <Link className="primary-link" href={buildPlayerTrapRequestToTalkUrl(record.reportToken ?? token)}>
+              {labels.diagnosisCallCta}
             </Link>
           </div>
 
           <div className="content-actions">
-            <Link className="secondary-link" href="/book-a-fit-call?source=assessment">
-              Review your result with Itay
+            <Link className="secondary-link" href="/contact?source=diagnostic&intent=request_to_talk">
+              Request to talk with Itay
             </Link>
             <Link className="secondary-link" href="/for-organizations?source=assessment">
               Discuss the findings for your organization

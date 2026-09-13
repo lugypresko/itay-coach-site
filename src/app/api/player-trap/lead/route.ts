@@ -4,6 +4,7 @@ import { getServerPayload } from "@/lib/payload";
 import type { PlayerTrapQuestionId } from "@/lib/player-trap";
 import {
   buildPlayerTrapDiagnosisCallUrl,
+  buildPlayerTrapRequestToTalkUrl,
   buildPlayerTrapFollowUpEmail,
   buildPlayerTrapReport,
   buildPlayerTrapReportUrl,
@@ -11,6 +12,7 @@ import {
   getPlayerTrapQuestions,
   normalizeUtmAttribution,
   normalizePlayerTrapLanguage,
+  isPlayerTrapReportTokenValid,
   validatePlayerTrapAnswers,
   playerTrapNurtureSequence,
   scorePlayerTrap,
@@ -64,7 +66,7 @@ async function handleLeadPost(request: Request) {
   if (normalizedEmail.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
     return NextResponse.json({ error: "Please enter a valid email address." }, { status: 400 });
   }
-  if (reportToken.length > 128) {
+  if (!isPlayerTrapReportTokenValid(reportToken)) {
     return NextResponse.json({ error: "Invalid diagnostic submission." }, { status: 400 });
   }
   if (name.length > 120) {
@@ -74,6 +76,7 @@ async function handleLeadPost(request: Request) {
   const requestBaseUrl = requestUrl.origin;
   const reportUrl = buildPlayerTrapReportUrl(reportToken, requestBaseUrl);
   const diagnosisCallUrl = buildPlayerTrapDiagnosisCallUrl(reportToken, requestBaseUrl);
+  const requestToTalkUrl = buildPlayerTrapRequestToTalkUrl(reportToken, requestBaseUrl);
   const utm = normalizeUtmAttribution(body.utm);
   const pageLanguage = normalizePlayerTrapLanguage(body.pageLanguage);
   const questions = getPlayerTrapQuestions(pageLanguage);
@@ -82,6 +85,7 @@ async function handleLeadPost(request: Request) {
     return NextResponse.json({ error: "Please answer every diagnostic question.", fields: answerErrors }, { status: 400 });
   }
   const result = scorePlayerTrap(body.answers ?? {}, questions);
+  const { totalScore: _totalScore, maxScore: _maxScore, ...publicResult } = result;
   const now = new Date().toISOString();
   const payload = await getServerPayload();
 
@@ -102,6 +106,7 @@ async function handleLeadPost(request: Request) {
       ok: true,
       reportUrl: tokenRecord.reportUrl ?? reportUrl,
       diagnosisCallUrl: tokenRecord.diagnosisCallUrl ?? diagnosisCallUrl,
+      requestToTalkUrl,
       email: normalizedEmail,
       resendMode: "deduplicated",
     });
@@ -188,9 +193,10 @@ async function handleLeadPost(request: Request) {
     ok: true,
     reportUrl,
     diagnosisCallUrl,
-    result,
+    result: publicResult,
     email: normalizedEmail,
     resendMode: resendResult.mode,
     reportSummary,
+    requestToTalkUrl,
   });
 }

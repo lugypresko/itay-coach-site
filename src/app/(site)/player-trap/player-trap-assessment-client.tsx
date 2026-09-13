@@ -57,6 +57,7 @@ export function PlayerTrapAssessmentClient({
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [consentAccepted, setConsentAccepted] = useState(false);
+  const [contactEarned, setContactEarned] = useState(false);
   const [status, setStatus] = useState<"idle" | "submitting" | "error">("idle");
   const [error, setError] = useState<string | null>(null);
   const [reportToken] = useState(() => crypto.randomUUID());
@@ -85,6 +86,12 @@ export function PlayerTrapAssessmentClient({
     if (!complete) {
       setStatus("error");
       setError(copy.resultPromptBody);
+      return;
+    }
+
+    if (!contactEarned) {
+      setStatus("error");
+      setError("Review the micro-insight before sharing your contact details.");
       return;
     }
 
@@ -128,6 +135,13 @@ export function PlayerTrapAssessmentClient({
         utm_campaign: utm.utmCampaign,
         utm_content: utm.utmContent,
         utm_term: utm.utmTerm,
+      });
+      track("diagnostic_contact_earned", {
+        assessment: "player-trap",
+        page_language: pageLanguage,
+        utm_source: utm.utmSource,
+        utm_medium: utm.utmMedium,
+        utm_campaign: utm.utmCampaign,
       });
 
       if (!payload.reportUrl) {
@@ -189,37 +203,30 @@ export function PlayerTrapAssessmentClient({
           {!complete ? (
             <>
               <h2>{copy.resultPromptTitle}</h2>
-              <p className="authority-summary">{copy.resultPromptBody}</p>
-              <LeadCaptureForm
-                copy={copy}
-                name={name}
-                email={email}
-                consentAccepted={consentAccepted}
-                status={status}
-                error={error}
-                disabled
-                onNameChange={setName}
-                onEmailChange={setEmail}
-                onConsentChange={setConsentAccepted}
-                onSubmit={handleLeadSubmit}
-              />
+              <p className="authority-summary">Complete the five questions to receive a specific hypothesis about the pattern in your case.</p>
             </>
           ) : (
             <>
-              <h2>{copy.resultGateTitle}</h2>
-              <p className="authority-summary">{copy.resultGateBody}</p>
-              <LeadCaptureForm
-                copy={copy}
-                name={name}
-                email={email}
-                consentAccepted={consentAccepted}
-                status={status}
-                error={error}
-                onNameChange={setName}
-                onEmailChange={setEmail}
-                onConsentChange={setConsentAccepted}
-                onSubmit={handleLeadSubmit}
-              />
+              <h2>Your case points to a leadership pattern.</h2>
+              <p className="authority-summary">The likely pattern is that decisions keep returning to the person with the most context. Test one decision this week by writing the decision rule before the next escalation and watching whether the team uses it without you.</p>
+              {!contactEarned ? (
+                <button className="form-submit" type="button" onClick={() => setContactEarned(true)}>
+                  This reflects my situation — continue
+                </button>
+              ) : (
+                <LeadCaptureForm
+                  copy={copy}
+                  name={name}
+                  email={email}
+                  consentAccepted={consentAccepted}
+                  status={status}
+                  error={error}
+                  onNameChange={setName}
+                  onEmailChange={setEmail}
+                  onConsentChange={setConsentAccepted}
+                  onSubmit={handleLeadSubmit}
+                />
+              )}
             </>
           )}
         </div>

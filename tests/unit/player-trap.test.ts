@@ -6,6 +6,7 @@ import {
   buildPlayerTrapFollowUpEmail,
   buildPlayerTrapReport,
   buildPlayerTrapReportLabels,
+  buildPlayerTrapRequestToTalkUrl,
   buildPlayerTrapReportUrl,
   buildPlayerTrapSubmissionData,
   getPlayerTrapFunnelCopy,
@@ -28,9 +29,26 @@ import {
   playerTrapQuestionsHebrew,
   scorePlayerTrap,
   validatePlayerTrapAnswers,
+  isPlayerTrapReportTokenValid,
+  isPlayerTrapReportWithinTtl,
 } from "../../src/lib/player-trap";
 
 describe("player trap conversion infrastructure", () => {
+  it("builds a request-to-talk URL without the legacy booking route", () => {
+    const url = buildPlayerTrapRequestToTalkUrl("abc123", "https://example.com");
+    expect(url).toBe("https://example.com/contact?source=diagnostic&intent=request_to_talk");
+    expect(url).not.toContain("abc123");
+    expect(url).not.toContain("book-a-fit-call");
+  });
+
+  it("accepts only opaque UUID report tokens and enforces a finite TTL", () => {
+    expect(isPlayerTrapReportTokenValid("550e8400-e29b-41d4-a716-446655440000")).toBe(true);
+    expect(isPlayerTrapReportTokenValid("manager@example.com")).toBe(false);
+    const issued = "2026-09-01T00:00:00.000Z";
+    expect(isPlayerTrapReportWithinTtl(issued, Date.parse("2026-09-15T00:00:00.000Z"))).toBe(true);
+    expect(isPlayerTrapReportWithinTtl(issued, Date.parse("2026-10-15T00:00:00.000Z"))).toBe(false);
+  });
+
   it("rejects incomplete or tampered diagnostic answers", () => {
     expect(validatePlayerTrapAnswers({})).toHaveLength(5);
     expect(
@@ -173,7 +191,10 @@ describe("player trap conversion infrastructure", () => {
     expect(client).toContain("consentAccepted");
     expect(client).toContain("contentConsentAccepted");
     expect(client).toContain("cookiesConsentAccepted");
-    expect(client).toContain("copy.resultGateTitle");
+    expect(client).toContain("Your case points to a leadership pattern.");
+    expect(client).toContain('track("diagnostic_contact_earned"');
+    expect(client).toContain("onClick={() => setContactEarned(true)}");
+    expect(client).not.toContain('onClick={() => { setContactEarned(true); track("diagnostic_contact_earned"');
     expect(client).toContain("function LeadCaptureForm");
     expect(client).toContain("disabled || status === \"submitting\"");
     expect(client).not.toContain("quickChecks.map");
@@ -235,7 +256,7 @@ describe("player trap conversion infrastructure", () => {
 
     const englishLabels = buildPlayerTrapReportLabels("en");
     const hebrewLabels = buildPlayerTrapReportLabels("he");
-    expect(englishLabels.diagnosisCallCta).toBe("Book a Pre-Promoted Diagnosis Call");
+    expect(englishLabels.diagnosisCallCta).toBe("Request to talk with Itay");
     expect(englishLabels.diagnosisCallSupport).toContain("generic coaching call");
     expect(hebrewLabels.diagnosisCallCta).toBe("קבע שיחת אבחון Pre-Promoted");
     expect(hebrewLabels.diagnosisCallSupport).toContain("שיחת אבחון ממוקדת");
