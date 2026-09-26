@@ -11,6 +11,7 @@ export type PlayerTrapTier = "trusted-operator" | "invisible-executor" | "execut
 export type PlayerTrapLanguage = "en" | "he";
 
 const PLAYER_TRAP_MAX_TEXT_LENGTH = 500;
+export const PLAYER_TRAP_REPORT_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 
 export interface PlayerTrapChoice {
   label: string;
@@ -615,13 +616,13 @@ export const playerTrapQuickChecksHebrew = [
 
 export const playerTrapAuthorityCopy = {
   eyebrow: "Authority",
-  headline: "Trusted by 120+ managers in fast-moving engineering orgs.",
+  headline: "Experience helping technical leaders in fast-moving engineering organisations.",
   body: "The Push helps technical leaders make the operating model visible before the system turns them into the default bottleneck.",
 } as const;
 
 export const playerTrapAuthorityCopyHebrew = {
   eyebrow: "סמכות",
-  headline: "120+ מנהלים בוחרים לעבוד על המודל, לא רק על העומס.",
+  headline: "Experience with technical leaders in fast-moving organisations.",
   body: "The Push עוזר למובילים טכנולוגיים להפוך את מודל ההפעלה לגלוי לפני שהמערכת הופכת אותם לצוואר הבקבוק ברירת המחדל.",
 } as const;
 
@@ -644,15 +645,15 @@ export const playerTrapNurtureSequence: PlayerTrapEmailTemplate[] = [
     dayOffset: 0,
     slug: "diagnostic-report",
     subject: "Your Player Trap diagnostic report",
-    previewText: "Your score, diagnosis, and next step are ready.",
+    previewText: "Your diagnosis and next step are ready.",
     body:
-      "This is the diagnostic report you requested. It summarizes the score, the leadership pattern, and the next step to reduce bottleneck risk.",
+      "This is the diagnostic report you requested. It summarizes the leadership pattern and the next step to reduce bottleneck risk.",
   },
   {
     dayOffset: 1,
     slug: "stop-being-the-bottleneck",
     subject: "How bottlenecks form in AI-assisted teams",
-    previewText: "A short explanation of the pattern behind the score.",
+    previewText: "A short explanation of the pattern behind your result.",
     body:
       "This email explains how engineering managers become the default review and escalation path when decision rules stay implicit.",
   },
@@ -725,7 +726,7 @@ function scorePlayerTrapEnglish(
       diagnosis:
         "The hidden cost is that your speed can train the system to ask you instead of deciding without you.",
       primaryCTA: "The next leadership move is to keep the decision rules visible before the load grows.",
-      secondaryCTA: "Use the scorecard to check whether the approval path is still too personal.",
+      secondaryCTA: "Check whether the approval path is still too personal.",
       nextStep: "Move the approval path into the system, not your inbox.",
     };
   }
@@ -740,7 +741,7 @@ function scorePlayerTrapEnglish(
       diagnosis:
         "The hidden cost is that your execution strength creates a quiet dependency that does not always show up in status updates.",
       primaryCTA: "The next leadership move is to make the delegation and escalation rules visible enough for others to use.",
-      secondaryCTA: "Check the scorecard before the queue becomes another habit.",
+      secondaryCTA: "Check the approval queue before it becomes another habit.",
       nextStep: "Turn the model into something the team can repeat without asking you.",
     };
   }
@@ -753,7 +754,7 @@ function scorePlayerTrapEnglish(
     summary: "You are probably the default place where decisions, escalations, and reviews end up.",
     diagnosis: "The hidden cost is that the team has learned to wait for you, which keeps the operating model from scaling.",
     primaryCTA: "The next leadership move is to step back from being the fastest path and define the path the team should follow.",
-    secondaryCTA: "Use the scorecard to see how much of the system still routes through you.",
+    secondaryCTA: "Trace how much of the system still routes through you.",
     nextStep: "Redesign the route so progress does not depend on your personal availability.",
   };
 }
@@ -834,7 +835,7 @@ export function buildPlayerTrapReportLabels(language: PlayerTrapLanguage): Playe
     diagnosis: "Diagnosis",
     nextStep: "Next step",
     primaryCta: "Primary CTA",
-    diagnosisCallCta: "Book a Pre-Promoted Diagnosis Call",
+    diagnosisCallCta: "Request to talk with Itay",
     diagnosisCallSupport:
       "This is not a generic coaching call. It is a focused diagnosis of where you are still carrying the system and what needs to change next.",
     scorecardCta: "Open the scorecard",
@@ -939,14 +940,11 @@ export function buildPlayerTrapReport(
   context: { name?: string; reportUrl: string; diagnosisCallUrl: string },
 ) {
   const intro = context.name ? `Hi ${context.name},` : "Here is your diagnostic report.";
-  const scoreLine = `${result.totalScore}/${result.maxScore}`;
-
   return {
     subject: `Player Trap diagnostic report - ${result.title}`,
     text: [
       intro,
       "",
-      `Score: ${scoreLine}`,
       `Diagnosis: ${result.diagnosis}`,
       `Summary: ${result.summary}`,
       "",
@@ -960,7 +958,6 @@ export function buildPlayerTrapReport(
     ].join("\n"),
     html: [
       `<p>${context.name ? `Hi ${escapeHtml(context.name)},` : "Here is your diagnostic report."}</p>`,
-      `<p><strong>Score:</strong> ${scoreLine}</p>`,
       `<p><strong>Diagnosis:</strong> ${result.diagnosis}</p>`,
       `<p><strong>Summary:</strong> ${result.summary}</p>`,
       `<p><strong>Primary CTA:</strong> ${result.primaryCTA}</p>`,
@@ -973,7 +970,6 @@ export function buildPlayerTrapReport(
 }
 
 export function buildPlayerTrapFollowUpEmail(template: PlayerTrapEmailTemplate, context: PlayerTrapSubmissionContext) {
-  const scoreLine = `${context.result.totalScore}/${context.result.maxScore}`;
   const reportLink = context.reportUrl;
 
   return {
@@ -984,7 +980,6 @@ export function buildPlayerTrapFollowUpEmail(template: PlayerTrapEmailTemplate, 
       "",
       template.body,
       "",
-      `Report score: ${scoreLine}`,
       `Report: ${reportLink}`,
       `Diagnosis call: ${context.diagnosisCallUrl}`,
       "",
@@ -993,7 +988,6 @@ export function buildPlayerTrapFollowUpEmail(template: PlayerTrapEmailTemplate, 
     html: [
       context.name ? `<p>Hi ${escapeHtml(context.name)},</p>` : "<p>Hi,</p>",
       `<p>${template.body}</p>`,
-      `<p><strong>Report score:</strong> ${scoreLine}</p>`,
       `<p><a href="${reportLink}">Open the report</a></p>`,
       `<p><a href="${context.diagnosisCallUrl}">Request a diagnosis call</a></p>`,
       `<p><strong>Next step:</strong> ${context.result.nextStep}</p>`,
@@ -1010,6 +1004,25 @@ export function buildPlayerTrapDiagnosisCallUrl(reportToken: string, baseUrl = g
     `/api/player-trap/diagnosis-call?reportToken=${encodeURIComponent(reportToken)}`,
     baseUrl,
   ).toString();
+}
+
+export function isPlayerTrapReportTokenValid(token: string) {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(token);
+}
+
+export function isPlayerTrapReportWithinTtl(issuedAt: string | Date | undefined, now = Date.now()) {
+  if (!issuedAt) return false;
+  const timestamp = new Date(issuedAt).getTime();
+  return Number.isFinite(timestamp) && now - timestamp >= 0 && now - timestamp <= PLAYER_TRAP_REPORT_TTL_MS;
+}
+
+export function buildPlayerTrapRequestToTalkUrl(reportToken: string, baseUrl = getSiteUrl()) {
+  const url = new URL("/contact", baseUrl);
+  url.searchParams.set("source", "diagnostic");
+  url.searchParams.set("intent", "request_to_talk");
+  // Keep the opaque report token out of browser history, referrers, and proxy logs.
+  void reportToken;
+  return url.toString();
 }
 
 export function serializeAnswers(answers: Partial<Record<PlayerTrapQuestionId, string>>) {

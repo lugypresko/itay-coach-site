@@ -12,7 +12,7 @@ type Props = Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "href" | "onClick"> &
   href?: string;
 };
 
-export function HomeV3TrackedLink({ children, className, href = "/player-trap", ...rest }: Props) {
+export function HomeV3TrackedLink({ children, className, href = "/diagnostic", ...rest }: Props) {
   const [search, setSearch] = useState("");
   const [pattern, setPattern] = useState<string | undefined>(undefined);
 
@@ -29,6 +29,6 @@ export function HomeV3TrackedLink({ children, className, href = "/player-trap", 
     return () => window.removeEventListener("homepage-pattern-change", handlePatternChange);
   }, []);
 
-  const destination = href === "/player-trap" ? buildDiagnosticHref(search, pattern) : href;
+  const destination = href === "/diagnostic" ? buildDiagnosticHref(search, pattern) : href;
   return <Link {...rest} className={className} href={destination} onClick={() => track("homepage_cta_click", { destination })}>{children}</Link>;
 }

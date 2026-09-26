@@ -4621,3 +4621,12 @@ Verification notes:
 - Added `canonicalUrl` support to the sprint payload interface and seed runner so the FAQ record can persist `/faq`.
 - `npm test -- tests/unit/authority-asset-production-sprint.test.ts` passed.
 - `npm run typecheck` passed.
+
+
+## SITE-NEXT-01 ? isolated brand and diagnostic implementation
+State: in_progress
+Owner: Codex
+Scope: approved brand plan, single diagnostic contract, safe local review, rollback snapshots.
+Out of scope: production writes/deployments, outreach, employer reporting.
+Validation: full tests/typecheck/lint, browser journeys and screenshots, checksum restore drill.
+DoD: local verified flows and site copy, checkpoints and documented external blockers.

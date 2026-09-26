@@ -410,6 +410,7 @@ describe("publication decision", () => {
       "/problems/cto-becomes-the-bottleneck",
       "/problems/vp-rnd-losing-execution-control",
       "/problems/engineering-managers-stuck-in-firefighting",
+      "/problems/product-engineering-misalignment",
     ]);
     expect(getProblemPagePathnames()).toHaveLength(10);
   });

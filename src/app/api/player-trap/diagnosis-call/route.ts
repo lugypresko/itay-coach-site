@@ -1,6 +1,12 @@
 import { NextResponse } from "next/server";
 
 import { getServerPayload } from "@/lib/payload";
+import { isPlayerTrapReportTokenValid, isPlayerTrapReportWithinTtl } from "@/lib/player-trap";
+
+const historicalHeaders = {
+  "Cache-Control": "private, no-store",
+  "Referrer-Policy": "no-referrer",
+};
 
 async function readToken(request: Request) {
   const contentType = request.headers.get("content-type") ?? "";
@@ -16,8 +22,8 @@ async function readToken(request: Request) {
 
 export async function GET(request: Request) {
   const reportToken = new URL(request.url).searchParams.get("reportToken")?.trim() ?? "";
-  if (!reportToken) {
-    return NextResponse.json({ error: "reportToken is required." }, { status: 400 });
+  if (!isPlayerTrapReportTokenValid(reportToken)) {
+    return NextResponse.json({ error: "Report token not found." }, { status: 404, headers: historicalHeaders });
   }
 
   const payload = await getServerPayload();
@@ -32,24 +38,24 @@ export async function GET(request: Request) {
     },
   } as never);
 
-  const record = result.docs[0] as unknown as { id?: string; pageLanguage?: string } | undefined;
+  const record = result.docs[0] as unknown as { id?: string; pageLanguage?: string; createdAt?: string } | undefined;
 
-  if (!record?.id) {
-    return NextResponse.json({ error: "Report token not found." }, { status: 404 });
+  if (!record?.id || !isPlayerTrapReportWithinTtl(record.createdAt)) {
+    return NextResponse.json({ error: "Report token not found." }, { status: 404, headers: historicalHeaders });
   }
 
   await payload.update({
     collection: "email-subscribers",
     id: record.id,
     data: {
-      lifecycleStage: "diagnosis_call_requested",
+      lifecycleStage: "conversation_requested",
       diagnosisCallRequestedAt: new Date().toISOString(),
     } as never,
     overrideAccess: true,
   });
 
   const lang = record.pageLanguage === "he" ? "he" : "en";
-  return NextResponse.redirect(new URL(`/book-a-fit-call?source=player-trap&lang=${lang}`, request.url), 303);
+  return NextResponse.redirect(new URL(`/contact?source=diagnostic&intent=request_to_talk&lang=${lang}`, request.url), { status: 303, headers: historicalHeaders });
 }
 
 export async function POST(request: Request) {
@@ -81,12 +87,12 @@ export async function POST(request: Request) {
     collection: "email-subscribers",
     id: record.id,
     data: {
-      lifecycleStage: "diagnosis_call_requested",
+      lifecycleStage: "conversation_requested",
       diagnosisCallRequestedAt: new Date().toISOString(),
     } as never,
     overrideAccess: true,
   });
 
   const lang = record.pageLanguage === "he" ? "he" : "en";
-  return NextResponse.redirect(new URL(`/book-a-fit-call?source=player-trap&lang=${lang}`, request.url), 303);
+  return NextResponse.redirect(new URL(`/contact?source=diagnostic&intent=request_to_talk&lang=${lang}`, request.url), { status: 303, headers: historicalHeaders });
 }

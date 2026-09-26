@@ -538,9 +538,11 @@ export function buildEmailSubscriberCollection(
       useAsTitle: "email",
     },
     access: {
-      create: () => true,
-      read: () => true,
-      update: () => true,
+      // Lead writes happen through server routes using overrideAccess. Public
+      // Payload reads/updates must never expose or mutate contact records.
+      create: ({ req }) => Boolean(req.user),
+      read: ({ req }) => Boolean(req.user),
+      update: ({ req }) => Boolean(req.user),
       delete: () => false,
     },
     timestamps: true,
@@ -616,6 +618,46 @@ export function buildEmailSubscriberCollection(
       { name: "utmCampaign", type: "text", index: true },
       { name: "utmContent", type: "text", index: true },
       { name: "utmTerm", type: "text", index: true },
+      // Conversion Core fields. These are additive so historical campaign
+      // records remain readable while the new diagnostic stops depending on
+      // the legacy question/score schema.
+      { name: "diagnosticSession", type: "text", unique: true, index: true },
+      { name: "diagnosticSnapshot", type: "json" },
+      { name: "processingConsentAccepted", type: "checkbox", defaultValue: false, index: true },
+      { name: "processingConsentAcceptedAt", type: "date", index: true },
+      { name: "marketingConsentAccepted", type: "checkbox", defaultValue: false, index: true },
+      { name: "marketingConsentAcceptedAt", type: "date", index: true },
+      { name: "submissionId", type: "text", unique: true, index: true },
+      {
+        name: "explicitIntent",
+        type: "select",
+        options: ["TALK_NOW", "LATER", "SELF_SERVE"],
+        index: true,
+      },
+      {
+        name: "dqlRoute",
+        type: "select",
+        options: ["TALK_NOW", "NURTURE", "NO_FIT", "INSUFFICIENT_EVIDENCE"],
+        index: true,
+      },
+      { name: "routeReasonCodes", type: "json" },
+      { name: "requestToTalkAt", type: "date", index: true },
+      {
+        name: "requestToTalkStatus",
+        type: "select",
+        options: ["requested", "not_requested", "notification_pending", "notification_sent", "notification_failed"],
+        index: true,
+      },
+      {
+        name: "itayNotificationStatus",
+        type: "select",
+        options: ["pending", "sent", "failed"],
+      },
+      {
+        name: "visitorConfirmationStatus",
+        type: "select",
+        options: ["not_requested", "pending", "sent", "failed"],
+      },
       arrayTextField("tags"),
     ],
   };

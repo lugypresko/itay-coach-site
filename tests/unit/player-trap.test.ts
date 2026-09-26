@@ -1,11 +1,19 @@
-import { readFileSync } from "node:fs";
-import { describe, expect, it } from "vitest";
+// @vitest-environment happy-dom
+import { describe, expect, it, vi } from "vitest";
+import * as React from "react";
+import { act, createElement } from "react";
+import { createRoot } from "react-dom/client";
+import { PushConversation } from "../../src/components/push-conversation";
+
+Object.assign(globalThis, { React });
+Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
 
 import {
   buildPlayerTrapDiagnosisCallUrl,
   buildPlayerTrapFollowUpEmail,
   buildPlayerTrapReport,
   buildPlayerTrapReportLabels,
+  buildPlayerTrapRequestToTalkUrl,
   buildPlayerTrapReportUrl,
   buildPlayerTrapSubmissionData,
   getPlayerTrapFunnelCopy,
@@ -28,9 +36,26 @@ import {
   playerTrapQuestionsHebrew,
   scorePlayerTrap,
   validatePlayerTrapAnswers,
+  isPlayerTrapReportTokenValid,
+  isPlayerTrapReportWithinTtl,
 } from "../../src/lib/player-trap";
 
 describe("player trap conversion infrastructure", () => {
+  it("builds a request-to-talk URL without the legacy booking route", () => {
+    const url = buildPlayerTrapRequestToTalkUrl("abc123", "https://example.com");
+    expect(url).toBe("https://example.com/contact?source=diagnostic&intent=request_to_talk");
+    expect(url).not.toContain("abc123");
+    expect(url).not.toContain("book-a-fit-call");
+  });
+
+  it("accepts only opaque UUID report tokens and enforces a finite TTL", () => {
+    expect(isPlayerTrapReportTokenValid("550e8400-e29b-41d4-a716-446655440000")).toBe(true);
+    expect(isPlayerTrapReportTokenValid("manager@example.com")).toBe(false);
+    const issued = "2026-09-01T00:00:00.000Z";
+    expect(isPlayerTrapReportWithinTtl(issued, Date.parse("2026-09-15T00:00:00.000Z"))).toBe(true);
+    expect(isPlayerTrapReportWithinTtl(issued, Date.parse("2026-10-15T00:00:00.000Z"))).toBe(false);
+  });
+
   it("rejects incomplete or tampered diagnostic answers", () => {
     expect(validatePlayerTrapAnswers({})).toHaveLength(5);
     expect(
@@ -119,8 +144,6 @@ describe("player trap conversion infrastructure", () => {
       "Pre-Promoted Leader",
     ]);
     expect(playerTrapQuickChecks).toHaveLength(5);
-    expect(playerTrapAuthorityCopy.headline).toContain("120+ managers");
-    expect(playerTrapAuthorityCopyHebrew.headline).toContain("120+");
     expect(playerTrapImpactChartPoints.map((point) => point.stage)).toEqual([
       "Star Player",
       "Captain",
@@ -135,53 +158,58 @@ describe("player trap conversion infrastructure", () => {
     ]);
   });
 
-  it("renders separate English and Hebrew campaign surfaces", () => {
-    const page = readFileSync(new URL("../../src/app/(site)/player-trap/page.tsx", import.meta.url), "utf8");
-    const hebrewPage = readFileSync(new URL("../../src/app/(site)/player-trap-he/page.tsx", import.meta.url), "utf8");
-    const reportPage = readFileSync(
-      new URL("../../src/app/(site)/player-trap/report/[token]/page.tsx", import.meta.url),
-      "utf8",
+  it("starts the rendered diagnostic when the CTA is clicked", async () => {
+    const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          view: {
+            step: "incident",
+            prompt: {
+              title: "Bring one real leadership situation.",
+              help: "Describe what happened.",
+            },
+            turns: [],
+            incident: "",
+            category: "unclear",
+            contact: "offered",
+            intent: null,
+            route: null,
+            reasons: [],
+            requested: false,
+            diagnosis: null,
+          },
+          localReview: true,
+        }),
+        { headers: { "Content-Type": "application/json" } },
+      ),
     );
-    const client = readFileSync(
-      new URL("../../src/app/(site)/player-trap/player-trap-assessment-client.tsx", import.meta.url),
-      "utf8",
+    const container = document.createElement("div");
+    document.body.appendChild(container);
+    const root = createRoot(container);
+
+    await act(async () => {
+      root.render(createElement(PushConversation));
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    const cta = Array.from(container.querySelectorAll("button")).find(
+      (button) => button.textContent === "Diagnose one situation",
     );
-    const componentsCss = readFileSync(new URL("../../src/styles/components.css", import.meta.url), "utf8");
+    expect(cta).toBeTruthy();
+    expect((cta as HTMLButtonElement).disabled).toBe(false);
 
-    expect(page).toContain('className="content-shell player-trap-shell"');
-    expect(page).toContain('getPlayerTrapFunnelCopy("en")');
-    expect(page).toContain('pageLanguage="en"');
-    expect(page).toContain('href="#player-trap-self-check"');
-    expect(page).toContain('id="player-trap-framework"');
+    await act(async () => {
+      cta?.click();
+    });
 
-    expect(hebrewPage).toContain('dir="rtl"');
-    expect(hebrewPage).toContain('getPlayerTrapFunnelCopy("he")');
-    expect(hebrewPage).toContain('pageLanguage="he"');
-    expect(hebrewPage).toContain('getPlayerTrapQuestions("he")');
-    expect(hebrewPage).toContain('playerTrapAuthorityCopyHebrew');
-    expect(hebrewPage).toContain('playerTrapImpactChartPointsHebrew');
+    expect(container.querySelector(".push-intro")).toBeNull();
+    expect(container.querySelector("textarea#answer")).toBeTruthy();
+    expect(container.querySelector("h1")?.textContent).toBe("Bring one real leadership situation.");
 
-    expect(reportPage).toContain("diagnosisCallSupport");
-    expect(reportPage).toContain("labels.primaryCta");
-    expect(reportPage).toContain('lang={pageLanguage}');
-    expect(reportPage).toContain('dir={pageLanguage === "he" ? "rtl" : "ltr"}');
-
-    expect(client).toContain('fetch("/api/player-trap/lead"');
-    expect(client).toContain("questions.every");
-    expect(client).toContain("answers: buildAnswerRecord(answers, questions)");
-    expect(client).toContain("pageLanguage");
-    expect(client).toContain("consentAccepted");
-    expect(client).toContain("contentConsentAccepted");
-    expect(client).toContain("cookiesConsentAccepted");
-    expect(client).toContain("copy.resultGateTitle");
-    expect(client).toContain("function LeadCaptureForm");
-    expect(client).toContain("disabled || status === \"submitting\"");
-    expect(client).not.toContain("quickChecks.map");
-
-    expect(componentsCss).toContain(".player-trap-shell");
-    expect(componentsCss).toContain(".form-consent");
-    expect(componentsCss).toContain("--color-bg: #0b0b0b");
-    expect(componentsCss).toContain("--color-accent: #d4af37");
+    root.unmount();
+    container.remove();
+    fetchMock.mockRestore();
   });
 
   it("builds language-aware submission records, localized results, and report labels", () => {
@@ -235,7 +263,7 @@ describe("player trap conversion infrastructure", () => {
 
     const englishLabels = buildPlayerTrapReportLabels("en");
     const hebrewLabels = buildPlayerTrapReportLabels("he");
-    expect(englishLabels.diagnosisCallCta).toBe("Book a Pre-Promoted Diagnosis Call");
+    expect(englishLabels.diagnosisCallCta).toBe("Request to talk with Itay");
     expect(englishLabels.diagnosisCallSupport).toContain("generic coaching call");
     expect(hebrewLabels.diagnosisCallCta).toBe("קבע שיחת אבחון Pre-Promoted");
     expect(hebrewLabels.diagnosisCallSupport).toContain("שיחת אבחון ממוקדת");

@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     template: "%s | The Push",
   },
   description:
-    "Tech Leadership Coach for Engineering Managers, Tech Leads, R&D Managers, and VP Engineering candidates. The Push is the Leadership OS for Tech Leaders.",
+    "Tech Leadership Coach for Engineering Managers, Tech Leads, R&D Managers, and VP Engineering candidates. The Push is a 12-week coaching and advisory engagement.",
   metadataBase: new URL(getSiteUrl()),
   openGraph: {
     title: "Itay Foyerstein | Technical Leadership Coaching",
@@ -39,7 +39,7 @@ export default function SiteLayout({ children }: SiteLayoutProps) {
   return (
     <html lang="en">
       <body>
-        <div className="site-frame">
+        <a className="skip-link" href="#main-content">Skip to content</a><div className="site-frame">
           <header className="site-header">
             <Link href="/" className="site-brand" aria-label="The Push home">
               <span className="site-brand-mark" aria-hidden="true">
@@ -53,8 +53,8 @@ export default function SiteLayout({ children }: SiteLayoutProps) {
               <Link href="/faq">FAQ</Link>
               <Link href="/contact">Contact</Link>
               <Link href="/entities/the-push">The Push</Link>
-              <Link href="/book-a-fit-call" className="site-nav-cta">
-                Book a fit call
+              <Link href="/diagnostic" className="site-nav-cta">
+                Bring one situation
               </Link>
             </nav>
           </header>

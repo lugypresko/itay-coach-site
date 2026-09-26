@@ -32,8 +32,8 @@ const initialState: FormState = {
   website: "",
 };
 
-export function LeadQualificationForm({ defaultIntent = "self" }: { defaultIntent?: FormState["supportIntent"] }) {
-  const [form, setForm] = useState({ ...initialState, supportIntent: defaultIntent });
+export function LeadQualificationForm({ defaultIntent = "self", diagnosticContext = "" }: { defaultIntent?: FormState["supportIntent"]; diagnosticContext?: string }) {
+  const [form, setForm] = useState({ ...initialState, supportIntent: defaultIntent, challenge: diagnosticContext });
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [message, setMessage] = useState("");
   const isSponsor = form.supportIntent !== "self";
