@@ -165,9 +165,9 @@ describe("canonical authority sprint", () => {
         "A decision",
       ),
     ).toBe(
-      "/player-trap?utm_source=linkedin&utm_medium=social&utm_campaign=push&utm_content=post-1&utm_term=manager&pattern=A+decision",
+      "/diagnostic?utm_source=linkedin&utm_medium=social&utm_campaign=push&utm_content=post-1&utm_term=manager&pattern=A+decision",
     );
-    expect(buildDiagnosticHref("?ref=internal")).toBe("/player-trap");
+    expect(buildDiagnosticHref("?ref=internal")).toBe("/diagnostic");
 
     vi.stubGlobal("document", { referrer: "https://google.com/search" });
 

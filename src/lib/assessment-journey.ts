@@ -15,7 +15,9 @@ export type DiagnosticState =
   | "PAIN_CONFIRMED"
   | "WHY_NOW"
   | "MICRO_INSIGHT"
-  | "CONTACT_EARNED"
+  | "CONTACT_OFFERED"
+  | "CONTACT_SUBMITTED"
+  | "CONTACT_SKIPPED"
   | "DIAGNOSIS"
   | "INTENT"
   | "ROUTE";
@@ -46,8 +48,10 @@ const stateTransitions: Record<DiagnosticState, DiagnosticState | null> = {
   PATTERN_HYPOTHESES: "PAIN_CONFIRMED",
   PAIN_CONFIRMED: "WHY_NOW",
   WHY_NOW: "MICRO_INSIGHT",
-  MICRO_INSIGHT: "CONTACT_EARNED",
-  CONTACT_EARNED: "DIAGNOSIS",
+  MICRO_INSIGHT: "CONTACT_OFFERED",
+  CONTACT_OFFERED: "CONTACT_SUBMITTED",
+  CONTACT_SUBMITTED: "DIAGNOSIS",
+  CONTACT_SKIPPED: "DIAGNOSIS",
   DIAGNOSIS: "INTENT",
   INTENT: "ROUTE",
   ROUTE: null,
@@ -56,7 +60,7 @@ const stateTransitions: Record<DiagnosticState, DiagnosticState | null> = {
 /** Advance one state only after the evidence required by that state is present. */
 export function advanceDiagnosticState(state: DiagnosticState, evidence: Record<string, unknown>): DiagnosticState {
   if (state === "MICRO_INSIGHT" && evidence.accepted !== true) return state;
-  if (state === "CONTACT_EARNED" && evidence.consented !== true) return state;
+  if (state === "CONTACT_OFFERED" && evidence.consented !== true) return state;
   if (state === "PAIN_CONFIRMED" && evidence.confirmed !== true) return state;
   if (state === "WHY_NOW" && evidence.trigger !== true) return state;
   return stateTransitions[state] ?? state;
@@ -81,3 +85,24 @@ export function getAssessmentNextStep(audience: AssessmentAudience) {
         href: "/contact?source=diagnostic&intent=request_to_talk",
       };
 }
+
+// Rich Core exports live in a separate module so UI consumers can adopt the
+// executable conversation without importing legacy score/result helpers.
+export {
+  buildDiagnosis,
+  buildMicroInsight,
+  buildReflection,
+  createDiagnosticSession,
+  recordDiagnosticAnswer,
+  routeDiagnosticWithReasons,
+} from "./diagnostic-core";
+export type {
+  DiagnosticAnswerInput,
+  DiagnosticAnswerResult,
+  DiagnosticSession,
+  DiagnosticTurn,
+  EvidenceField,
+  EvidenceStatus,
+  MeddpiccDimension,
+  MeddpiccEvidence,
+} from "./diagnostic-core";

@@ -1,23 +1,26 @@
 import Link from "next/link";
+import { cookies } from "next/headers";
 import type { Metadata } from "next";
 
 import { LeadQualificationForm } from "@/components/lead-qualification-form";
+import { formatDiagnosticFitContext } from "@/lib/diagnostic-funnel/context";
+import { getPreviewDiagnosticSessionRepository } from "@/lib/diagnostic-funnel/preview-repository";
 
 const engagementPaths = [
   {
     title: "One leader",
     body: "For an Engineering Manager, Group Lead, or Director whose team still comes back to them for decisions, escalation, and rescue.",
-    href: "/#ways",
+    href: "/book-a-fit-call?audience=individual",
   },
   {
     title: "One critical squad",
     body: "For one leader and a small group that needs a cleaner decision path before the whole team can move without rescue.",
-    href: "/#ways",
+    href: "/book-a-fit-call?audience=squad",
   },
   {
     title: "Leadership layer",
     body: "For a manager or director layer that needs shared ownership, clearer boundaries, and less dependency on one person.",
-    href: "/#ways",
+    href: "/for-organizations?audience=leadership_layer",
   },
 ];
 
@@ -31,7 +34,12 @@ export const metadata: Metadata = {
   robots: { index: false, follow: true },
 };
 
-export default function BookAFitCallPage() {
+export default async function BookAFitCallPage() {
+  const sessionId = (await cookies()).get("diagnostic_session_id")?.value;
+  const diagnosticSession = sessionId
+    ? await getPreviewDiagnosticSessionRepository().read(sessionId)
+    : null;
+
   return (
     <main className="content-shell">
       <header className="content-hero">
@@ -53,7 +61,7 @@ export default function BookAFitCallPage() {
         </div>
       </header>
 
-      <LeadQualificationForm />
+      <LeadQualificationForm diagnosticContext={formatDiagnosticFitContext(diagnosticSession)} />
 
       <section className="content-grid">
         <article className="content-panel content-panel-wide">

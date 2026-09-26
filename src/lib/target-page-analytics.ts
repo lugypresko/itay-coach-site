@@ -34,7 +34,7 @@ export function buildDiagnosticHref(search: string, pattern?: string): string {
   if (pattern) destination.set("pattern", pattern);
 
   const query = destination.toString();
-  return query ? `/player-trap?${query}` : "/player-trap";
+  return query ? `/diagnostic?${query}` : "/diagnostic";
 }
 
 export interface TargetAnalyticsPropertiesInput {
@@ -61,7 +61,17 @@ function getDocumentReferrer() {
     return "direct";
   }
 
-  return document.referrer || "direct";
+  if (!document.referrer) return "direct";
+
+  // Referrer query strings can contain visitor-entered identifiers. Keep the
+  // useful source context while excluding query and fragment values from
+  // analytics payloads.
+  try {
+    const referrer = new URL(document.referrer);
+    return `${referrer.origin}${referrer.pathname}`;
+  } catch {
+    return "unknown";
+  }
 }
 
 export function buildTargetAnalyticsProperties(input: TargetAnalyticsPropertiesInput): TargetAnalyticsProperties {

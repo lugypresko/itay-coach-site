@@ -310,6 +310,16 @@ export async function loadPublicationSurfaceProjection(
   const allowStaticFallback = options.allowStaticFallback ?? process.env.NODE_ENV !== "production";
   let governedEntries: PublicationSurfaceEntry[] = [];
 
+  // A production build must be deterministic and must not require a live
+  // database just to prerender sitemap/llms surfaces. Runtime requests still
+  // use the governed Payload path below.
+  if (process.env.NEXT_PHASE === "phase-production-build" && !options.payload) {
+    const approvedStaticEntries = buildStaticFallbackEntries(origin).filter(
+      (entry) => entry.publicationDecision.indexable,
+    );
+    return buildPublicationSurfaceProjection([...buildFixedEntries(origin), ...approvedStaticEntries]);
+  }
+
   try {
     const payload = (options.payload ?? (await getServerPayload())) as PublicationPayloadReader;
     governedEntries = await loadPayloadEntries(payload, origin);

@@ -37,6 +37,17 @@ export async function POST(request: Request) {
     ];
     const text = lines.join("\n");
 
+    if (process.env.VERCEL_ENV === "preview" || process.env.NODE_ENV !== "production") {
+      const submissionId = crypto.randomUUID();
+      console.info("fit_call_submission_preview", {
+        submissionId,
+        persona: lead.persona,
+        supportIntent: lead.supportIntent,
+        company: lead.company,
+      });
+      return NextResponse.json({ ok: true, persona: lead.persona, deliveryMode: "preview-log", submissionId });
+    }
+
     const result = await sendResendEmail({
       from: process.env.RESEND_FROM_EMAIL ?? "The Push <no-reply@itayfoyerstein.com>",
       to: recipient,

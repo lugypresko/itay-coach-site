@@ -25,4 +25,5 @@ export * from "./InternalLinks";
 export * from "./ContentJobs";
 export * from "./AgentRuns";
 export * from "./EmailSubscribers";
+export * from "./DiagnosticSessions";
 export * from "./content";

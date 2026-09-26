@@ -616,13 +616,13 @@ export const playerTrapQuickChecksHebrew = [
 
 export const playerTrapAuthorityCopy = {
   eyebrow: "Authority",
-  headline: "Trusted by 120+ managers in fast-moving engineering orgs.",
+  headline: "Experience helping technical leaders in fast-moving engineering organisations.",
   body: "The Push helps technical leaders make the operating model visible before the system turns them into the default bottleneck.",
 } as const;
 
 export const playerTrapAuthorityCopyHebrew = {
   eyebrow: "סמכות",
-  headline: "120+ מנהלים בוחרים לעבוד על המודל, לא רק על העומס.",
+  headline: "Experience with technical leaders in fast-moving organisations.",
   body: "The Push עוזר למובילים טכנולוגיים להפוך את מודל ההפעלה לגלוי לפני שהמערכת הופכת אותם לצוואר הבקבוק ברירת המחדל.",
 } as const;
 

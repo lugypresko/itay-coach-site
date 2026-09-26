@@ -32,8 +32,8 @@ describe("assessment journey", () => {
   it("advances through the executable diagnostic states without a score", () => {
     expect(advanceDiagnosticState("ROLE", { role: "Engineering Manager" })).toBe("PAIN_RAW");
     expect(advanceDiagnosticState("PAIN_CONFIRMED", {})).toBe("PAIN_CONFIRMED");
-    expect(advanceDiagnosticState("MICRO_INSIGHT", { accepted: true })).toBe("CONTACT_EARNED");
-    expect(advanceDiagnosticState("CONTACT_EARNED", { consented: true })).toBe("DIAGNOSIS");
+    expect(advanceDiagnosticState("MICRO_INSIGHT", { accepted: true })).toBe("CONTACT_OFFERED");
+    expect(advanceDiagnosticState("CONTACT_OFFERED", { consented: true })).toBe("CONTACT_SUBMITTED");
   });
 
   it("routes from independent DQL signals to request_to_talk, nurture, or no-fit", () => {
