@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 
 import { LeadQualificationForm } from "@/components/lead-qualification-form";
 import { formatDiagnosticFitContext } from "@/lib/diagnostic-funnel/context";
-import { getPreviewDiagnosticSessionRepository } from "@/lib/diagnostic-funnel/preview-repository";
+import { getDiagnosticSessionRepository } from "@/lib/diagnostic-funnel/repository";
 
 const engagementPaths = [
   {
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
 export default async function BookAFitCallPage() {
   const sessionId = (await cookies()).get("diagnostic_session_id")?.value;
   const diagnosticSession = sessionId
-    ? await getPreviewDiagnosticSessionRepository().read(sessionId)
+    ? await getDiagnosticSessionRepository().read(sessionId)
     : null;
 
   return (

@@ -5,6 +5,7 @@ import * as migration_20260713_073552_task071_publication_governance_source_fiel
 import * as migration_20260713_091235_task073_reader_facing_page_artifacts from './20260713_091235_task073_reader_facing_page_artifacts';
 import * as migration_20260913_120000_diagnostic_sessions from './20260913_120000_diagnostic_sessions';
 import * as migration_20260914_090000_conversion_core_lead_fields from './20260914_090000_conversion_core_lead_fields';
+import * as migration_20260926_160000_diagnostic_funnel_session_payload from './20260926_160000_diagnostic_funnel_session_payload';
 
 export const migrations = [
   {
@@ -41,5 +42,10 @@ export const migrations = [
     up: migration_20260914_090000_conversion_core_lead_fields.up,
     down: migration_20260914_090000_conversion_core_lead_fields.down,
     name: '20260914_090000_conversion_core_lead_fields',
+  },
+  {
+    up: migration_20260926_160000_diagnostic_funnel_session_payload.up,
+    down: migration_20260926_160000_diagnostic_funnel_session_payload.down,
+    name: '20260926_160000_diagnostic_funnel_session_payload',
   },
 ];

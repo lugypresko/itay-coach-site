@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { getPreviewDiagnosticSessionRepository } from "@/lib/diagnostic-funnel/preview-repository";
+import { getDiagnosticSessionRepository } from "@/lib/diagnostic-funnel/repository";
 import type { DiagnosticSourceMetadata } from "@/lib/diagnostic-funnel/types";
 
 function isObject(value: unknown): value is Record<string, unknown> {
@@ -21,7 +21,7 @@ export async function POST(request: Request) {
   const sessionSource = source(body.source);
   if (!sessionSource) return NextResponse.json({ error: "Invalid source metadata." }, { status: 400 });
 
-  const session = await getPreviewDiagnosticSessionRepository().create({ source: sessionSource, status: "started", answers: {} });
+  const session = await getDiagnosticSessionRepository().create({ source: sessionSource, status: "started", answers: {} });
   const response = NextResponse.json({ session }, { status: 201, headers: { "Cache-Control": "no-store" } });
   response.cookies.set("diagnostic_session_id", session.id, {
     httpOnly: true,

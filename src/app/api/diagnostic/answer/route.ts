@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { getPreviewDiagnosticSessionRepository } from "@/lib/diagnostic-funnel/preview-repository";
+import { getDiagnosticSessionRepository } from "@/lib/diagnostic-funnel/repository";
 import type { DiagnosticAnswers } from "@/lib/diagnostic-funnel/types";
 
 function isObject(value: unknown): value is Record<string, unknown> {
@@ -14,7 +14,7 @@ export async function POST(request: Request) {
   }
   if (!isObject(body.answers)) return NextResponse.json({ error: "answers is required." }, { status: 400 });
 
-  const repo = getPreviewDiagnosticSessionRepository();
+  const repo = getDiagnosticSessionRepository();
   const current = await repo.read(body.sessionId);
   if (!current) return NextResponse.json({ error: "Diagnostic session not found." }, { status: 404 });
 

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { getPreviewDiagnosticSessionRepository } from "@/lib/diagnostic-funnel/preview-repository";
+import { getDiagnosticSessionRepository } from "@/lib/diagnostic-funnel/repository";
 import type { DiagnosticResult } from "@/lib/diagnostic-funnel/types";
 
 function isObject(value: unknown): value is Record<string, unknown> {
@@ -10,7 +10,7 @@ function isObject(value: unknown): value is Record<string, unknown> {
 export async function GET(request: Request) {
   const sessionId = new URL(request.url).searchParams.get("sessionId");
   if (!sessionId) return NextResponse.json({ error: "sessionId is required." }, { status: 400 });
-  const session = await getPreviewDiagnosticSessionRepository().read(sessionId);
+  const session = await getDiagnosticSessionRepository().read(sessionId);
   if (!session) return NextResponse.json({ error: "Diagnostic session not found." }, { status: 404 });
   if (!session.result) return NextResponse.json({ error: "Diagnostic result not found." }, { status: 404 });
   return NextResponse.json({ sessionId: session.id, result: session.result }, { headers: { "Cache-Control": "no-store" } });
@@ -23,7 +23,7 @@ export async function POST(request: Request) {
   }
   if (!isObject(body.result)) return NextResponse.json({ error: "result is required." }, { status: 400 });
 
-  const repo = getPreviewDiagnosticSessionRepository();
+  const repo = getDiagnosticSessionRepository();
   const current = await repo.read(body.sessionId);
   if (!current) return NextResponse.json({ error: "Diagnostic session not found." }, { status: 404 });
 
