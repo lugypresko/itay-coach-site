@@ -4444,3 +4444,54 @@ Verification notes:
 - Added `canonicalUrl` support to the sprint payload interface and seed runner so the FAQ record can persist `/faq`.
 - `npm test -- tests/unit/authority-asset-production-sprint.test.ts` passed.
 - `npm run typecheck` passed.
+### Task 094 - Codespaces and Codex Cloud Development Environment
+
+State: `review`
+Lane: `developer-experience`, `infrastructure`
+Owner: Codex
+
+Goal:
+Prepare the existing repository for reproducible GitHub Codespaces and Codex Cloud development without changing application behavior or deployment architecture.
+
+Scope:
+- Add the minimum Codespaces configuration.
+- Reuse the existing Node 22.17.0, npm 11.12.1, package-lock, and project scripts.
+- Document the environment variables required for local/cloud development in the completion report.
+- Verify dependency installation, local application startup, existing tests, and build.
+
+Out of scope:
+- No changes under `/diagnostic`.
+- No Supabase or database architecture changes.
+- No deployment, production, publishing, migrations, or secret commits.
+- No application functionality changes.
+
+Files expected to change:
+- `.devcontainer/devcontainer.json`
+- `PLANS.md`
+
+Data contracts affected:
+- None.
+
+Agent permissions affected:
+- None.
+
+Validation steps:
+- Run `npm ci`.
+- Run `npm test`.
+- Run `npm run build`.
+- Start `npm run dev` and verify the existing application responds on port 3000.
+- Confirm the diff is limited to the task files and contains no secrets or `/diagnostic` changes.
+
+Acceptance criteria:
+- A fresh Codespace installs dependencies automatically with the committed lockfile.
+- The existing Node/package manager versions and application scripts remain the source of truth.
+- Port 3000 is forwarded and the existing `npm run dev` command is usable.
+- Tests and build pass in the current workspace, or any blocker is reported with command evidence.
+- No production, deployment, database architecture, `/diagnostic`, or application behavior changes are made.
+
+Verification notes:
+- `npm ci` passed after synchronizing the previously stale `package-lock.json`; npm installed 744 packages.
+- `npm run build` passed with existing ESLint unused-variable warnings.
+- `npm run dev` started on port 3000 and `GET /` returned HTTP 200.
+- `npm test` reached 361/363 passing tests; two existing content-contract assertions fail in `tests/unit/authority-launch-pages.test.ts` and `tests/unit/book-a-fit-call-page.test.ts`.
+- No `/diagnostic` files or secret files were changed by this task.
