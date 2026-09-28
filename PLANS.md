@@ -4630,3 +4630,59 @@ Scope: approved brand plan, single diagnostic contract, safe local review, rollb
 Out of scope: production writes/deployments, outreach, employer reporting.
 Validation: full tests/typecheck/lint, browser journeys and screenshots, checksum restore drill.
 DoD: local verified flows and site copy, checkpoints and documented external blockers.
+
+## Task 089 — Progressive Diagnostic and Case Brief
+State: `in_progress`
+Lane: `diagnostic`
+Owner: Codex
+
+Goal:
+Upgrade `/diagnostic` into a progressive, evidence-based leadership diagnostic and persist qualified Case Briefs as `diagnostic_cases` through Payload/Postgres.
+
+Scope:
+- Preserve existing visual language and legacy session routes where backward compatibility requires them.
+- Collect situation type/detail, suspected cause, absence outcome, required concrete example, frequency, and impact.
+- Show deterministic mirrors and a progressive Case Card after each stage.
+- Generate one validated final analysis using one server-side LLM call with deterministic fallback.
+- Show partial read before name/email capture, then persist the full result and Case Brief before revealing it.
+- Continue the same case into the existing fit-call/booking flow and emit the required analytics events.
+- Use Payload/Postgres only for new Case Brief persistence. Do not use Supabase REST for the new flow.
+
+Out of scope:
+- Production deployment or production database migration.
+- New database/vendor, accounts, full admin UI, unrelated page changes.
+
+Files expected to change:
+- `PLANS.md`
+- `payload.config.ts`, `src/payload/collections/index.ts`, new `src/payload/collections/DiagnosticCases.ts`
+- New additive migration under `src/migrations/` and `src/migrations/index.ts`
+- `src/components/diagnostic/diagnostic-funnel.tsx`
+- `src/lib/diagnostic-funnel/types.ts`, `questions.ts`, deterministic analysis/persistence helpers
+- `src/app/api/diagnostic/**` routes
+- `src/lib/diagnostic-analytics.ts`
+- Focused diagnostic tests
+
+Data contracts affected:
+- Diagnostic answer/result contract and new Payload `diagnostic-cases` collection.
+
+Agent permissions affected:
+- None.
+
+Validation steps:
+- Focused diagnostic unit/API tests.
+- Full `npm test`, `npm run typecheck`, and `npm run lint` where environment permits.
+- Acceptance journey covering all requested answers, mirrors, Case Card, partial and full reads, lead persistence, internal brief, fallback, analytics, and booking handoff.
+- Never run migration against Production.
+
+Acceptance criteria:
+- User receives a mirror and updated Case Card at every evidence stage.
+- Concrete example (2–4 sentences) and impact are required.
+- One final LLM request is validated; any error/timeout/invalid shape safely falls back.
+- Full read is gated on successful server-side Payload/Postgres persistence of `diagnostic_cases`.
+- Case Brief is retrievable by ID; booking CTA carries that ID.
+- Required analytics events are emitted without raw answers or PII.
+- Existing visual language remains; unrelated pages are not changed.
+- No production migration or deployment.
+
+Verification notes:
+- Pending implementation and test run.
