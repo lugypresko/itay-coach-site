@@ -1,26 +1,196 @@
-import Link from "next/link";
 import Image from "next/image";
+import Link from "next/link";
 import type { Metadata } from "next";
 import { HomeV3Selector } from "@/components/home-v3-selector";
 import { HomeV3TrackedLink } from "@/components/home-v3-tracked-link";
 
-export const metadata: Metadata = { title: "Technical Leadership Coaching for Engineering Managers & Directors", description: "12-week 1:1 technical leadership coaching for Engineering Managers, Group Managers and Directors in growing B2B SaaS companies who are still the path for too many decisions, reviews and escalations.", alternates: { canonical: "https://itayfoyerstein.com/" }, robots: { index: true, follow: true } };
-const scenes = [["The meeting you have to attend.", "You are accountable for the outcome, so being informed quietly turned into being present."], ["The decision that comes back for one last check.", "The team can do the work, but judgment still lives one level higher."], ["The strategic work that starts after the meetings end.", "Delivery is moving. Your calendar is full. The work only you should do gets pushed to later."]] as const;
-const steps = [["SEE", "See the situation and the system.", "Separate what happened from the first explanation."], ["CHALLENGE", "Test the first explanation.", "Consider what else could explain the situation."], ["MOVE", "Choose one real leadership move.", "Try one manageable change with clear boundaries."], ["READ", "Notice the response.", "Compare what happened with what you expected."], ["ADJUST", "Decide what comes next.", "Keep, change or stop based on what you learned."]] as const;
-const artifacts = [["Decision map", "Who owns which decisions and where escalation belongs."], ["Bottleneck tracker", "What keeps returning to you and why."], ["Stakeholder map", "Where context, alignment or authority is missing."], ["30/60/90 plan", "Observable operating changes to test and keep."]] as const;
+export const metadata: Metadata = {
+  title: "The Push: technical leadership coaching",
+  description:
+    "1:1 coaching for Engineering Managers, Group Managers and Directors in growing B2B SaaS companies. Start with one real situation and get a written first read before anyone asks for a call.",
+  alternates: { canonical: "https://itayfoyerstein.com/" },
+  robots: { index: true, follow: true },
+};
 
-export default function HomePage() { const schema = { "@context": "https://schema.org", "@type": "WebPage", url: "https://itayfoyerstein.com/", name: metadata.title, description: metadata.description }; return <>
-  <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
-  <header><div className="wrap nav"><Link href="#main-content" className="brand"><span className="mark">TP</span><span>The Push</span></Link><nav className="navlinks"><Link href="#proof">Proof</Link><Link href="#work">How it works</Link><Link href="#fit">Fit</Link><Link href="#itay">About Itay</Link><Link href="#diagnostic" className="nav-cta">Bring one case →</Link></nav></div></header>
-  <main id="main-content" className="home-v3-reference">
-    <section className="hero"><div className="wrap hero-grid"><div><div className="eyebrow">Technical leadership coaching</div><h1 className="next-home-heading">Your team can do the work. The decisions still come back to you.</h1><p className="hero-copy">The Push helps you understand why?and build the judgment, authority and context that let others move forward, while keeping your involvement where it matters most.</p><div className="pills"><span className="pill">Engineering Managers · Group Managers · Directors</span><span className="pill">Growing B2B SaaS · typically 50–250 people</span><span className="pill">12 weeks · 6 private 1:1 sessions</span></div><div className="actions"><HomeV3TrackedLink href="#commit" className="btn primary">Bring one current case →</HomeV3TrackedLink><Link className="btn" href="#work">See the engagement</Link></div><div className="micro">Start with one real situation. Get a working hypothesis and one experiment before deciding whether coaching is the right next step.</div></div><div className="hero-photo"><Image src="/itay-home-photo.jpg" alt="Itay Foyerstein" fill priority sizes="(max-width: 920px) 100vw, 46vw" /><div className="photo-overlay"><div className="big">Itay Foyerstein</div><div className="small">25+ years across technology, product, delivery and organizational change · 1000+ coaching hours</div></div></div></div></section>
-    <section className="section recognition"><div className="wrap"><div className="section-head"><div className="eyebrow">Recognition</div><div><h2>Your responsibility grew. What still depends on you?</h2><p>The question is not whether you should “delegate more.” It is what still genuinely needs your involvement — and what has simply learned to wait for it.</p></div></div><div className="scenes">{scenes.map(([title, body], i) => <article className="scene" key={title}><div className="num">0{i + 1}</div><h3>{title}</h3><p>{body}</p></article>)}</div></div></section>
-    <section className="proof" id="proof"><div className="wrap"><div className="section-head"><div className="eyebrow">Observed in real work</div><div><h2>Not testimonials. Evidence from situations we worked on.</h2><p>The point is not that every leader has the same problem. The point is that we can look at a live situation, test the first explanation, and see what changes.</p></div></div><div className="proof-grid"><article className="case featured"><div className="name">Avi · senior R&amp;D leader</div><div className="metric">Calendar overload → control</div><h3>From being managed by the calendar to managing the system.</h3><p>His week was packed with meetings and reactive work. We started by examining which meetings required a decision, what he actually needed to ask for, and where his presence was unnecessary.</p><p>Over the following cycle, he moved toward a more controlled schedule, dedicated 1:1 planning time, and a clearer plan for managing both the team and his own attention.</p><div className="observed"><strong>Observed change:</strong> “I’m more precise. I know better what I want to ask. I cut meetings faster.”</div></article><article className="case"><div className="name">Itay · product / engineering leader</div><div className="metric">30 min</div><h3>Accountability did not require attendance.</h3><p>He assumed he needed to attend because the feature was his responsibility.</p><div className="observed"><strong>Experiment:</strong> ask whether a decision actually required him. It did not. One meeting disappeared; accountability did not.</div></article><article className="case"><div className="name">Claudia · senior commercial leader</div><div className="metric">$10M → $20M</div><h3>Senior involvement can be real — and still worth examining.</h3><p>She was handling 4–6 escalation meetings a day while finishing one planning cycle around a $10M sales plan.</p><p>The work was not “delegate everything.” It was to distinguish where her judgment created business value and where the system had simply learned to depend on her presence.</p><div className="observed"><strong>Business context:</strong> after completing that planning cycle, the work continued around a $20M sales plan. The figures describe the commercial scope, not revenue attributed to coaching.</div></article></div></div></section>
-    <section className="commit" id="commit"><div className="wrap commit-box"><div><div className="eyebrow">One small step</div><h2>What comes back to you most often?</h2><p className="kicker">Choose the closest pattern. This does not diagnose you — it just gives us a better place to start.</p></div><HomeV3Selector /></div></section>
-    <section className="section"><div className="wrap thinking-grid"><div className="thinking-card"><div className="eyebrow">How I work</div><h3>Do not call it a bottleneck before the evidence earns the diagnosis.</h3><p>One incident is a story. A repeated pattern, competing explanations and a reversible test give us something useful.</p><div className="test"><div className="eyebrow">Presence test</div><div className="q">“What decision cannot be made if I am not there?”</div><p>If there is no good answer, skip one cycle. Ask for the decision and outcome afterward. Then inspect what actually changed.</p></div></div><div className="steps">{steps.map(([n, title, body]) => <div className="step" key={n}><div className="n">{n}</div><div><h3>{title}</h3><p>{body}</p></div></div>)}</div></div></section>
-    <section className="section offer" id="work"><div className="wrap"><div className="section-head"><div className="eyebrow">The engagement</div><div><h2>One live leadership problem. Six cycles of diagnosis, action and evidence.</h2><p>The Push is a 12-week 1:1 coaching and advisory engagement. We work on the real decisions, people, meetings and constraints in your role — not a generic leadership curriculum.</p></div></div><div className="offer-grid"><article className="offer-card"><div className="big">12</div><h3>Weeks</h3><p>Enough time to observe patterns and test behavior in real work.</p></article><article className="offer-card"><div className="big">6</div><h3>Private 1:1 sessions</h3><p>Biweekly coaching + advisory around a live leadership problem.</p></article><article className="offer-card"><div className="big">1</div><h3>Problem worth changing</h3><p>We start with one situation that is already costing you attention, leverage or strategic capacity.</p></article></div><div className="artifacts">{artifacts.map(([title, body]) => <div className="artifact" key={title}><strong>{title}</strong><span>{body}</span></div>)}</div></div></section>
-    <section className="section" id="fit"><div className="wrap"><div className="section-head"><div className="eyebrow">Fit</div><div><h2>Sometimes coaching is not the answer.</h2><p>If the real constraint sits in the organization rather than in how you are operating, the useful move is to name that clearly — not force it into a coaching problem.</p></div></div><div className="fit-grid"><article className="fit-card good"><h3>Strong fit</h3><ul><li>Your scope has grown, but too much judgment still routes through you.</li><li>You lead capable people and want more leverage without becoming disconnected.</li><li>You work through managers, cross-functional dependencies or a growing leadership layer.</li><li>You are willing to test changes between sessions.</li></ul></article><article className="fit-card"><h3>Probably not a coaching problem</h3><ul><li>You do not have the authority the role requires.</li><li>The team is materially understaffed.</li><li>The core issue is specialist technical expertise.</li><li>The role or organization design is unresolved.</li><li>A capability gap is better solved through hiring or training.</li></ul></article></div></div></section>
-    <section className="section" id="itay"><div className="wrap about"><div className="about-photo"><Image src="/itay-home-photo.jpg" alt="Itay Foyerstein in his workspace" fill sizes="(max-width: 920px) 100vw, 35vw" /></div><div><div className="eyebrow">Itay Foyerstein</div><h2>I have spent most of my career inside the problems I now coach.</h2><p>For 25+ years I have worked across technology, product, delivery and organizational change — from hands-on execution to cross-functional programs, consulting and leadership work.</p><p>Across that career, I have worked with teams and organizations including ServiceNow, Amdocs, Taboola, Claroty, EY, 888 and others. That work included environments where product, R&amp;D and business had to make decisions under pressure, recover delayed delivery, reduce operational friction and build systems that did not depend on one person holding everything together.</p><p>The coaching is practical because the work is practical: real people, real trade-offs, real accountability, and decisions that still have to ship.</p><div className="proofline"><span>25+ years in technology &amp; delivery</span><span>1000+ coaching hours</span><span>ServiceNow · Amdocs · Taboola · Claroty · EY · 888</span><span>Technology · Product · Delivery · Consulting</span><span>Hebrew + English</span></div><Link className="btn" href="/about">More about my background</Link><a href="https://www.linkedin.com/in/itayfoyerstein/" target="_blank" rel="noreferrer" className="btn">LinkedIn</a></div></div></section>
-    <section className="section diagnostic" id="diagnostic"><div className="wrap diag-grid"><div><div className="eyebrow">Start with your case</div><h2>Start with one real situation.</h2><p>Bring one current decision, review, escalation or meeting that keeps coming back to you. Examine a working hypothesis and one manageable experiment before deciding whether to talk.</p><div className="progress" aria-label="Diagnostic progress preview"><span className="on" /><span /><span /><span /></div><div className="kicker">Case → Context → Hypothesis → Experiment</div><div className="actions" style={{ marginTop: 25 }}><HomeV3TrackedLink className="btn dark">Start with my case →</HomeV3TrackedLink></div><div className="micro" style={{ color: "#30302a" }}>No leadership score. No assumption that coaching is the answer. No call required to see the result.</div></div><div className="result-card"><div className="eyebrow" style={{ color: "#8f8f88" }}>What you should get back</div>{[["Observed pattern", "What appears to be repeating"], ["Most likely explanation", "Authority · Context · Capability · Risk"], ["Evidence against it", "What would make this hypothesis wrong"], ["Reversible experiment", "One change to test in real work"], ["Next step", "Self-serve · coaching · organizational change"]].map(([label, value]) => <div className="result-row" key={label}><small>{label}</small><strong>{value}</strong></div>)}</div></div></section>
-  </main><footer><div className="wrap footer"><div><Link href="#main-content" className="brand"><span className="mark">TP</span><span>The Push</span></Link><div className="micro">© 2026 Itay Foyerstein · Technical leadership coaching</div></div><div className="footer-links"><Link href="/faq">FAQ</Link><Link href="/contact">Contact</Link><Link href="/privacy">Privacy</Link><Link href="/terms">Terms</Link></div></div></footer>
- </>; }
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  url: "https://itayfoyerstein.com/",
+  name: metadata.title,
+  description: metadata.description,
+};
+
+export default function HomePage() {
+  return (
+    <div className="approved-home" id="top">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+      />
+
+      <header className="home-header">
+        <div className="w nav">
+          <Link className="brand" href="#top">The Push</Link>
+          <nav aria-label="Homepage">
+            <Link href="#proof">Proof</Link>
+            <Link href="#how">How it works</Link>
+            <Link href="#fit">Fit</Link>
+            <Link className="btn sm" href="#start">Start with one case</Link>
+          </nav>
+        </div>
+      </header>
+
+      <main id="main-content">
+        <section className="hero">
+          <div className="w hg">
+            <div>
+              <h1>Your team can do the work. The decisions still come back to you.</h1>
+              <p className="pay"><strong>The goal isn&apos;t to be needed less. It&apos;s to be needed at the right level.</strong></p>
+              <p className="who">1:1 coaching for Engineering Managers, Group Managers and Directors in growing B2B SaaS companies.</p>
+              <div className="act">
+                <Link className="btn" href="#start">Bring one current case</Link>
+                <span className="fine">You get a written first read before anyone asks for a call.</span>
+              </div>
+            </div>
+            <aside className="read" aria-label="Example first read">
+              <div className="tg">What you get back: an example</div>
+              <h3>There is a pattern worth looking at.</h3>
+              <p>You described this as a capability or confidence issue.</p>
+              <dl>
+                <dt>Working pattern</dt><dd>Decision dependency.</dd>
+                <dt>Strongest signal</dt><dd>When you are unavailable, the work slows rather than stops.</dd>
+                <dt>Next</dt><dd>One distinction to test before treating this as a capability problem.</dd>
+              </dl>
+            </aside>
+          </div>
+        </section>
+
+        <div className="creds">
+          <div className="w">
+            <span className="l">25+ years in technology and delivery. 1000+ coaching hours. Worked with people at</span>
+            <span>ServiceNow</span><span>Amdocs</span><span>Taboola</span><span>Claroty</span><span>EY</span><span>888</span>
+          </div>
+        </div>
+
+        <section>
+          <div className="w">
+            <div className="hd">
+              <h2>Where does it show up for you?</h2>
+              <p>The useful question isn&apos;t whether to delegate more. It&apos;s what genuinely needs your judgment, and what has simply learned to wait for it.</p>
+            </div>
+            <div className="scenes">
+              <article className="sc"><h3>The meeting you have to attend.</h3><p>Accountability quietly turned into being present.</p></article>
+              <article className="sc"><h3>The decision that comes back for one last check.</h3><p>The team can do the work. Judgment still lives one level higher.</p></article>
+              <article className="sc"><h3>The strategic work that starts after the meetings end.</h3><p>Delivery is moving. Your calendar is full.</p></article>
+            </div>
+            <blockquote className="quote">
+              “Itay helped me fine-tune my leadership approach and scale my impact as an R&amp;D Director.”
+              <small>Ziv Baruch, R&amp;D Director</small>
+            </blockquote>
+          </div>
+        </section>
+
+        <section className="pattern-section">
+          <div className="w"><HomeV3Selector /></div>
+        </section>
+
+        <section className="proof" id="proof">
+          <div className="w">
+            <div className="hd">
+              <h2>Not testimonials. What changed in the work.</h2>
+              <p>Proof here says what someone started doing differently and what others could then observe.</p>
+            </div>
+            <div className="cases">
+              <article className="case">
+                <div className="id">Claudia, Sales Director Mittelstand &amp; Enterprise, ServiceNow</div>
+                <h3>From hitting $10M to designing for $20M</h3>
+                <p>We first built the operating approach for the first $10M: team structure, principles, SOPs. Then the question changed: if the system supports $10M, what must change to support $20M?</p>
+                <div className="ev"><b>Shift:</b> from hitting a target to designing the operating system for the next level.</div>
+              </article>
+              <article className="case">
+                <div className="id">Technology leader, name withheld</div>
+                <h3>From contributor to owner</h3>
+                <p>He wanted to be recognized as a technology leader. We moved him from doing his part to defining direction, creating alignment and owning the outcome.</p>
+                <div className="ev"><b>Observable:</b> he now leads a high-priority taskforce, presents in management forums, and senior technologists come to him for his judgment.</div>
+              </article>
+              <article className="case">
+                <div className="id">Senior R&amp;D leader, name withheld</div>
+                <h3>From managed by the calendar to managing the system</h3>
+                <p>We examined which meetings needed a decision, what he needed to ask for, and where his presence added nothing.</p>
+                <div className="ev"><b>Observable:</b> fewer unnecessary meetings, sharper questions, more control over his attention.</div>
+              </article>
+            </div>
+            <p className="note">Names are withheld where confidentiality requires it. Funding by a company never authorizes sharing what is said in sessions.</p>
+            <div className="proof-action"><Link className="btn" href="#start">Try it on my case</Link></div>
+          </div>
+        </section>
+
+        <section id="how">
+          <div className="w">
+            <div className="hd">
+              <h2>Don&apos;t call it a bottleneck before the evidence earns the diagnosis.</h2>
+              <p>One incident is a story. A repeated pattern, competing explanations and a reversible test give us something to work with.</p>
+            </div>
+            <div className="steps">
+              <div className="st"><b>See</b><span>the real case and the system around it</span></div>
+              <div className="st"><b>Challenge</b><span>the first explanation</span></div>
+              <div className="st"><b>Move</b><span>one real leadership behavior</span></div>
+              <div className="st"><b>Read</b><span>how people respond</span></div>
+              <div className="st"><b>Adjust</b><span>what comes next</span></div>
+            </div>
+            <div className="facts">
+              <div><strong>12</strong>weeks</div>
+              <div><strong>6</strong>private 1:1 sessions</div>
+              <div><strong>1</strong>problem worth changing</div>
+            </div>
+          </div>
+        </section>
+
+        <section className="fit-section" id="fit">
+          <div className="w">
+            <div className="hd"><h2>Who this is for, and who it isn&apos;t.</h2></div>
+            <div className="fit">
+              <article className="fb y"><h3>Strong fit</h3><ul>
+                <li>Your scope has grown, but too much still depends on your direct involvement.</li>
+                <li>You lead capable people and want more leverage without becoming disconnected.</li>
+                <li>You are willing to test changes between sessions.</li>
+              </ul></article>
+              <article className="fb"><h3>Probably not a coaching problem</h3><ul>
+                <li>You don&apos;t have the authority the role requires.</li>
+                <li>The team is materially understaffed.</li>
+                <li>The role or organization design is unresolved.</li>
+              </ul></article>
+            </div>
+          </div>
+        </section>
+
+        <section className="about-section">
+          <div className="w about">
+            <div className="ph">
+              <Image src="/itay-home-photo.jpg" alt="Itay Foyerstein in his workspace" fill sizes="(max-width: 860px) 260px, 35vw" />
+            </div>
+            <div>
+              <h2>I spent most of my career inside the problems I now coach.</h2>
+              <p className="about-intro">For 25+ years I have worked across technology, product, delivery and organizational change, from hands-on execution to cross-functional programs, consulting and leadership.</p>
+              <p>The coaching is practical because the work is: real people, real trade-offs, real accountability, and decisions that still have to ship.</p>
+              <Link className="btn sm dark" href="/about">More about my background</Link>
+            </div>
+          </div>
+        </section>
+
+        <section className="final" id="start">
+          <div className="w">
+            <h2>Start with one real situation.</h2>
+            <p className="final-copy">Bring one current decision, review, escalation or meeting that keeps coming back to you. You get a working read before deciding whether a conversation makes sense.</p>
+            <div className="flow" aria-label="Diagnostic steps"><span>Case</span><span>Context</span><span>Hypothesis</span><span>Experiment</span></div>
+            <HomeV3TrackedLink className="btn final-link">Start with my case</HomeV3TrackedLink>
+          </div>
+        </section>
+      </main>
+
+      <footer className="home-footer">
+        <div className="w">The Push. Itay Foyerstein.</div>
+      </footer>
+    </div>
+  );
+}
