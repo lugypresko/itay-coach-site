@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
+import { buildItayPersonJsonLd } from "@/lib/public-schema";
 import { HomeV3Selector } from "@/components/home-v3-selector";
 import { HomeV3TrackedLink } from "@/components/home-v3-tracked-link";
 
@@ -26,6 +27,10 @@ export default function HomePage() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildItayPersonJsonLd()) }}
       />
 
       <header className="home-header">
