@@ -1,12 +1,14 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
-import { buildItayPersonJsonLd } from "@/lib/public-schema";
+import { HOME_TITLE } from "@/lib/public-offer";
+import { buildCoachingServiceJsonLd, buildItayPersonJsonLd } from "@/lib/public-schema";
 import { HomeV3Selector } from "@/components/home-v3-selector";
 import { HomeV3TrackedLink } from "@/components/home-v3-tracked-link";
 
 export const metadata: Metadata = {
-  title: "The Push: technical leadership coaching",
+  title: { absolute: HOME_TITLE },
+  openGraph: { title: HOME_TITLE, description: "12 weeks, 6 private 1:1 sessions for engineering managers and directors. Start with one real case.", url: "https://itayfoyerstein.com/", images: [{url: "/og-default.png", width: 1200, height: 630}] },
   description:
     "1:1 coaching for Engineering Managers, Group Managers and Directors in growing B2B SaaS companies. Start with one real situation and get a written first read before anyone asks for a call.",
   alternates: { canonical: "https://itayfoyerstein.com/" },
@@ -17,7 +19,7 @@ const schema = {
   "@context": "https://schema.org",
   "@type": "WebPage",
   url: "https://itayfoyerstein.com/",
-  name: metadata.title,
+  name: HOME_TITLE,
   description: metadata.description,
 };
 
@@ -30,7 +32,7 @@ export default function HomePage() {
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildItayPersonJsonLd()) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify([buildItayPersonJsonLd(), buildCoachingServiceJsonLd()]) }}
       />
 
       <header className="home-header">
@@ -127,6 +129,18 @@ export default function HomePage() {
             </div>
             <p className="note">Names are withheld where confidentiality requires it. Funding by a company never authorizes sharing what is said in sessions.</p>
             <div className="proof-action"><Link className="btn" href="#start">Try it on my case</Link></div>
+          </div>
+        </section>
+
+        <section aria-labelledby="leadership-questions">
+          <div className="w">
+            <h2 id="leadership-questions">What is technical leadership coaching?</h2>
+            <p>Practical 1:1 work on the decisions, authority, context and relationships in your role. We start with one real situation, test the first explanation, and choose a reversible leadership move.</p>
+            <nav aria-label="Explore leadership situations" className="link-list">
+              <Link href="/problems/cto-becomes-the-bottleneck">When the CTO becomes the bottleneck</Link>
+              <Link href="/problems/vp-rnd-losing-execution-control">When VP R&amp;D loses execution control</Link>
+              <Link href="/problems/engineering-managers-stuck-in-firefighting">Engineering managers stuck in firefighting</Link>
+            </nav>
           </div>
         </section>
 

@@ -1,4 +1,5 @@
 .approved-home {
+  --home-accent-ink: #0f1a14;
   --home-bg: #f4f2e9;
   --home-ink: #0f1a14;
   --home-muted: #4f5a52;
@@ -225,3 +226,22 @@ html[data-theme="dark"] body:has(.approved-home) .approved-home {
   .approved-home *, .approved-home *::before, .approved-home *::after { scroll-behavior: auto !important; transition: none !important; }
   .approved-home .btn:hover { transform: none; }
 }
+
+/* Bright surfaces retain dark text in either theme. */
+.approved-home .btn:not(.dark):not(.final-link),
+.approved-home .pick,
+.approved-home .ch button:not([aria-pressed="true"]),
+.approved-home .final,
+.approved-home .final .flow span { color: var(--home-accent-ink); }
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme="light"]) .approved-home :is(h1,h2,h3,h4,strong) { color: inherit; }
+  html:not([data-theme="light"]) .approved-home p,
+  html:not([data-theme="light"]) .approved-home .quote { color: var(--home-muted); }
+  html:not([data-theme="light"]) .approved-home :is(.pick,.final) p { color: #2d3a30; }
+  html:not([data-theme="light"]) .approved-home :is(.read,.proof) p { color: var(--home-dark-muted); }
+}
+html[data-theme="dark"] .approved-home :is(h1,h2,h3,h4,strong) { color: inherit; }
+html[data-theme="dark"] .approved-home p,
+html[data-theme="dark"] .approved-home .quote { color: var(--home-muted); }
+html[data-theme="dark"] .approved-home :is(.pick,.final) p { color: #2d3a30; }
+html[data-theme="dark"] .approved-home :is(.read,.proof) p { color: var(--home-dark-muted); }

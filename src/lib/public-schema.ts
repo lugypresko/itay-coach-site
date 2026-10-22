@@ -7,8 +7,12 @@ export function buildItayPersonJsonLd() {
   return {
     "@context": "https://schema.org",
     "@type": "Person",
+    "@id": "https://itayfoyerstein.com/#itay",
     name: "Itay Foyerstein",
     jobTitle: "Tech Leadership Coach",
+    image: "https://itayfoyerstein.com/itay-home-photo.jpg",
+    homeLocation: { "@type": "Country", name: "Israel" },
+    knowsAbout: ["Technical leadership", "Engineering management", "Decision ownership", "Cross-team execution"],
     url: "https://itayfoyerstein.com/",
     sameAs: [ITAY_LINKEDIN],
   };
@@ -150,4 +154,18 @@ export function buildPageJsonLd(page: PublicContentPageModel) {
   }
 
   return pieces;
+}
+
+export function buildCoachingServiceJsonLd() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "@id": "https://itayfoyerstein.com/#coaching",
+    name: "Technical leadership coaching",
+    serviceType: "1:1 technical leadership coaching",
+    availableChannel: { "@type": "ServiceChannel", availableLanguage: ["English", "Hebrew"] },
+    description: "12 weeks, 6 private 1:1 sessions, focused on one real leadership problem.",
+    provider: { "@id": "https://itayfoyerstein.com/#itay" },
+    url: "https://itayfoyerstein.com/",
+  };
 }

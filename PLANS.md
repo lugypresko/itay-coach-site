@@ -4690,3 +4690,14 @@ Scope: approved brand plan, single diagnostic contract, safe local review, rollb
 Out of scope: production writes/deployments, outreach, employer reporting.
 Validation: full tests/typecheck/lint, browser journeys and screenshots, checksum restore drill.
 DoD: local verified flows and site copy, checkpoints and documented external blockers.
+
+## SEO-CONTRAST-092 — approved audit remediation
+State: in_review
+Owner: Codex
+Scope: fix confirmed SEO/AEO and dark contrast issues; version 0.9.2; no merge or index-policy changes.
+Rollback: rollback/pre-0.9.2-2026-10-22 -> 6c3ac10; production dpl_8HcXUhpkWFTDKJYjTokouaRM9vB1.
+Evidence: user-approved audit and homepage offer (12 weeks, 6 sessions), existing page content only.
+Queries/entity: technical leadership coaching for engineering managers / Itay Foyerstein.
+CTA: bring one case through /diagnostic. Internal links: problem pages and frameworks.
+
+Verification: typecheck passed; lint passed with pre-existing warnings; 14 focused tests passed; full Next build passed. Final regenerated HTML checks and remote preview pending.

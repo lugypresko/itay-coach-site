@@ -291,3 +291,10 @@ This file is the project’s single append-only decision record. New decisions a
 - Context: User minor-revision request on `2026-07-26`; `PLANS.md` Task 095; `DEC-20260726-03`; `DEC-20260726-04`.
 - Rationale: Improve semantic and conversion clarity without changing canonical meaning or governed page structure.
 - Consequences: Version 2/hash `9080366c4cfaeac6b2f8e575c1770e885ce7cdaccd510bf16f152f31a6f0c5c9` is superseded by draft version 3/hash `28b0ea1c56e8a8e527851ed1fa00077095c5eb904c3d8293d4a22565aa944788`; no approval or publication is granted.
+
+## DEC-20261022-01 — v0.9.2 public-surface audit remediation
+- Context: User-approved SEO/AEO and dark contrast audits; PLANS.md SEO-CONTRAST-092.
+- Decision: Preserve homepage fc65b2d design, index policies and existing publication gates. Align machine-facing offer/CTA with the visible 12-week, six-session offer; use scoped contrast tokens for bright surfaces. Add accurate metadata, contextual links and Service schema without ratings or invented credentials.
+- CMS: No record mutation or approval-hash change. Two path-specific descriptions are presentation overrides; deleting the overrides restores previous CMS display.
+- Language: Separate Hebrew root layout preserves server-rendered html lang without changing the English layout language or adding request middleware.
+- Rollback: Checkpoint branch rollback/pre-0.9.2-2026-10-22 at 6c3ac10. Previous Production dpl_8HcXUhpkWFTDKJYjTokouaRM9vB1; restore through Vercel rollback or redeploy checkpoint. No schema/data migration.
