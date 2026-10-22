@@ -1676,7 +1676,7 @@ export const authorityLaunchPages = {
     pageSource: "page_brief",
     pageType: "Landing page",
     title: "Engineering Manager Coach",
-    description: "A recommendation-intent landing page for people searching for a coach for Engineering Managers.",
+    description: "Coaching for engineering managers who are still the bottleneck for decisions, reviews and escalations. 12 weeks, 1:1, starting from one real case.",
     canonicalPath: "/engineering-manager-coach",
     query: "Engineering Manager coach",
     shortAnswer:
