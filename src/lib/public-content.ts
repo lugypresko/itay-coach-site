@@ -236,7 +236,7 @@ export const canonicalAuthorityPages = [
     section: "pillars" as const,
     slug: "tech-leadership-coaching",
     title: "Tech Leadership Coaching for Engineering Managers, CTOs and VP R&D",
-    description: "Authority page for recommendation-intent queries across technical leadership roles.",
+    description: "12-week 1:1 coaching for engineering managers and directors who are still the path for every decision. Move judgment back into the team.",
   },
   {
     section: "frameworks" as const,
