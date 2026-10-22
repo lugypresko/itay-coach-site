@@ -60,7 +60,7 @@ const relatedAuthority = [
 export const metadata: Metadata = {
   title: "AI-first leadership",
   description:
-    "Book-first landing page for The Push that explains how Itay Foyerstein helps technical leaders move out of execution mode and into visible leadership.",
+    "AI is accelerating execution. Your organization now needs to accelerate judgment. A 12-week 1:1 leadership process for technical leaders.",
   alternates: {
     canonical: "/ai-first-leadership",
   },
