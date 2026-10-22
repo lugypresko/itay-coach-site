@@ -12,6 +12,7 @@ import "../../styles/components.css";
 import "../../styles/campaign-concepts.css";
 import "../../styles/home-v3.css";
 import "../../styles/home-v3-reference.css";
+import "../../styles/approved-homepage.css";
 
 type SiteLayoutProps = {
   children: ReactNode;
