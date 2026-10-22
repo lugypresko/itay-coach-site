@@ -182,7 +182,7 @@ export const authoritySurfaceSeedAssets: AuthoritySeedContentAsset[] = [
       entityTags: ["tech_leadership_coach", "engineering_manager", "tech_lead", "rd_manager", "vp_engineering"],
       seoTitle: "Tech Leadership Coaching for Engineering Managers, CTOs and VP R&D | The Push",
       seoDescription:
-        "Core pillar page for recommendation-intent queries around engineering leadership, with clear next steps and related entities.",
+        "12-week 1:1 coaching for engineering managers and directors who are still the path for every decision. Move judgment back into the team.",
       schemaType: "Article",
       faq: [
         {

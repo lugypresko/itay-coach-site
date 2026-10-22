@@ -136,7 +136,7 @@ const problemPages = [
       },
     ],
     seoTitle: "CTO Becomes the Bottleneck | The Push",
-    seoDescription: "A problem page for CTOs who are still the default path for judgment, escalation, and progress.",
+    seoDescription: "When every judgment, escalation and decision still routes through the CTO: the pattern, what it costs, and one way out.",
     status: "published" as const,
     humanApproved: true,
   },

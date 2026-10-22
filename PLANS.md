@@ -74,6 +74,66 @@ Do not expand the system with new agents, collections, or workflows while the re
 
 The release target after verification is `Authority Engine Alpha`.
 
+### Task 097 - Approved HTML Homepage Implementation
+
+State: `completed`
+Lane: `homepage`, `frontend`
+Owner: Codex
+Branch: `codex/homepage-html-implementation-20260928`
+
+Goal:
+Implement the user-approved homepage HTML design in the existing Next.js app.
+
+Scope:
+- Match the approved HTML for homepage structure, copy, visual hierarchy, section order, responsive behavior, and pattern selector behavior.
+- Render the Itay photo exactly once in the About section.
+- Route all selected patterns to `/diagnostic?pattern=<selected-pattern>` using the approved keys: `decision`, `meeting`, `escalation`, and `stall`.
+- Keep the implementation native to the existing Next.js app and retain homepage metadata and analytics conventions.
+
+Out of scope:
+- No changes to `/diagnostic` or unrelated pages.
+- No use or merge of `fix/homepage-single-photo`.
+- No merge, deployment, or production data changes.
+
+Files expected to change:
+- `src/app/(site)/page.tsx`
+- `src/components/home-v3-selector.tsx`
+- Homepage-scoped styles in `src/styles/approved-homepage.css`
+- `src/app/(site)/layout.tsx`
+- `src/lib/homepage-patterns.ts`
+- `tests/unit/homepage-patterns.test.ts`
+- `PLANS.md`
+
+Data contracts affected:
+- None.
+
+Agent permissions affected:
+- None.
+
+Validation steps:
+- Run `npm test -- tests/unit/homepage-patterns.test.ts` to verify all four selector choices build the expected `/diagnostic?pattern=` destination.
+- Verify selecting a pattern updates both homepage CTAs.
+- Verify only one Itay photo is rendered and it appears inside About.
+- Run focused homepage tests, `npm run typecheck`, and `npm run build`.
+
+Acceptance criteria:
+- Homepage content and ordering match `The Push_ homepage(3).html`.
+- The page is responsive and remains accessible with keyboard navigation and reduced motion.
+- Exactly one Itay photo appears in the About section.
+- Every selector option carries its approved pattern to `/diagnostic`.
+- No files under `/diagnostic` or unrelated routes are changed.
+- Build and relevant tests pass; branch remains unmerged and undeployed.
+
+Verification notes:
+- Ported the approved HTML sections and copy into native Next.js components and homepage-scoped CSS.
+- Updated the selector to the approved `decision`, `meeting`, `escalation`, and `stall` keys; its selected value is carried into both diagnostic CTAs.
+- Rendered one Itay photo in the About section. The production HTML contains one `<img>`, all four selector keys, and the expected section anchors.
+- `npm test -- tests/unit/homepage-patterns.test.ts` passed (1 test).
+- `npm run typecheck` passed.
+- `npm run build` passed.
+- Full `npm test` reports 91/92 files and 459/463 tests passing; the four failures are in the existing diagnostic API route tests, which require `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` when the suite loads the route in production mode. The route tests pass when run in isolation with `NODE_ENV=test`.
+- No diagnostic route or unrelated page was modified. No merge or deployment was performed.
+
 ### Task 096 - Canonical Page Pattern Layer
 
 State: `review`

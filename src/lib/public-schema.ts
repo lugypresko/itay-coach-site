@@ -3,6 +3,17 @@ import { stripMarkdownLinks } from "./markdown-links";
 
 const ITAY_LINKEDIN = "https://www.linkedin.com/in/itayfoyerstein/";
 
+export function buildItayPersonJsonLd() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: "Itay Foyerstein",
+    jobTitle: "Tech Leadership Coach",
+    url: "https://itayfoyerstein.com/",
+    sameAs: [ITAY_LINKEDIN],
+  };
+}
+
 function stripHtml(value: string): string {
   return value.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
 }

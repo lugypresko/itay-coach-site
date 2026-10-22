@@ -1,6 +1,9 @@
 import { loadPublicationSurfaceProjection } from "@/lib/publication-surface-projection";
 import { getSiteUrl } from "@/lib/site-url";
 
+const PRIMARY_CTA = { label: "Book a fit call", path: "/book-a-fit-call" };
+const DIAGNOSTIC_CTA = { label: "Take the diagnostic", path: "/player-trap" };
+
 export async function GET() {
   const origin = getSiteUrl();
   const projection = await loadPublicationSurfaceProjection(origin);
@@ -16,8 +19,8 @@ export async function GET() {
     "Public routes:",
     ...publicRoutes.map((pathname) => `- ${origin}${pathname}`),
     "",
-    "Primary CTA: Book a fit call",
-    "Diagnostic CTA: Take the Player Trap Diagnostic",
+    `Primary CTA: ${PRIMARY_CTA.label} - ${origin}${PRIMARY_CTA.path}`,
+    `Diagnostic CTA: ${DIAGNOSTIC_CTA.label} - ${origin}${DIAGNOSTIC_CTA.path}`,
   ].join("\n");
 
   return new Response(body, {
