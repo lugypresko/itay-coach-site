@@ -84,6 +84,12 @@ body:has(.approved-home) .site-frame > .site-footer { display: none; }
 .approved-home .act { display: flex; align-items: center; flex-wrap: wrap; gap: 16px; margin-top: 24px; }
 .approved-home .fine { color: var(--home-muted); font-size: 14px; }
 .approved-home .read { padding: 26px; border-radius: 16px; background: var(--home-dark); color: var(--home-on-dark); }
+/* Dark panels need explicit heading colors to override global typography. */
+.approved-home .read h3,
+.approved-home .proof h2,
+.approved-home .proof h3,
+.approved-home .read strong,
+.approved-home .proof strong { color: var(--home-on-dark); }
 .approved-home .read .tg { margin-bottom: 10px; color: var(--home-acid); font-size: 14px; font-weight: 700; }
 .approved-home .read h3 { margin-bottom: 14px; font-size: 26px; }
 .approved-home .read p { color: var(--home-dark-muted); font-size: 15px; }
