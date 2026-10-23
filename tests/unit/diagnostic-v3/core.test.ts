@@ -365,3 +365,38 @@ describe("revision safe private sessions", () => {
     expect(s.events.filter((e) => e.endsWith("q1_complete"))).toHaveLength(1);
   });
 });
+
+describe("identity durability before provider work", () => {
+  it("persists contact and initial brief before the second request, without sending identity", async () => {
+    const { store, s } = await setup();
+    s.answers = answers;
+    s.answer_revision = 1;
+    await save(store, s, 0);
+    await act(store, s, {
+      action: "partial",
+      expected_version: s.record_version,
+    });
+    vi.stubEnv("DIAGNOSTIC_V3_AI_ENABLED", "true");
+    vi.stubEnv("GROQ_ZDR_VERIFIED", "true");
+    vi.stubEnv("GROQ_API_KEY", "test");
+    const fetch = vi.fn(async (_url: string, init: RequestInit) => {
+      const persisted = await store.read("private-token");
+      expect(persisted?.identity).toEqual(identity);
+      expect(persisted?.sales_brief).toContain(identity.email);
+      const outbound = String(init.body);
+      expect(outbound).not.toContain(identity.email);
+      expect(outbound).not.toContain(identity.company);
+      expect(outbound).not.toContain(identity.first_name);
+      throw new Error("provider outage");
+    });
+    vi.stubGlobal("fetch", fetch);
+    await act(store, s, {
+      action: "identify",
+      expected_version: s.record_version,
+      identity,
+    });
+    expect(fetch).toHaveBeenCalledOnce();
+    expect(s.full?.source).toBe("fallback");
+    expect(s.stage).toBe("full");
+  });
+});

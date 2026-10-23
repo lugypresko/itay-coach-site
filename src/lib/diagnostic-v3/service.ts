@@ -70,7 +70,7 @@ export async function act(
 ): Promise<Session> {
   if (input.expected_version !== s.record_version)
     throw new Conflict("Your case has changed. Reload to continue.");
-  const expected = s.record_version;
+  let expected = s.record_version;
   if (input.action === "answers") {
     const answers = answerSchema.parse(input.answers);
     if (
@@ -114,6 +114,9 @@ export async function act(
       expiry.setUTCFullYear(expiry.getUTCFullYear() + 1);
       s.expires_at = expiry.toISOString();
       event(s, "identity_submit");
+      s.sales_brief = brief(s);
+      await save(store, s, expected);
+      expected = s.record_version;
     }
     if (s.full?.answer_revision !== s.answer_revision)
       s.full = await analyze(
