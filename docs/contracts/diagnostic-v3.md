@@ -1,6 +1,6 @@
 # Diagnostic V3 implementation contract and gap analysis
 
-User-approved 2026-10-23. Diagnostic version v3; scoring-v1; analysis-v1.
+User-approved 2026-10-23. Diagnostic version v3; scoring-v1; analysis-v2 (approved two-pass prompts).
 
 ## Gap analysis (completed before implementation)
 - Existing UI: five auto-advancing questions; result computed client-side; no restore; Review returns only Q5.
@@ -28,3 +28,13 @@ Both passes: fixed pattern enum, confidence enum, evidence with answer_reference
 
 ## Preview limitations and acceptance
 Disposable memory adapter must be visibly labeled and not mistaken for durable cross-instance persistence. No external email or booking success claims in simulation. Real persistence, email delivery, booking webhook and ZDR must be verified separately before Production. User journey must remain usable without those providers.
+
+
+## Approved First Read / Full Read integration (2026-10-23)
+Gap against the initial V3 implementation: shared short prompt, coarse pattern enum, internal field references instead of Q IDs, extra First Read fields in Full Read, and missing experiment review_point. This revision separates the two approved reasoning instructions in src/lib/diagnostic-v3/prompts.ts, updates strict schemas, maps actual answer labels to Q1–Q9, permits CASE_CONTEXT only in Full Read, and renders the review point and unresolved question. JSON schemas are supplied separately from the reasoning text; application injection/privacy/no-scoring guardrails are appended to both passes.
+
+Q5 contains duration + recurrence and counts as one independent question. Q6 includes attempts/context, Q7 impact/context, Q8 desired outcome, Q9 case context. CASE_CONTEXT aliases Q9, never independent evidence. First Read is validated before being included in the second pass. Identity and qualification remain excluded from provider payloads. scoring-v1 and routing are unchanged.
+
+No database migration: JSONB session envelope remains unchanged. analysis_version advances to analysis-v2. Older derived reads are invalidated on load; answers, identity, qualification and retained Sales Brief remain. User explicitly reruns analysis; no background provider request. Atomic record-version writes continue to reject stale updates. No Production action or homepage change.
+
+Rollback of this Preview revision: redeploy 14e129a9ae98c60defa503e71e0df4699dcf3ead (analysis-v1); use a fresh disposable Preview session for QA. Production rollback checkpoint remains unchanged. Neither a Production rollback nor persistent DB migration was exercised here.

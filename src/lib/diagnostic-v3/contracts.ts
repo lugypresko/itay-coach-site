@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { questions } from "./questions";
 export const VERSION = "v3" as const;
-export const ANALYSIS_VERSION = "analysis-v1" as const;
+export const ANALYSIS_VERSION = "analysis-v2" as const;
 export const SCORING_VERSION = "scoring-v1" as const;
 const single = (id: string) =>
   z.enum(
@@ -63,31 +63,20 @@ export const identitySchema = z
   .strict();
 export type Identity = z.infer<typeof identitySchema>;
 export const patterns = [
-  "authority",
-  "ownership",
-  "coordination",
-  "review_dependency",
-  "dependency_habit",
-  "risk",
-  "insufficient_evidence",
+  "ownership_gap", "decision_rights_gap", "cross_team_dependency",
+  "review_dependency", "escalation_habit", "risk_boundary_ambiguity",
+  "capability_gap", "system_process_problem", "mixed", "unclear",
 ] as const;
+export const answerReferences = {
+  Q1: ["situation"], Q2: ["absence"], Q3: ["owner"], Q4: ["authority"],
+  Q5: ["duration", "frequency"], Q6: ["attempts", "attempts_context"],
+  Q7: ["impact", "impact_context"], Q8: ["desired"], Q9: ["context"],
+  CASE_CONTEXT: ["context"],
+} as const;
 const text = z.string().min(1).max(700);
 const evidenceSchema = z
   .object({
-    answer_reference: z.enum([
-      "situation",
-      "absence",
-      "owner",
-      "authority",
-      "duration",
-      "frequency",
-      "attempts",
-      "impact",
-      "desired",
-      "context",
-      "attempts_context",
-      "impact_context",
-    ]),
+    answer_reference: z.enum(["Q1", "Q2", "Q3", "Q4", "Q5", "Q6", "Q7", "Q8", "Q9"]),
     interpretation: text,
   })
   .strict();
@@ -106,12 +95,15 @@ export const partialSchema = z
   .object({
     ...common,
     teaser_insight: text,
-    recommended_test_category: z.enum(patterns),
+    recommended_test_category: z.enum(["ownership", "decision_rights", "escalation", "risk_boundary", "cross_team", "capability", "system", "unclear"]),
   })
   .strict();
 export const fullSchema = z
   .object({
-    ...common,
+    primary_pattern: z.enum(patterns),
+    likely_explanation: text,
+    alternative_hypothesis: text.nullable(),
+    evidence: z.array(evidenceSchema.extend({answer_reference: z.enum(["Q1", "Q2", "Q3", "Q4", "Q5", "Q6", "Q7", "Q8", "Q9", "CASE_CONTEXT"])})).max(5),
     case_summary: text,
     leadership_move: text,
     manager_question: text,
@@ -121,6 +113,7 @@ export const fullSchema = z
         trigger: text,
         safety_boundary: text,
         observation: text,
+        review_point: text,
       })
       .strict(),
     success_signal: text,

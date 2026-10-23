@@ -1,5 +1,5 @@
 import { createHash, randomBytes, randomUUID } from "node:crypto";
-import { VERSION, type Session } from "./contracts";
+import { VERSION, ANALYSIS_VERSION, type Session } from "./contracts";
 import { score } from "./scoring";
 // pg is already a runtime dependency of this repository.
 import pg from "pg";
@@ -14,6 +14,17 @@ export interface Store {
   remove(auth: string): Promise<void>;
   consumeReturn(value: string, newAuth: string): Promise<boolean>;
 }
+// Prompt contract changes invalidate derived reads, never answers or identity.
+export function currentAnalysis(s: Session): Session {
+  if ([s.partial, s.full].some((read) => read && read.analysis_version !== ANALYSIS_VERSION)) {
+    delete s.partial;
+    delete s.full;
+    delete s.mail;
+    s.stage = "answering";
+    s.step = 8;
+  }
+  return s;
+}
 const runtime = globalThis as typeof globalThis & {
   __diagnosticV3Store?: Store;
 };
@@ -26,7 +37,7 @@ export function memoryStore(): Store {
     async read(auth) {
       const row = [...rows.values()].find((r) => r.auth === hash(auth));
       return row && Date.parse(row.s.expires_at) > Date.now()
-        ? structuredClone(row.s)
+        ? currentAnalysis(structuredClone(row.s))
         : null;
     },
     async save(s, expected) {
@@ -84,7 +95,7 @@ export function getStore(): Store {
         "SELECT payload FROM diagnostic_v3_sessions WHERE auth_hash=$1 AND expires_at>now()",
         [hash(auth)],
       );
-      return r.rows[0]?.payload ?? null;
+      return r.rows[0]?.payload ? currentAnalysis(r.rows[0].payload) : null;
     },
     async save(s, expected) {
       const next = { ...s, record_version: expected + 1 };

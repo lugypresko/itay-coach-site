@@ -304,3 +304,9 @@ This file is the project’s single append-only decision record. New decisions a
 - Decision: Dedicated V3 private storage and APIs; preserve V2 data/readers. Server-generated analysis; deterministic qualification; Full Read available before optional qualification. Missing fit is unqualified_nurture. No homepage changes.
 - Safety: Groq disabled until ZDR explicitly verified; no identity in provider requests. CAS and revision-bound analyses; private session cookies. Preview adapters must disclose disposable storage and simulated delivery.
 - Release: Preview only from feature/diagnostic-v3. No Production database mutation, release or main merge. Checkpoint 6722fa3, dpl_HLEjaT3vrfzQvDJDfyCftKuPMBtY.
+
+## DEC-20261023-02 — Approved two-pass diagnostic reasoning
+- Context: User-provided FIRST READ and FULL READ prompts; docs/contracts/diagnostic-v3.md; PLANS.md DIAGNOSTIC-V3.
+- Decision: Separate pass-specific reasoning; strict approved pattern vocabulary and Q1–Q9/CASE_CONTEXT evidence references. Full Read has a five-part experiment, including review_point. Preserve deterministic scoring-v1 and all privacy/fallback gates.
+- Compatibility: analysis-v2 invalidates old derived Preview reads without deleting answers, identity or retained brief. No database migration or automatic provider rerun.
+- Release: feature/diagnostic-v3 Preview only; no main merge, homepage changes or Production deployment. Previous Preview commit 14e129a9ae98c60defa503e71e0df4699dcf3ead is the code rollback point.

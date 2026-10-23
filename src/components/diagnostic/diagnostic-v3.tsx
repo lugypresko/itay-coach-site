@@ -424,7 +424,7 @@ export function DiagnosticV3() {
             What is happening
           </h2>
           <p>{f.case_summary}</p>
-          {f.confidence === "low" && (
+          {p?.confidence === "low" && (
             <p>
               I don’t have enough evidence yet to make a strong call. Treat this
               as a question to test.
@@ -444,7 +444,7 @@ export function DiagnosticV3() {
             ))}
           </ul>
           <p>{f.likely_explanation}</p>
-          {f.contradictions.map((c, i) => (
+          {(p?.contradictions ?? []).map((c, i) => (
             <p key={i}>{c}</p>
           ))}
           {f.alternative_hypothesis && (
@@ -462,9 +462,12 @@ export function DiagnosticV3() {
           <p>{f.seven_day_experiment.action}</p>
           <p>{f.seven_day_experiment.safety_boundary}</p>
           <p>{f.seven_day_experiment.observation}</p>
+          <p>{f.seven_day_experiment.review_point}</p>
           <h3>How you’ll know whether it worked</h3>
           <p>{f.success_signal}</p>
-          <p>Your desired outcome: {f.desired_outcome}</p>
+          <p>Your desired outcome: {p?.desired_outcome}</p>
+          <h3>What remains open</h3>
+          <p>{f.unresolved_question}</p>
           {qualify && !session.qualification ? (
             <form
               onSubmit={(e) => {

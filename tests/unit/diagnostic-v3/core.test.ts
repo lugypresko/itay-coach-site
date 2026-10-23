@@ -7,6 +7,7 @@ import {
 } from "@/lib/diagnostic-v3/contracts";
 import {
   fallback,
+  partialFallback,
   sanitizeCase,
   analyze,
   validateEvidence,
@@ -188,13 +189,13 @@ describe("analysis contract and provider failure", () => {
   });
   it("flags contradictions and first-event uncertainty", () => {
     expect(
-      fallback({ ...answers, absence: "handles" }).contradictions,
+      partialFallback({ ...answers, absence: "handles" }).contradictions,
     ).not.toHaveLength(0);
-    expect(fallback({ ...answers, duration: "first" }).confidence).toBe("low");
+    expect(partialFallback({ ...answers, duration: "first" }).confidence).toBe("low");
   });
   it("rejects fake evidence references and lowers confidence with fewer than two", () => {
-    const f = fallback(answers);
-    f.evidence = [{ answer_reference: "context", interpretation: "x" }];
+    const f = partialFallback(answers);
+    f.evidence = [{ answer_reference: "Q9", interpretation: "x" }];
     expect(() => validateEvidence(f, {})).toThrow();
     expect(validateEvidence(f, answers).confidence).toBe("low");
   });
@@ -225,7 +226,7 @@ describe("analysis contract and provider failure", () => {
     expect(r).toMatchObject({
       session_id: "s",
       answer_revision: 2,
-      analysis_version: "analysis-v1",
+      analysis_version: "analysis-v2",
       source: "fallback",
     });
     const request = JSON.parse(fetch.mock.calls[0][1].body);
