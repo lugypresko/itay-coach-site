@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { requireDiagnosticAdmin } from "@/payload/access/diagnostic-admin";
 import { analyze } from "@/lib/diagnostic-v3/analysis";
 import type {
   Answers,
@@ -63,10 +64,12 @@ async function probe() {
 const scope = globalThis as typeof globalThis & {
   __v3SyntheticCheck?: { until: number; pending: ReturnType<typeof probe> };
 };
-export async function GET() {
+export async function GET(request: Request) {
   // Never enable this diagnostic route in Production, even with V3 enabled.
   if (process.env.VERCEL_ENV !== "preview")
     return NextResponse.json({ error: "Not found" }, { status: 404 });
+  const denied = await requireDiagnosticAdmin(request);
+  if (denied) return denied;
   // Coalesce callers and cache for 10 minutes to bound provider spend.
   if (!scope.__v3SyntheticCheck || scope.__v3SyntheticCheck.until < Date.now())
     scope.__v3SyntheticCheck = { until: Date.now() + 600000, pending: probe() };

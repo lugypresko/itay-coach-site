@@ -310,3 +310,10 @@ This file is the project’s single append-only decision record. New decisions a
 - Decision: Separate pass-specific reasoning; strict approved pattern vocabulary and Q1–Q9/CASE_CONTEXT evidence references. Full Read has a five-part experiment, including review_point. Preserve deterministic scoring-v1 and all privacy/fallback gates.
 - Compatibility: analysis-v2 invalidates old derived Preview reads without deleting answers, identity or retained brief. No database migration or automatic provider rerun.
 - Release: feature/diagnostic-v3 Preview only; no main merge, homepage changes or Production deployment. Previous Preview commit 14e129a9ae98c60defa503e71e0df4699dcf3ead is the code rollback point.
+
+## DEC-20261023-03 — Persistent isolated Preview and Payload admin boundary
+- Context: User-confirmed PostgreSQL isolation and Payload-admin-only internal verification; docs/contracts/diagnostic-v3-operations.md; PLANS.md DIAGNOSTIC-V3.
+- Decision: Neon preview/diagnostic-v3 in winter-resonance-15589128, synthetic data only; require persistent storage in deployed Preview, with no fallback to Production DATABASE_URL. Payload Preview authentication uses the same isolated database.
+- Authorization: Server-verified Payload users with role=admin only for internal diagnostics; deny before cache/provider/data access. Protect role assignment from non-admin API writes. No second identity system.
+- Evidence: Additive V3 DDL and exact synthetic payload preservation after Preview compute restart verified. Vercel env list/create both denied 403, so app-to-DB/redeploy acceptance remains blocked; no env/Production connection changed.
+- Release: feature/diagnostic-v3 Preview only. Preserve data on rollback; previous source 7b2bb04755e70637c335f5c96a9117a227dd2ae5.

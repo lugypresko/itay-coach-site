@@ -72,6 +72,8 @@ export function memoryStore(): Store {
   };
 }
 export function getStore(): Store {
+  if (["preview", "production"].includes(process.env.VERCEL_ENV ?? "") && !process.env.DIAGNOSTIC_V3_DATABASE_URL)
+    throw new Error("V3 isolated database is not configured");
   if (runtime.__diagnosticV3Store) return runtime.__diagnosticV3Store;
   if (!process.env.DIAGNOSTIC_V3_DATABASE_URL) {
     if (process.env.VERCEL_ENV === "production")
