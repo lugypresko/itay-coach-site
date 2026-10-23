@@ -208,7 +208,35 @@ export async function analyze(
     analysis_version: ANALYSIS_VERSION,
   };
   const sanitized = sanitizeCase(a, privateTerms);
-  let reason = "provider_disabled";
+  const started = Date.now();
+  let providerStatus: number | undefined;
+  let reason =
+    process.env.DIAGNOSTIC_V3_AI_ENABLED !== "true"
+      ? "ai_disabled"
+      : process.env.GROQ_ZDR_VERIFIED !== "true"
+        ? "zdr_unverified"
+        : !process.env.GROQ_API_KEY
+          ? "missing_key"
+          : "provider_failed";
+  function telemetry(source: string, model: string, failure?: string) {
+    const diagnostic = {
+      event: "diagnostic_v3_analysis",
+      pass,
+      source,
+      model,
+      answer_revision: revision,
+      analysis_version: ANALYSIS_VERSION,
+      duration_ms: Date.now() - started,
+      provider_status: providerStatus ?? null,
+      fallback_reason: failure ?? null,
+    };
+    if (process.env.VERCEL_ENV === "preview")
+      console.info(JSON.stringify(diagnostic));
+    return {
+      duration_ms: diagnostic.duration_ms,
+      provider_status: providerStatus,
+    };
+  }
   if (
     process.env.DIAGNOSTIC_V3_AI_ENABLED === "true" &&
     process.env.GROQ_ZDR_VERIFIED === "true" &&
@@ -252,18 +280,45 @@ export async function analyze(
           }),
         },
       );
-      if (!response.ok) throw new Error("provider_status");
+      providerStatus = response.status;
+      if (!response.ok) throw new Error(`http_${response.status}`);
       const body = await response.json();
-      data = validateEvidence(
-        schema.parse(JSON.parse(body.choices?.[0]?.message?.content ?? "")),
-        sanitized.answers,
+      const parsed = schema.parse(
+        JSON.parse(body.choices?.[0]?.message?.content ?? ""),
       );
+      const validated = validateEvidence(parsed, sanitized.answers);
       // Validate generated text for accidental identity/secret emission too.
-      if (!sanitizeCase({ context: JSON.stringify(data) }).safe)
+      if (!sanitizeCase({ context: JSON.stringify(validated) }).safe)
         throw new Error("unsafe_output");
-      return { ...base, data, source: "groq", model };
-    } catch {
-      reason = "provider_failed_or_invalid";
+      return {
+        ...base,
+        data: validated,
+        source: "groq",
+        model,
+        ...telemetry("groq", model),
+      };
+    } catch (error) {
+      if (error instanceof z.ZodError) reason = "invalid_schema";
+      else if (error instanceof SyntaxError) reason = "invalid_json";
+      else if (
+        error instanceof Error &&
+        ["TimeoutError", "AbortError"].includes(error.name)
+      )
+        reason = "timeout";
+      else if (
+        error instanceof Error &&
+        (/^http_\d{3}$/.test(error.message) ||
+          ["unsafe_output", "Unsupported evidence reference"].includes(
+            error.message,
+          ))
+      )
+        reason =
+          error.message === "Unsupported evidence reference"
+            ? "invalid_evidence"
+            : error.message;
+      else reason = "provider_unavailable";
+      // Never return a rejected provider result as fallback content.
+      data = pass === "partial" ? partialFallback(a) : fallback(a);
     }
   } else if (!sanitized.safe) reason = "unsafe_input";
   return {
@@ -272,5 +327,6 @@ export async function analyze(
     source: "fallback",
     model: "deterministic-v1",
     fallback_reason: reason,
+    ...telemetry("fallback", "deterministic-v1", reason),
   };
 }

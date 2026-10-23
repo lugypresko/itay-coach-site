@@ -137,6 +137,8 @@ export type Analysis<T> = {
   source: "groq" | "fallback";
   model: string;
   fallback_reason?: string;
+  provider_status?: number;
+  duration_ms?: number;
 };
 export type Route =
   | "unqualified_nurture"

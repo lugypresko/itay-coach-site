@@ -4713,3 +4713,5 @@ Production deployment: dpl_HLEjaT3vrfzQvDJDfyCftKuPMBtY. Branch: feature/diagnos
 No production DB changes, no merge, no production release. V2 contracts remain intact.
 
 V3 verification: 41 new tests + 18 selected V2/homepage regressions passed; typecheck passed; targeted ESLint clean; full Next build passed. Production/homepage unchanged. Isolated DB migration, real Groq/ZDR, email, booking and mobile browser acceptance remain unverified. Preview has explicit disposable-storage and simulated-mail labels. PR #10.
+
+V3 Groq verification follow-up: user authorized synthetic Preview provider verification and a fill script. Added privacy-safe status/latency/fallback telemetry, fixed rejected-output fallback, Preview-only cached fixed-case check, and docs/contracts/diagnostic-v3-qa-script.md. 45 V3 tests, typecheck and targeted lint passed. Live provider check pending Preview deployment. No Production changes.

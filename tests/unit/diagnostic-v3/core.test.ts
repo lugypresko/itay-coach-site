@@ -400,3 +400,51 @@ describe("identity durability before provider work", () => {
     expect(s.stage).toBe("full");
   });
 });
+
+describe("provider diagnostics do not expose rejected output", () => {
+  it("distinguishes missing key and invalid authorization without printing credentials", async () => {
+    vi.stubEnv("DIAGNOSTIC_V3_AI_ENABLED", "true");
+    vi.stubEnv("GROQ_ZDR_VERIFIED", "true");
+    vi.stubEnv("GROQ_API_KEY", "");
+    expect(
+      (await analyze("synthetic", 1, answers, "partial")).fallback_reason,
+    ).toBe("missing_key");
+    vi.stubEnv("GROQ_API_KEY", "never-print-this");
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({ ok: false, status: 401 }),
+    );
+    const result = await analyze("synthetic", 1, answers, "partial");
+    expect(result).toMatchObject({
+      source: "fallback",
+      fallback_reason: "http_401",
+      provider_status: 401,
+    });
+    expect(JSON.stringify(result)).not.toContain("never-print-this");
+  });
+  it("uses original deterministic content after rejecting unsafe model output", async () => {
+    vi.stubEnv("DIAGNOSTIC_V3_AI_ENABLED", "true");
+    vi.stubEnv("GROQ_ZDR_VERIFIED", "true");
+    vi.stubEnv("GROQ_API_KEY", "test");
+    const unsafe = {
+      ...fallback(answers),
+      case_summary: "Contact someone@example.com with the secret.",
+    };
+    vi.stubGlobal(
+      "fetch",
+      vi
+        .fn()
+        .mockResolvedValue({
+          ok: true,
+          status: 200,
+          json: async () => ({
+            choices: [{ message: { content: JSON.stringify(unsafe) } }],
+          }),
+        }),
+    );
+    const result = await analyze("synthetic", 1, answers, "full");
+    expect(result.fallback_reason).toBe("unsafe_output");
+    expect(result.data).toEqual(fallback(answers));
+    expect(JSON.stringify(result.data)).not.toContain("someone@example.com");
+  });
+});
