@@ -1,0 +1,212 @@
+import { createHmac } from "node:crypto";
+import {
+  answerSchema,
+  identitySchema,
+  qualificationSchema,
+  complete,
+  type Session,
+} from "./contracts";
+import { analyze } from "./analysis";
+import { score } from "./scoring";
+import { hash, save, Conflict, type Store } from "./store";
+export function brief(s: Session): string {
+  return JSON.stringify(
+    {
+      diagnostic_version: s.diagnostic_version,
+      lead: s.identity ?? null,
+      qualification: s.qualification ?? null,
+      answers: s.answers,
+      analysis: s.full?.data ?? s.partial?.data ?? null,
+      analysis_source: s.full?.source ?? s.partial?.source,
+      scoring: s.scoring,
+      opening_question: s.full?.data.unresolved_question,
+      do_not_ask_again: Object.keys(s.answers),
+    },
+    null,
+    2,
+  );
+}
+export function event(s: Session, name: string) {
+  const key = `${s.answer_revision}:${name}`;
+  if (!s.events.includes(key)) s.events.push(key);
+}
+export function publicSession(s: Session) {
+  return {
+    diagnostic_version: s.diagnostic_version,
+    record_version: s.record_version,
+    answer_revision: s.answer_revision,
+    answers: s.answers,
+    step: s.step,
+    stage: s.stage,
+    identified: Boolean(s.identity),
+    qualification: s.qualification ?? null,
+    qualification_skipped: Boolean(s.qualification_skipped),
+    partial: s.partial?.data ?? null,
+    full: s.identity ? (s.full?.data ?? null) : null,
+    route: s.identity ? s.scoring.route : null,
+    mail: s.mail ?? null,
+    booking_url:
+      s.identity &&
+      ["conversation", "conversation_override"].includes(s.scoring.route)
+        ? bookingUrl()
+        : null,
+    storage: process.env.DIAGNOSTIC_V3_DATABASE_URL
+      ? "persistent"
+      : "disposable_preview",
+  };
+}
+export function bookingUrl() {
+  try {
+    const url = new URL(process.env.DIAGNOSTIC_V3_BOOKING_URL ?? "");
+    return url.protocol === "https:" ? url.href : null;
+  } catch {
+    return null;
+  }
+}
+export async function act(
+  store: Store,
+  s: Session,
+  input: Record<string, unknown>,
+): Promise<Session> {
+  if (input.expected_version !== s.record_version)
+    throw new Conflict("Your case has changed. Reload to continue.");
+  const expected = s.record_version;
+  if (input.action === "answers") {
+    const answers = answerSchema.parse(input.answers);
+    if (
+      !Number.isInteger(input.step) ||
+      Number(input.step) < 0 ||
+      Number(input.step) > 8
+    )
+      throw new Error("Invalid step");
+    if (JSON.stringify(answers) !== JSON.stringify(s.answers)) {
+      s.answers = answers;
+      s.answer_revision++;
+      delete s.partial;
+      delete s.full;
+      s.stage = "answering";
+      s.scoring = score(answers, s.qualification);
+      delete s.mail;
+    }
+    s.step = Number(input.step);
+    if (
+      Number.isInteger(input.completed_step) &&
+      Number(input.completed_step) >= 1 &&
+      Number(input.completed_step) <= 9
+    )
+      event(s, `q${input.completed_step}_complete`);
+  } else if (input.action === "partial") {
+    if (!complete(s.answers))
+      throw new Error("Please finish the questions first.");
+    if (s.partial?.answer_revision === s.answer_revision) return s;
+    event(s, "analysis_started");
+    s.partial = await analyze(s.id, s.answer_revision, s.answers, "partial");
+    s.stage = "partial";
+    event(s, "partial_result_view");
+    event(s, "identity_gate_view");
+  } else if (input.action === "identify") {
+    if (!s.partial || s.partial.answer_revision !== s.answer_revision)
+      throw new Error("Read your first analysis before continuing.");
+    if (!s.identity) {
+      s.identity = identitySchema.parse(input.identity);
+      s.identified_at = new Date().toISOString();
+      const expiry = new Date(s.identified_at);
+      expiry.setUTCFullYear(expiry.getUTCFullYear() + 1);
+      s.expires_at = expiry.toISOString();
+      event(s, "identity_submit");
+    }
+    if (s.full?.answer_revision !== s.answer_revision)
+      s.full = await analyze(
+        s.id,
+        s.answer_revision,
+        s.answers,
+        "full",
+        s.partial.data,
+        [s.identity.first_name, s.identity.email, s.identity.company],
+      );
+    s.stage = "full";
+    s.scoring = score(s.answers, s.qualification);
+    event(s, "full_result_view");
+  } else if (input.action === "qualification") {
+    if (!s.identity || !s.full) throw new Error("Open your full read first.");
+    s.qualification =
+      input.skip === true
+        ? undefined
+        : qualificationSchema.parse(input.qualification);
+    s.qualification_skipped = input.skip === true;
+    s.scoring = score(s.answers, s.qualification);
+    event(s, `route_${s.scoring.route}`);
+  } else if (input.action === "booking_click") {
+    if (
+      !s.identity ||
+      !["conversation", "conversation_override"].includes(s.scoring.route) ||
+      !bookingUrl()
+    )
+      throw new Error("Booking is not available for this case.");
+    event(s, "book_call_click");
+  } else if (input.action === "summary") {
+    if (!s.identity || !s.full) throw new Error("Open your full read first.");
+    if (s.mail === "sent" || s.mail === "simulated" || s.mail === "queued")
+      return s;
+    // Reserve delivery before the side effect. Retries use the same provider idempotency key.
+    s.mail = "queued";
+  } else throw new Error("Unknown diagnostic action");
+  if (s.identity) s.sales_brief = brief(s);
+  return save(store, s, expected);
+}
+export async function deliverSummary(
+  store: Store,
+  s: Session,
+  origin: string,
+  auth: string,
+): Promise<Session> {
+  if (!s.identity || !s.full || s.mail !== "queued") return s;
+  const expected = s.record_version;
+  const returnToken = createHmac("sha256", auth)
+    .update(`${s.id}:${s.answer_revision}:return`)
+    .digest("base64url");
+  s.return_hash = hash(returnToken);
+  s.return_expires_at = new Date(Date.now() + 7 * 86400000).toISOString();
+  await save(store, s, expected);
+  const text = [
+    s.full.data.case_summary,
+    s.full.data.likely_explanation,
+    s.full.data.leadership_move,
+    s.full.data.manager_question,
+    JSON.stringify(s.full.data.seven_day_experiment),
+    s.full.data.success_signal,
+    `Return privately (7 days, one use): ${origin}/api/diagnostic/v3?return=${returnToken}`,
+  ].join("\n\n");
+  const live =
+    process.env.DIAGNOSTIC_V3_MAIL_ENABLED === "true" &&
+    process.env.VERCEL_ENV !== "preview" &&
+    process.env.RESEND_API_KEY &&
+    process.env.DIAGNOSTIC_V3_MAIL_FROM;
+  if (!live) s.mail = "simulated";
+  else {
+    try {
+      const r = await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        signal: AbortSignal.timeout(8000),
+        headers: {
+          Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+          "Content-Type": "application/json",
+          "Idempotency-Key": `diagnostic-v3-${s.id}-${s.answer_revision}`,
+        },
+        body: JSON.stringify({
+          from: process.env.DIAGNOSTIC_V3_MAIL_FROM,
+          to: [s.identity.email],
+          subject: "Your case: one experiment for the next 7 days",
+          text,
+        }),
+      });
+      if (!r.ok) throw new Error("delivery_failed");
+      s.mail = "sent";
+    } catch {
+      s.mail = "failed";
+    }
+  }
+  // A concurrent edit wins. Do not overwrite its answers or result.
+  await save(store, s, s.record_version);
+  return s;
+}

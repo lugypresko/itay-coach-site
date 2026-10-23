@@ -4701,3 +4701,13 @@ Queries/entity: technical leadership coaching for engineering managers / Itay Fo
 CTA: bring one case through /diagnostic. Internal links: problem pages and frameworks.
 
 Verification: typecheck passed; lint passed with pre-existing warnings; 14 focused tests passed; full Next build passed. Final regenerated HTML checks and remote preview pending.
+
+## DIAGNOSTIC-V3 — approved conversion specification
+State: in_progress
+Owner: Codex
+Lane: diagnostic-v3 (no homepage or governed content changes)
+Scope: V3, scoring-v1, revision-safe private sessions, Groq with deterministic fallback, Preview only.
+Gap analysis completed before code: docs/contracts/diagnostic-v3.md.
+Checkpoint: rollback/pre-diagnostic-v3-2026-10-23 -> 6722fa3603e9292ef2b4b8275f7fae178f20b3fa.
+Production deployment: dpl_HLEjaT3vrfzQvDJDfyCftKuPMBtY. Branch: feature/diagnostic-v3.
+No production DB changes, no merge, no production release. V2 contracts remain intact.

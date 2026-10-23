@@ -298,3 +298,9 @@ This file is the project’s single append-only decision record. New decisions a
 - CMS: No record mutation or approval-hash change. Two path-specific descriptions are presentation overrides; deleting the overrides restores previous CMS display.
 - Language: Separate Hebrew root layout preserves server-rendered html lang without changing the English layout language or adding request middleware.
 - Rollback: Checkpoint branch rollback/pre-0.9.2-2026-10-22 at 6c3ac10. Previous Production dpl_8HcXUhpkWFTDKJYjTokouaRM9vB1; restore through Vercel rollback or redeploy checkpoint. No schema/data migration.
+
+## DEC-20261023-01 — Diagnostic V3 isolated Preview
+- Context: User-approved Diagnostic V3, scoring-v1 and routing/revision clarifications; PLANS.md DIAGNOSTIC-V3; docs/contracts/diagnostic-v3.md.
+- Decision: Dedicated V3 private storage and APIs; preserve V2 data/readers. Server-generated analysis; deterministic qualification; Full Read available before optional qualification. Missing fit is unqualified_nurture. No homepage changes.
+- Safety: Groq disabled until ZDR explicitly verified; no identity in provider requests. CAS and revision-bound analyses; private session cookies. Preview adapters must disclose disposable storage and simulated delivery.
+- Release: Preview only from feature/diagnostic-v3. No Production database mutation, release or main merge. Checkpoint 6722fa3, dpl_HLEjaT3vrfzQvDJDfyCftKuPMBtY.
