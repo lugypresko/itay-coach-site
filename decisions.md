@@ -317,3 +317,9 @@ This file is the project’s single append-only decision record. New decisions a
 - Authorization: Server-verified Payload users with role=admin only for internal diagnostics; deny before cache/provider/data access. Protect role assignment from non-admin API writes. No second identity system.
 - Evidence: Additive V3 DDL and exact synthetic payload preservation after Preview compute restart verified. Vercel env list/create both denied 403, so app-to-DB/redeploy acceptance remains blocked; no env/Production connection changed.
 - Release: feature/diagnostic-v3 Preview only. Preserve data on rollback; previous source 7b2bb04755e70637c335f5c96a9117a227dd2ae5.
+
+## DEC-20261023-04 — Preview trace schema and conditional Production gate
+- Context: User approved exact six-table additive schema, then requested Preview health, three synthetic E2E sessions and redeploy persistence before Production migration preparation; docs/contracts/diagnostic-v3-preview-acceptance.md.
+- Decision: Preserve sessions.payload and existing rows; apply additive trace schema only on br-cold-credit-b9x1qomi. No destructive down or Production mutation.
+- Evidence: 28 DDL statements committed previously; resumed inspection found six tables with RLS. Ten DB-health checks and nine rollback-only constraint assertions passed. Application entry still HTTP 503; normalized writer remains incomplete.
+- Release gate: DB-only tests are not E2E acceptance. Do not prepare Production migration until all requested application and redeploy persistence checks pass.
