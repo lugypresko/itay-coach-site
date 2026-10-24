@@ -38,9 +38,67 @@ function enabled() {
     process.env.DIAGNOSTIC_V3_PRODUCTION_ENABLED === "true"
   );
 }
+
+async function previewDatabaseDiagnostic() {
+  if (process.env.VERCEL_ENV !== "preview") return;
+  const raw = process.env.DIAGNOSTIC_V3_DATABASE_URL;
+  let hostname: string | null = null;
+  let database: string | null = null;
+  let attempted = false;
+  let connected = false;
+  let username = "";
+  let password = "";
+  try {
+    if (!raw) throw new Error("V3 isolated database is not configured");
+    let parsed: URL;
+    try { parsed = new URL(raw); }
+    catch { throw new Error("Invalid PostgreSQL connection URL"); }
+    username = decodeURIComponent(parsed.username);
+    password = decodeURIComponent(parsed.password);
+    hostname = parsed.hostname.replace(/[^a-zA-Z0-9.-]/g, "");
+    database = decodeURIComponent(parsed.pathname.slice(1)).replace(/[^a-zA-Z0-9_-]/g, "");
+    if (!/^ep-icy-fire-b9b5tsic(?:-pooler)?\./.test(hostname) || database !== "neondb")
+      throw new Error("Preview database configuration mismatch");
+    // Use the same Store and application pool as the real session path.
+    const store = getStore();
+    const auth = token();
+    const synthetic = newSession();
+    attempted = true;
+    await store.create(synthetic, auth);
+    connected = true;
+    try {
+      const restored = await store.read(auth);
+      if (restored?.id !== synthetic.id) throw new Error("Synthetic application read failed");
+    } finally { await store.remove(auth); }
+    if (await store.read(auth)) throw new Error("Synthetic application delete failed");
+    console.info("diagnostic_v3_preview_db", {
+      DIAGNOSTIC_V3_DATABASE_URL_present: true,
+      hostname, database, connection_attempt: "success",
+      error_class: null, error_message: null, error_code: null,
+    });
+  } catch (error) {
+    const e = error as { name?: string; message?: string; code?: string };
+    let message = String(e.message ?? "Unknown database error");
+    // Strip all URLs and any parsed credential, including encoded forms.
+    message = message.replace(/[a-z][a-z0-9+.-]*:\/\/[^\s]+/gi, "[REDACTED_URL]");
+    for (const secret of [raw, username, password].filter(Boolean) as string[]) {
+      message = message.split(secret).join("[REDACTED]");
+      message = message.split(encodeURIComponent(secret)).join("[REDACTED]");
+    }
+    console.error("diagnostic_v3_preview_db", {
+      DIAGNOSTIC_V3_DATABASE_URL_present: Boolean(raw),
+      hostname, database,
+      connection_attempt: connected ? "success" : attempted ? "failure" : "not_attempted",
+      error_class: e.name ?? "Error", error_message: message, error_code: e.code ?? null,
+    });
+    throw new Error("Preview database diagnostic failed");
+  }
+}
+
 export async function GET(req: NextRequest) {
   if (!enabled()) return json({ error: "Diagnostic V3 is not enabled." }, 404);
   try {
+    await previewDatabaseDiagnostic();
     const store = getStore();
     const returnToken = req.nextUrl.searchParams.get("return");
     if (returnToken) {
