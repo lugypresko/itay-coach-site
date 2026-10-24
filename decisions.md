@@ -323,3 +323,11 @@ This file is the project’s single append-only decision record. New decisions a
 - Decision: Preserve sessions.payload and existing rows; apply additive trace schema only on br-cold-credit-b9x1qomi. No destructive down or Production mutation.
 - Evidence: 28 DDL statements committed previously; resumed inspection found six tables with RLS. Ten DB-health checks and nine rollback-only constraint assertions passed. Application entry still HTTP 503; normalized writer remains incomplete.
 - Release gate: DB-only tests are not E2E acceptance. Do not prepare Production migration until all requested application and redeploy persistence checks pass.
+
+
+## DEC-20261024-01 — Normalized V3 persistence in Preview
+- Context: User authorized completing normalized-table wiring and four synthetic E2E routes after the Preview connection was confirmed; PLANS.md DIAGNOSTIC-V3.
+- Decision: New V3 sessions read answers, attempts, identities, qualification/scoring and events from the five normalized tables. sessions.payload contains only transitional UI and return-link metadata. Serialize writes using session row locks and record_version; preserve late attempt completion but select only in a successful current-version save.
+- Analysis: Persist pending and completed attempts, retain separate rejected Groq and deterministic fallback records, and link Full Read to its exact First Read. Role/Org changes produce scoring snapshots without calling Groq. Screen-view events require browser acknowledgement.
+- Compatibility: Legacy answer-only sessions can be imported as legacy_snapshot. Legacy sessions with identity/analyses are preserved and require a separately verified offline snapshot import before Production. No historical events/timings are invented.
+- Release: Push only feature/diagnostic-v3 and use automatic Preview deployment. No Production migration/deployment, main merge or weaker Preview authentication.

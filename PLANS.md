@@ -4703,7 +4703,7 @@ CTA: bring one case through /diagnostic. Internal links: problem pages and frame
 Verification: typecheck passed; lint passed with pre-existing warnings; 14 focused tests passed; full Next build passed. Final regenerated HTML checks and remote preview pending.
 
 ## DIAGNOSTIC-V3 — approved conversion specification
-State: in_review
+State: in_progress
 Owner: Codex
 Lane: diagnostic-v3 (no homepage or governed content changes)
 Scope: V3, scoring-v1, revision-safe private sessions, Groq with deterministic fallback, Preview only.
@@ -4721,3 +4721,7 @@ Approved two-pass prompts integrated as analysis-v2: independent Q IDs, exact pa
 Persistent Preview/admin follow-up: provisioned Neon br-cold-credit-b9x1qomi under winter-resonance-15589128; V3 additive DDL, synthetic exact-payload preservation after compute restart, stale CAS rejection and RLS checks passed. Added server-side Payload administrator boundary, role-assignment protection and Preview DB fail-closed configuration. 60 V3 tests plus 5 role-access tests passed; typecheck, targeted lint and clean Next build passed. Vercel env list/create returned 403: no env changed, no application persistence/redeploy acceptance. Isolated Payload initialization/admin, internal audit/health surfaces and expanded Golden/E2E specification remain pending. No Production changes or main merge.
 
 Trace-schema acceptance resumed: six tables/RLS/FKs/indexes observed; 10 DB-health assertions and 9 rolled-back synthetic constraint assertions passed. Three deployed E2E routes blocked before start by HTTP 503. Current writer remains payload-only; normalized trace writer is not implemented. Fresh same-commit Preview redeploy requested for persistence evidence. Full acceptance and Production migration preparation remain blocked. See docs/contracts/diagnostic-v3-preview-acceptance.md. No Production changes.
+
+2026-10-24 Preview connectivity: redeployed feature/diagnostic-v3 as dpl_H2m657uBk9b9uTxdN2e7q4iHskwa; page 200, API 503. Temporary Preview-only sanitized logging deployed at 1fe3485 / dpl_GtMpUzPtc1ELrjj46HmdDDk7jpNm; reproduced once. Runtime Error (code null): V3 isolated database is not configured. DIAGNOSTIC_V3_DATABASE_URL absent/empty in running Preview; no Neon connection attempted. Direct Neon synthetic write/read/delete passed on winter-resonance-15589128 / br-cold-credit-b9x1qomi / ep-icy-fire-b9b5tsic / neondb. Temporary logging removed remotely at 89a8f19. No normalized wiring, Production changes or main merge. Blocked on Preview env configuration (connector env access 403).
+
+2026-10-24 normalized persistence implementation: answers/revisions, attempt lifecycle with separate rejected provider/fallback rows, identity, qualification snapshots/scoring, private brief and funnel events wired. payload retains only UI/return metadata. Row-lock + record_version CAS guards current selection; stale attempts remain unselected. Eight PostgreSQL/PGlite integration tests cover four routes, refresh/source-of-truth isolation, attempt fallback, stale race, edits and Role/Org-only changes. Existing 65 V3 tests pass; TypeScript, targeted lint and Next build pass. Live protected Preview browser E2E and Neon complete trace remain pending required Vercel login/passkey; no weakening of protection, Production changes or main merge.

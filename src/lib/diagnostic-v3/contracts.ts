@@ -123,6 +123,7 @@ export const fullSchema = z
 export type PartialAnalysis = z.infer<typeof partialSchema>;
 export type FullAnalysis = z.infer<typeof fullSchema>;
 export type Analysis<T> = {
+  id?: string;
   session_id: string;
   answer_revision: number;
   analysis_version: typeof ANALYSIS_VERSION;
@@ -131,6 +132,8 @@ export type Analysis<T> = {
   model: string;
   fallback_reason?: string;
   provider_status?: number;
+  provider_request_id?: string;
+  returned_model?: string;
   duration_ms?: number;
 };
 export type Route =
@@ -151,6 +154,7 @@ export type Scoring = {
   rule: string;
 };
 export type Session = {
+  origin?: "live" | "synthetic" | "legacy_snapshot";
   id: string;
   diagnostic_version: typeof VERSION;
   record_version: number;

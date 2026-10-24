@@ -307,6 +307,8 @@ export async function analyze(
         data: validated,
         source: "groq",
         model,
+        returned_model: typeof body.model === "string" ? body.model : model,
+        provider_request_id: response.headers?.get?.("x-request-id") ?? (typeof body.id === "string" ? body.id : undefined),
         ...telemetry("groq", model),
       };
     } catch (error) {

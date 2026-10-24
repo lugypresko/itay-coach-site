@@ -3,11 +3,16 @@ import { VERSION, ANALYSIS_VERSION, type Session } from "./contracts";
 import { score } from "./scoring";
 // pg is already a runtime dependency of this repository.
 import pg from "pg";
+import { normalizedStore } from "./normalized-store";
+import type { Analysis, PartialAnalysis, FullAnalysis } from "./contracts";
 const { Pool } = pg;
 export const hash = (v: string) => createHash("sha256").update(v).digest("hex");
 export const token = () => randomBytes(32).toString("base64url");
 export class Conflict extends Error {}
 export interface Store {
+  recordViews?(s: Session, names: string[]): Promise<void>;
+  beginAnalysis?(s: Session, pass: "partial" | "full"): Promise<string>;
+  finishAnalysis?(s: Session, id: string, read: Analysis<PartialAnalysis | FullAnalysis>): Promise<string>;
   create(s: Session, auth: string): Promise<void>;
   read(auth: string): Promise<Session | null>;
   save(s: Session, expected: number): Promise<boolean>;
@@ -85,42 +90,7 @@ export function getStore(): Store {
     max: 3,
     connectionTimeoutMillis: 5000,
   });
-  return (runtime.__diagnosticV3Store = {
-    async create(s, auth) {
-      await pool.query(
-        "INSERT INTO diagnostic_v3_sessions (id,auth_hash,payload,record_version,expires_at) VALUES ($1,$2,$3,0,$4)",
-        [s.id, hash(auth), s, s.expires_at],
-      );
-    },
-    async read(auth) {
-      const r = await pool.query(
-        "SELECT payload FROM diagnostic_v3_sessions WHERE auth_hash=$1 AND expires_at>now()",
-        [hash(auth)],
-      );
-      return r.rows[0]?.payload ? currentAnalysis(r.rows[0].payload) : null;
-    },
-    async save(s, expected) {
-      const next = { ...s, record_version: expected + 1 };
-      const r = await pool.query(
-        "UPDATE diagnostic_v3_sessions SET payload=$1,record_version=$2,expires_at=$3 WHERE id=$4 AND record_version=$5 AND expires_at>now()",
-        [next, expected + 1, s.expires_at, s.id, expected],
-      );
-      return r.rowCount === 1;
-    },
-    async remove(auth) {
-      await pool.query(
-        "DELETE FROM diagnostic_v3_sessions WHERE auth_hash=$1",
-        [hash(auth)],
-      );
-    },
-    async consumeReturn(value, newAuth) {
-      const r = await pool.query(
-        "UPDATE diagnostic_v3_sessions SET auth_hash=$1, record_version=record_version+1, payload=(payload-'return_hash'-'return_expires_at') || jsonb_build_object('record_version',record_version+1) WHERE payload->>'return_hash'=$2 AND (payload->>'return_expires_at')::timestamptz>now() AND expires_at>now()",
-        [hash(newAuth), hash(value)],
-      );
-      return r.rowCount === 1;
-    },
-  });
+  return (runtime.__diagnosticV3Store = normalizedStore(pool));
 }
 export function newSession(): Session {
   const now = new Date();

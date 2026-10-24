@@ -137,6 +137,12 @@ export async function POST(req: NextRequest) {
         { error: "This private session expired. Start a new case." },
         401,
       );
+    if (input.action === "view") {
+      if (input.stage !== s.stage || input.answer_revision !== s.answer_revision) return json({ ok: false });
+      const names = s.stage === "full" ? ["full_result_view"] : s.stage === "partial" ? ["partial_result_view", "identity_gate_view"] : ["diagnostic_view"];
+      await store.recordViews?.(s, names);
+      return json({ ok: true });
+    }
     if (input.action === "delete") {
       await store.remove(auth!);
       const r = json({ session: null });

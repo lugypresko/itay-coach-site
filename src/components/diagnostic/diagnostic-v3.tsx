@@ -112,6 +112,16 @@ export function DiagnosticV3() {
       };
     });
   }
+  const reportedView = useRef("");
+  useEffect(() => {
+    if (!session || busy) return;
+    const key = `${session.answer_revision}:${session.stage}`;
+    if (reportedView.current === key) return;
+    reportedView.current = key;
+    // Acknowledge a committed rendered screen; provider completion is not a view.
+    void fetch(endpoint, { method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "view", stage: session.stage, answer_revision: session.answer_revision }) }).catch(() => { reportedView.current = ""; });
+  }, [session, busy]);
   const question = questions[step];
   const valid =
     step === 8 ||

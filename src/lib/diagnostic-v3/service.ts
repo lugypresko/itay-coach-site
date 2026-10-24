@@ -79,7 +79,7 @@ export async function act(
       Number(input.step) > 8
     )
       throw new Error("Invalid step");
-    if (JSON.stringify(answers) !== JSON.stringify(s.answers)) {
+    if (JSON.stringify(answers) !== JSON.stringify(s.answers) || (Number.isInteger(input.completed_step) && !s.events.some(e => e.split(":")[1] === `q${input.completed_step}_complete`))) {
       s.answers = answers;
       s.answer_revision++;
       delete s.partial;
@@ -100,10 +100,11 @@ export async function act(
       throw new Error("Please finish the questions first.");
     if (s.partial?.answer_revision === s.answer_revision) return s;
     event(s, "analysis_started");
+    const attempt = await store.beginAnalysis?.(s, "partial");
     s.partial = await analyze(s.id, s.answer_revision, s.answers, "partial");
+    if (attempt) s.partial.id = await store.finishAnalysis!(s, attempt, s.partial);
     s.stage = "partial";
-    event(s, "partial_result_view");
-    event(s, "identity_gate_view");
+
   } else if (input.action === "identify") {
     if (!s.partial || s.partial.answer_revision !== s.answer_revision)
       throw new Error("Read your first analysis before continuing.");
@@ -118,7 +119,8 @@ export async function act(
       await save(store, s, expected);
       expected = s.record_version;
     }
-    if (s.full?.answer_revision !== s.answer_revision)
+    if (s.full?.answer_revision !== s.answer_revision) {
+      const attempt = await store.beginAnalysis?.(s, "full");
       s.full = await analyze(
         s.id,
         s.answer_revision,
@@ -127,9 +129,11 @@ export async function act(
         s.partial.data,
         [s.identity.first_name, s.identity.email, s.identity.company],
       );
+      if (attempt) s.full.id = await store.finishAnalysis!(s, attempt, s.full);
+    }
     s.stage = "full";
     s.scoring = score(s.answers, s.qualification);
-    event(s, "full_result_view");
+
   } else if (input.action === "qualification") {
     if (!s.identity || !s.full) throw new Error("Open your full read first.");
     s.qualification =
@@ -138,6 +142,8 @@ export async function act(
         : qualificationSchema.parse(input.qualification);
     s.qualification_skipped = input.skip === true;
     s.scoring = score(s.answers, s.qualification);
+    event(s, input.skip === true ? "qualification_skipped" : "qualification_submit");
+    // Include the decision snapshot to distinguish repeated qualification changes.
     event(s, `route_${s.scoring.route}`);
   } else if (input.action === "booking_click") {
     if (

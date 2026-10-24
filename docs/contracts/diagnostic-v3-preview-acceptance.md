@@ -45,3 +45,12 @@ An unchanged database fingerprint after redeploy only proves database retention;
 
 ## Production gate
 Only after persistent application configuration, normalized writer integration, authenticated health check, three actual synthetic E2E sessions and app-session recovery across redeploy pass may the approved Production migration package be prepared. No Production mutation or merge is permitted by this task.
+
+
+## 2026-10-24 normalized writer verification
+
+Application DB connectivity was confirmed before this implementation. New sessions now use the normalized writer/reader. `payload` is limited to UI state and return-link/delivery metadata. No schema migration was applied in this implementation.
+
+Local evidence: eight PostgreSQL/PGlite integration cases use a schema snapshot introspected from Neon Preview. Four complete service flows reach conversation, nurture, self_service and unqualified_nurture; all verify revisions, two analyses, identity, qualification, brief, events, restored reads, and cascading cleanup. Additional cases verify a failed Groq attempt plus separate fallback, validated mocked Groq metadata, payload contamination isolation, stale analysis preservation without selection, answer edits, and Role/Org changes without provider calls. These tests are **not deployed browser E2E** and mocked Groq is **not evidence of live Groq personalization**.
+
+Remaining acceptance: authenticated stable branch Preview browser journeys (four), live Groq outputs, and one complete Neon trace. Existing legacy analyzed/identified sessions need explicit offline snapshot migration before Production; they are preserved rather than silently fabricated. Production migration/release and main merge remain prohibited.
