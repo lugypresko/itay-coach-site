@@ -38,9 +38,35 @@ function enabled() {
     process.env.DIAGNOSTIC_V3_PRODUCTION_ENABLED === "true"
   );
 }
+
+const healthCache = globalThis as typeof globalThis & {
+  __v3Health?: { until: number; result: Promise<unknown> };
+};
+async function syntheticHealth() {
+  const parsed = new URL(process.env.DIAGNOSTIC_V3_DATABASE_URL ?? "");
+  if (!/^ep-icy-fire-b9b5tsic(?:-pooler)?\./.test(parsed.hostname) || parsed.pathname !== "/neondb")
+    throw new Error("Preview database configuration mismatch");
+  const store = getStore();
+  const auth = token();
+  const s = newSession();
+  await store.create(s, auth);
+  let read = false;
+  try { read = (await store.read(auth))?.id === s.id; }
+  finally { await store.remove(auth); }
+  const removed = (await store.read(auth)) === null;
+  if (!read || !removed) throw new Error("Synthetic application persistence check failed");
+  return { database_variable_present: true, hostname: parsed.hostname,
+    database: "neondb", synthetic_session_id: s.id, write: true, read, delete: removed };
+}
+
 export async function GET(req: NextRequest) {
   if (!enabled()) return json({ error: "Diagnostic V3 is not enabled." }, 404);
   try {
+    if (process.env.VERCEL_ENV === "preview" && req.nextUrl.searchParams.get("health") === "synthetic") {
+      if (!healthCache.__v3Health || healthCache.__v3Health.until < Date.now())
+        healthCache.__v3Health = { until: Date.now() + 600000, result: syntheticHealth() };
+      return json(await healthCache.__v3Health.result);
+    }
     const store = getStore();
     const returnToken = req.nextUrl.searchParams.get("return");
     if (returnToken) {
