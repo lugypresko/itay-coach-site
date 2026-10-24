@@ -360,8 +360,8 @@ export function DiagnosticV3() {
           >
             <h3>I can take this one level deeper.</h3>
             <p>
-              See the first leadership move I would test, one question for the
-              manager and what to watch over the next 7 days.
+              Get the reasoning, a question for your manager, and one practical
+              experiment to try over the next 7 days.
             </p>
             {!session.identified && (
               <>
