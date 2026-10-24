@@ -65,19 +65,7 @@ export async function GET(req: NextRequest) {
     const response = json({ session: publicSession(fresh) });
     response.cookies.set(COOKIE, newAuth, options);
     return response;
-  } catch (error) {
-    // Preview-only diagnostics: never emit credentials, SQL, stack or raw messages.
-    if (process.env.VERCEL_ENV === "preview") {
-      const e = error as { name?: string; code?: string; message?: string };
-      const message = String(e.message ?? "Unknown storage failure")
-        .replace(/postgres(?:ql)?:\/\/[^\s]+/gi, "[REDACTED_DATABASE_URL]")
-        .replace(/(password|token|secret|auth_hash)\s*[=:]\s*[^\s,;]+/gi, "$1=[REDACTED]");
-      console.error("diagnostic_v3_storage_failure", {
-        error_class: e.name ?? "Error",
-        code: e.code ?? null,
-        message,
-      });
-    }
+  } catch {
     return json(
       { error: "Your saved case is temporarily unavailable. Please retry." },
       503,
