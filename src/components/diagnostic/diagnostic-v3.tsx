@@ -463,16 +463,36 @@ export function DiagnosticV3() {
               <p>{f.alternative_hypothesis}</p>
             </>
           )}
-          <h3>What I would test first</h3>
-          <p>{f.leadership_move}</p>
           <h3>Ask your manager this</h3>
           <blockquote>{f.manager_question}</blockquote>
-          <h3>7-day experiment</h3>
-          <p>{f.seven_day_experiment.trigger}</p>
-          <p>{f.seven_day_experiment.action}</p>
-          <p>{f.seven_day_experiment.safety_boundary}</p>
-          <p>{f.seven_day_experiment.observation}</p>
-          <p>{f.seven_day_experiment.review_point}</p>
+          <section
+            className="v3-experiment"
+            aria-labelledby="v3-experiment-title"
+          >
+            <h3 id="v3-experiment-title">7-day experiment</h3>
+            <dl className="v3-experiment__steps">
+              <div>
+                <dt>When</dt>
+                <dd>{f.seven_day_experiment.trigger}</dd>
+              </div>
+              <div>
+                <dt>Try</dt>
+                <dd>{f.seven_day_experiment.action}</dd>
+              </div>
+              <div>
+                <dt>Keep it safe</dt>
+                <dd>{f.seven_day_experiment.safety_boundary}</dd>
+              </div>
+              <div>
+                <dt>Track</dt>
+                <dd>{f.seven_day_experiment.observation}</dd>
+              </div>
+              <div>
+                <dt>Review</dt>
+                <dd>{f.seven_day_experiment.review_point}</dd>
+              </div>
+            </dl>
+          </section>
           <h3>How you’ll know whether it worked</h3>
           <p>{f.success_signal}</p>
           <p>Your desired outcome: {p?.desired_outcome}</p>
@@ -480,6 +500,7 @@ export function DiagnosticV3() {
           <p>{f.unresolved_question}</p>
           {qualify && !session.qualification ? (
             <form
+              className="v3-qualification"
               onSubmit={(e) => {
                 e.preventDefault();
                 send("qualification", {
@@ -489,36 +510,48 @@ export function DiagnosticV3() {
             >
               <h3>One quick check to suggest the right next step</h3>
               <p>Your full read above is yours whether or not you answer.</p>
-              <label>
-                Your role
-                <select
-                  required
-                  value={role}
-                  onChange={(e) => setRole(e.target.value)}
-                >
-                  <option value="">Choose your role</option>
-                  {roles.map(([v, t]) => (
-                    <option key={v} value={v}>
-                      {t}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label>
-                Engineering org size
-                <select
-                  required
-                  value={size}
-                  onChange={(e) => setSize(e.target.value)}
-                >
-                  <option value="">Choose size</option>
-                  {sizes.map(([v, t]) => (
-                    <option key={v} value={v}>
-                      {t}
-                    </option>
-                  ))}
-                </select>
-              </label>
+              <div className="v3-qualification-fields">
+                <label className="v3-qualification-field">
+                  <span className="v3-qualification-field__title">
+                    Your role
+                  </span>
+                  <span className="v3-qualification-field__hint">
+                    Choose the role closest to your work.
+                  </span>
+                  <select
+                    required
+                    value={role}
+                    onChange={(e) => setRole(e.target.value)}
+                  >
+                    <option value="">Choose your role</option>
+                    {roles.map(([v, t]) => (
+                      <option key={v} value={v}>
+                        {t}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label className="v3-qualification-field">
+                  <span className="v3-qualification-field__title">
+                    Engineering org size
+                  </span>
+                  <span className="v3-qualification-field__hint">
+                    Approximate size of the engineering organization.
+                  </span>
+                  <select
+                    required
+                    value={size}
+                    onChange={(e) => setSize(e.target.value)}
+                  >
+                    <option value="">Choose size</option>
+                    {sizes.map(([v, t]) => (
+                      <option key={v} value={v}>
+                        {t}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </div>
               <div className="v3-actions">
                 <button className="primary-link" disabled={busy}>
                   Suggest my next step
@@ -542,7 +575,6 @@ export function DiagnosticV3() {
               session.route === "conversation_override" ? (
                 <>
                   <h3>I think this is worth looking at together.</h3>
-                  <p>{f.unresolved_question}</p>
                   {session.booking_url ? (
                     <a
                       className="primary-link"

@@ -136,6 +136,71 @@
   padding-left: 16px;
   border-left: 3px solid #6a8a00;
 }
+.diagnostic-v3 .v3-experiment {
+  margin: 20px 0 28px;
+  padding: 20px;
+  border: 1px solid #859387;
+  border-radius: 12px;
+  background: rgba(138, 155, 128, 0.08);
+}
+.diagnostic-v3 .v3-experiment h3 {
+  margin: 0 0 16px;
+}
+.diagnostic-v3 .v3-experiment__steps {
+  display: grid;
+  gap: 14px;
+  margin: 0;
+}
+.diagnostic-v3 .v3-experiment__steps > div {
+  display: grid;
+  grid-template-columns: minmax(92px, 0.22fr) minmax(0, 1fr);
+  gap: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(117, 131, 120, 0.45);
+}
+.diagnostic-v3 .v3-experiment__steps dt {
+  font-weight: 700;
+}
+.diagnostic-v3 .v3-experiment__steps dd {
+  margin: 0;
+  line-height: 1.65;
+}
+.diagnostic-v3 .v3-qualification > h3 {
+  margin-top: 0;
+}
+.diagnostic-v3 .v3-qualification-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin: 20px 0;
+}
+.diagnostic-v3 .v3-qualification-field {
+  box-sizing: border-box;
+  min-width: 0;
+  margin: 0;
+  padding: 16px;
+  border: 1px solid #859387;
+  border-radius: 10px;
+  background: rgba(138, 155, 128, 0.08);
+}
+.diagnostic-v3 .v3-qualification-field__title,
+.diagnostic-v3 .v3-qualification-field__hint {
+  display: block;
+}
+.diagnostic-v3 .v3-qualification-field__title {
+  font-weight: 700;
+}
+.diagnostic-v3 .v3-qualification-field__hint {
+  min-height: 2.8em;
+  margin-top: 5px;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.4;
+  opacity: 0.82;
+}
+.diagnostic-v3 .v3-qualification-field select {
+  margin-top: 12px;
+}
 .diagnostic-v3 [role="alert"] {
   padding: 12px;
   border: 1px solid #a63f27;
@@ -151,6 +216,16 @@
   }
   .diagnostic-v3 .v3-actions > * {
     flex: 1 1 130px;
+  }
+  .diagnostic-v3 .v3-qualification-fields {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .diagnostic-v3 .v3-qualification-field__hint {
+    min-height: 0;
+  }
+  .diagnostic-v3 .v3-experiment__steps > div {
+    grid-template-columns: minmax(74px, 0.25fr) minmax(0, 1fr);
+    gap: 8px;
   }
   .diagnostic-v3 h2 {
     font-size: 27px;
