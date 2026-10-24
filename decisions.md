@@ -291,3 +291,43 @@ This file is the project’s single append-only decision record. New decisions a
 - Context: User minor-revision request on `2026-07-26`; `PLANS.md` Task 095; `DEC-20260726-03`; `DEC-20260726-04`.
 - Rationale: Improve semantic and conversion clarity without changing canonical meaning or governed page structure.
 - Consequences: Version 2/hash `9080366c4cfaeac6b2f8e575c1770e885ce7cdaccd510bf16f152f31a6f0c5c9` is superseded by draft version 3/hash `28b0ea1c56e8a8e527851ed1fa00077095c5eb904c3d8293d4a22565aa944788`; no approval or publication is granted.
+
+## DEC-20261022-01 — v0.9.2 public-surface audit remediation
+- Context: User-approved SEO/AEO and dark contrast audits; PLANS.md SEO-CONTRAST-092.
+- Decision: Preserve homepage fc65b2d design, index policies and existing publication gates. Align machine-facing offer/CTA with the visible 12-week, six-session offer; use scoped contrast tokens for bright surfaces. Add accurate metadata, contextual links and Service schema without ratings or invented credentials.
+- CMS: No record mutation or approval-hash change. Two path-specific descriptions are presentation overrides; deleting the overrides restores previous CMS display.
+- Language: Separate Hebrew root layout preserves server-rendered html lang without changing the English layout language or adding request middleware.
+- Rollback: Checkpoint branch rollback/pre-0.9.2-2026-10-22 at 6c3ac10. Previous Production dpl_8HcXUhpkWFTDKJYjTokouaRM9vB1; restore through Vercel rollback or redeploy checkpoint. No schema/data migration.
+
+## DEC-20261023-01 — Diagnostic V3 isolated Preview
+- Context: User-approved Diagnostic V3, scoring-v1 and routing/revision clarifications; PLANS.md DIAGNOSTIC-V3; docs/contracts/diagnostic-v3.md.
+- Decision: Dedicated V3 private storage and APIs; preserve V2 data/readers. Server-generated analysis; deterministic qualification; Full Read available before optional qualification. Missing fit is unqualified_nurture. No homepage changes.
+- Safety: Groq disabled until ZDR explicitly verified; no identity in provider requests. CAS and revision-bound analyses; private session cookies. Preview adapters must disclose disposable storage and simulated delivery.
+- Release: Preview only from feature/diagnostic-v3. No Production database mutation, release or main merge. Checkpoint 6722fa3, dpl_HLEjaT3vrfzQvDJDfyCftKuPMBtY.
+
+## DEC-20261023-02 — Approved two-pass diagnostic reasoning
+- Context: User-provided FIRST READ and FULL READ prompts; docs/contracts/diagnostic-v3.md; PLANS.md DIAGNOSTIC-V3.
+- Decision: Separate pass-specific reasoning; strict approved pattern vocabulary and Q1–Q9/CASE_CONTEXT evidence references. Full Read has a five-part experiment, including review_point. Preserve deterministic scoring-v1 and all privacy/fallback gates.
+- Compatibility: analysis-v2 invalidates old derived Preview reads without deleting answers, identity or retained brief. No database migration or automatic provider rerun.
+- Release: feature/diagnostic-v3 Preview only; no main merge, homepage changes or Production deployment. Previous Preview commit 14e129a9ae98c60defa503e71e0df4699dcf3ead is the code rollback point.
+
+## DEC-20261023-03 — Persistent isolated Preview and Payload admin boundary
+- Context: User-confirmed PostgreSQL isolation and Payload-admin-only internal verification; docs/contracts/diagnostic-v3-operations.md; PLANS.md DIAGNOSTIC-V3.
+- Decision: Neon preview/diagnostic-v3 in winter-resonance-15589128, synthetic data only; require persistent storage in deployed Preview, with no fallback to Production DATABASE_URL. Payload Preview authentication uses the same isolated database.
+- Authorization: Server-verified Payload users with role=admin only for internal diagnostics; deny before cache/provider/data access. Protect role assignment from non-admin API writes. No second identity system.
+- Evidence: Additive V3 DDL and exact synthetic payload preservation after Preview compute restart verified. Vercel env list/create both denied 403, so app-to-DB/redeploy acceptance remains blocked; no env/Production connection changed.
+- Release: feature/diagnostic-v3 Preview only. Preserve data on rollback; previous source 7b2bb04755e70637c335f5c96a9117a227dd2ae5.
+
+## DEC-20261023-04 — Preview trace schema and conditional Production gate
+- Context: User approved exact six-table additive schema, then requested Preview health, three synthetic E2E sessions and redeploy persistence before Production migration preparation; docs/contracts/diagnostic-v3-preview-acceptance.md.
+- Decision: Preserve sessions.payload and existing rows; apply additive trace schema only on br-cold-credit-b9x1qomi. No destructive down or Production mutation.
+- Evidence: 28 DDL statements committed previously; resumed inspection found six tables with RLS. Ten DB-health checks and nine rollback-only constraint assertions passed. Application entry still HTTP 503; normalized writer remains incomplete.
+- Release gate: DB-only tests are not E2E acceptance. Do not prepare Production migration until all requested application and redeploy persistence checks pass.
+
+
+## DEC-20261024-01 — Normalized V3 persistence in Preview
+- Context: User authorized completing normalized-table wiring and four synthetic E2E routes after the Preview connection was confirmed; PLANS.md DIAGNOSTIC-V3.
+- Decision: New V3 sessions read answers, attempts, identities, qualification/scoring and events from the five normalized tables. sessions.payload contains only transitional UI and return-link metadata. Serialize writes using session row locks and record_version; preserve late attempt completion but select only in a successful current-version save.
+- Analysis: Persist pending and completed attempts, retain separate rejected Groq and deterministic fallback records, and link Full Read to its exact First Read. Role/Org changes produce scoring snapshots without calling Groq. Screen-view events require browser acknowledgement.
+- Compatibility: Legacy answer-only sessions can be imported as legacy_snapshot. Legacy sessions with identity/analyses are preserved and require a separately verified offline snapshot import before Production. No historical events/timings are invented.
+- Release: Push only feature/diagnostic-v3 and use automatic Preview deployment. No Production migration/deployment, main merge or weaker Preview authentication.

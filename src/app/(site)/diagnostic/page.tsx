@@ -1,6 +1,8 @@
 import React from "react";
 import type { Metadata } from "next";
 
+import { DiagnosticV3 } from "@/components/diagnostic/diagnostic-v3";
+
 import { DiagnosticFunnel } from "@/components/diagnostic/diagnostic-funnel";
 
 const title = "Leadership Diagnostic";
@@ -17,14 +19,26 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
+  const v3 =
+    process.env.VERCEL_ENV !== "production" ||
+    process.env.DIAGNOSTIC_V3_PRODUCTION_ENABLED === "true";
   return (
-    <main id="main-content" className="content-shell">
+    <main
+      id="main-content"
+      className={`content-shell${v3 ? " diagnostic-v3-shell" : ""}`}
+    >
       <header className="content-hero">
         <p className="eyebrow">Private working diagnostic</p>
-        <h1 id="diagnostic-route-title">{title}</h1>
-        <p className="lede">{description}</p>
+        <h1 id="diagnostic-route-title">
+          {v3 ? "Bring one real situation." : title}
+        </h1>
+        <p className="lede">
+          {v3
+            ? "See what may be keeping it stuck — and one move worth testing next."
+            : description}
+        </p>
       </header>
-      <DiagnosticFunnel />
+      {v3 ? <DiagnosticV3 /> : <DiagnosticFunnel />}
     </main>
   );
 }

@@ -1,3 +1,4 @@
+import { languageAlternates } from "@/lib/public-offer";
 import type { Metadata } from "next";
 import Link from "next/link";
 
@@ -8,7 +9,7 @@ const canonical = `${getSiteUrl()}/he/problems/product-engineering-misalignment`
 export const metadata: Metadata = {
   title: "חוסר תיאום בין מוצר לפיתוח: מי מקבל את ההחלטה",
   description: "איך להבדיל בין בעיית תקשורת לבעיית זכויות החלטה בין מוצר לפיתוח, וניסוי הפיך אחד ל־CTO או VP R&D.",
-  alternates: { canonical },
+  alternates: { canonical, languages: languageAlternates },
   openGraph: {
     title: "חוסר תיאום בין מוצר לפיתוח | The Push",
     description: "אבחון מעשי של חוסר תיאום בין מוצר לפיתוח וניסוי הפיך אחד.",
@@ -25,7 +26,7 @@ export default function HebrewProductEngineeringMisalignmentPage() {
         <p className="eyebrow">עמוד בעיה</p>
         <h1>כשמוצר ופיתוח לא מסכימים, ההחלטה חוזרת למנהל</h1>
         <p className="lede">חוסר תיאום אינו תמיד בעיית תקשורת. לפעמים אין בעלים ברור להכרעה בין ערך ללקוח לבין היתכנות טכנית.</p>
-        <div className="content-actions"><Link className="primary-link" href="/player-trap">הביאו מקרה אחד לאבחון</Link></div>
+        <div className="content-actions"><Link className="primary-link" href="/diagnostic">הביאו מקרה אחד לאבחון</Link></div>
       </header>
       <section className="content-grid">
         <article className="content-panel content-panel-wide"><h2>התשובה הקצרה</h2><p>כאשר מוצר ופיתוח חוזרים שוב ושוב לאותה מחלוקת, בדקו שתי אפשרויות: פער מידע ותקשורת, או פער בזכויות החלטה ובמדדים. מקרה יחיד אינו מוכיח דפוס. התחילו באירוע חי, הגדירו מי מחליט, איזה מידע חסר ומה ייחשב התקדמות.</p></article>
