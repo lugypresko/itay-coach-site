@@ -38,7 +38,11 @@ export default function Page() {
             : description}
         </p>
       </header>
-      {v3 ? <DiagnosticV3 /> : <DiagnosticFunnel />}
+      {v3 ? (
+        <DiagnosticV3 previewUx={process.env.VERCEL_ENV === "preview"} />
+      ) : (
+        <DiagnosticFunnel />
+      )}
     </main>
   );
 }

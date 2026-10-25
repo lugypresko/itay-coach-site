@@ -45,6 +45,45 @@
   color: #10251d;
   border: 2px solid #10251d;
 }
+.diagnostic-v3 .v3-multi-limit,
+.diagnostic-v3 .v3-save-state {
+  display: block;
+  margin-top: 10px;
+  font-size: 14px;
+  opacity: 0.8;
+}
+.diagnostic-v3 .v3-analysis-progress {
+  max-width: 540px;
+  margin: 56px auto;
+  padding: 24px 0;
+}
+.diagnostic-v3 .v3-analysis-progress h2 {
+  margin: 18px 0 8px;
+}
+.diagnostic-v3 .v3-analysis-progress ol {
+  display: grid;
+  gap: 8px;
+  margin: 24px 0 0;
+  padding-left: 22px;
+  opacity: 0.76;
+}
+.diagnostic-v3 .v3-analysis-progress__spinner {
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: v3-spin 0.9s linear infinite;
+}
+@keyframes v3-spin {
+  to { transform: rotate(360deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .diagnostic-v3 .v3-analysis-progress__spinner {
+    animation-duration: 2.5s;
+  }
+}
 .diagnostic-v3 button:focus-visible,
 .diagnostic-v3 a:focus-visible,
 .diagnostic-v3 input:focus-visible,

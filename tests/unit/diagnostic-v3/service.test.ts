@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { FullAnalysis, Session } from "@/lib/diagnostic-v3/contracts";
-import { act, deliverSummary, renderSummaryEmail } from "@/lib/diagnostic-v3/service";
+import { act, deliverSummary, publicSession, renderSummaryEmail } from "@/lib/diagnostic-v3/service";
+import { partialFallback } from "@/lib/diagnostic-v3/analysis";
 import type { Store } from "@/lib/diagnostic-v3/store";
 
 afterEach(() => {
@@ -99,6 +100,27 @@ describe("Diagnostic V3 summary email", () => {
     expect(text).not.toContain(full.unresolved_question);
   });
 
+  it("uses neutral language for the known escalating/blame phrasing", () => {
+    vi.stubEnv("VERCEL_ENV", "preview");
+    const text = renderSummaryEmail(
+      { ...full, likely_explanation: "You keep escalating and blocking progress." },
+      "https://preview.example.test/api/diagnostic/v3?return=private-token",
+    );
+    expect(text).toContain(
+      "The handoff keeps coming back to you and progress slows.",
+    );
+    expect(text).not.toContain("you keep escalating and blocking progress");
+  });
+
+  it("leaves Production email copy unchanged", () => {
+    vi.stubEnv("VERCEL_ENV", "production");
+    const text = renderSummaryEmail(
+      { ...full, likely_explanation: "You keep escalating and blocking progress." },
+      "https://site.example.test/api/diagnostic/v3?return=private-token",
+    );
+    expect(text).toContain("You keep escalating and blocking progress.");
+  });
+
   it("sends in Preview only when both mail flags and delivery settings exist", async () => {
     vi.stubEnv("VERCEL_ENV", "preview");
     vi.stubEnv("DIAGNOSTIC_V3_MAIL_ENABLED", "true");
@@ -186,5 +208,28 @@ describe("Diagnostic V3 summary email", () => {
 
     expect(session.mail).toBe("sent");
     expect(fetchMock).toHaveBeenCalledOnce();
+  });
+});
+
+describe("Diagnostic V3 Preview QA metadata", () => {
+  it("exposes selected analysis sources only in Preview", () => {
+    const session = mailSession();
+    session.partial = {
+      session_id: session.id,
+      answer_revision: session.answer_revision,
+      analysis_version: "analysis-v2",
+      data: partialFallback({}),
+      source: "fallback",
+      model: "deterministic-v1",
+    };
+
+    vi.stubEnv("VERCEL_ENV", "preview");
+    expect(publicSession(session).qa_metadata).toEqual({
+      first_read_source: "deterministic",
+      full_read_source: "groq",
+    });
+
+    vi.stubEnv("VERCEL_ENV", "production");
+    expect(publicSession(session).qa_metadata).toBeUndefined();
   });
 });

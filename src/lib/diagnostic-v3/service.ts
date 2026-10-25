@@ -31,6 +31,16 @@ export function event(s: Session, name: string) {
   if (!s.events.includes(key)) s.events.push(key);
 }
 export function publicSession(s: Session) {
+  const qaMetadata = process.env.VERCEL_ENV === "preview"
+    ? {
+        first_read_source: s.partial
+          ? s.partial.source === "groq" ? "groq" : "deterministic"
+          : null,
+        full_read_source: s.full
+          ? s.full.source === "groq" ? "groq" : "deterministic"
+          : null,
+      }
+    : undefined;
   return {
     diagnostic_version: s.diagnostic_version,
     record_version: s.record_version,
@@ -53,6 +63,7 @@ export function publicSession(s: Session) {
     storage: process.env.DIAGNOSTIC_V3_DATABASE_URL
       ? "persistent"
       : "disposable_preview",
+    qa_metadata: qaMetadata,
   };
 }
 export function bookingUrl() {
@@ -267,13 +278,25 @@ function firstSentence(value: string) {
   return limitWords(end === -1 ? normalized : normalized.slice(0, end + 1), 22);
 }
 
+function neutralizeEmailTone(value: string) {
+  return value.replace(/\byou keep escalating and blocking progress\b/i, (phrase) =>
+    phrase[0] === phrase[0]?.toUpperCase()
+      ? "The handoff keeps coming back to you and progress slows"
+      : "the handoff keeps coming back to you and progress slows",
+  );
+}
+
 export function renderSummaryEmail(
   full: NonNullable<Session["full"]>["data"],
   returnUrl: string,
 ) {
   return [
     "What I noticed",
-    firstSentence(full.likely_explanation),
+    firstSentence(
+      process.env.VERCEL_ENV === "preview"
+        ? neutralizeEmailTone(full.likely_explanation)
+        : full.likely_explanation,
+    ),
     "",
     "Your next move",
     limitWords(full.leadership_move, 22),

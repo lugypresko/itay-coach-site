@@ -12,19 +12,46 @@ import type {
   Identity,
   Qualification,
 } from "@/lib/diagnostic-v3/contracts";
+import {
+  MAX_MULTI_SELECT,
+  shouldAutoAdvance,
+  toggleMultiAnswer,
+} from "@/lib/diagnostic-v3/ui-state";
 import type { publicSession } from "@/lib/diagnostic-v3/service";
 import "./diagnostic-v3.css";
 type View = ReturnType<typeof publicSession>;
 const endpoint = "/api/diagnostic/v3";
-export function DiagnosticV3() {
+
+function AnalysisProgress({ mode }: { mode: "first" | "full" }) {
+  return (
+    <div className="v3-analysis-progress" role="status" aria-live="polite">
+      <span className="v3-analysis-progress__spinner" aria-hidden="true" />
+      <h2>{mode === "first" ? "Reading your answers…" : "Looking for the pattern…"}</h2>
+      <p>
+        {mode === "first"
+          ? "Looking for the pattern and preparing your next move."
+          : "Preparing your next move from the full read."}
+      </p>
+      <ol aria-label="Analysis steps">
+        <li>Reading your answers</li>
+        <li>Looking for the pattern</li>
+        <li>Preparing your next move</li>
+      </ol>
+    </div>
+  );
+}
+
+export function DiagnosticV3({ previewUx = false }: { previewUx?: boolean } = {}) {
   const [session, setSession] = useState<View | null>(null),
     [answers, setAnswers] = useState<Answers>({}),
     [step, setStep] = useState(0),
     [editing, setEditing] = useState(false);
   const [busy, setBusy] = useState(true),
+    [answerSaving, setAnswerSaving] = useState(false),
     [error, setError] = useState(""),
     [loaded, setLoaded] = useState(false),
     [qualify, setQualify] = useState(true);
+  const [analysisMode, setAnalysisMode] = useState<"first" | "full" | null>(null);
   const [identity, setIdentity] = useState<Identity>({
       first_name: "",
       email: "",
@@ -33,10 +60,19 @@ export function DiagnosticV3() {
     [role, setRole] = useState(""),
     [size, setSize] = useState("");
   const lock = useRef(false);
+  const answersRef = useRef<Answers>({});
+  const stepRef = useRef(0);
+  const persistedSessionRef = useRef<View | null>(null);
+  const answerWriteQueue = useRef<Promise<View | null>>(Promise.resolve(null));
+  const answerWriteCount = useRef(0);
+  const answerWriteEpoch = useRef(0);
   const heading = useRef<HTMLHeadingElement>(null);
   function accept(s: View | null) {
     setSession(s);
     if (s) {
+      persistedSessionRef.current = s;
+      answersRef.current = s.answers;
+      stepRef.current = s.step;
       setAnswers(s.answers);
       setStep(s.step);
       setQualify(!s.qualification_skipped);
@@ -96,32 +132,113 @@ export function DiagnosticV3() {
       setBusy(false);
     }
   }
+  function persistAnswersInBackground(
+    answerSnapshot: Answers,
+    nextStep: number,
+    completedStep?: number,
+  ): Promise<View | null> {
+    const epoch = answerWriteEpoch.current;
+    answerWriteCount.current += 1;
+    setAnswerSaving(true);
+    const task = answerWriteQueue.current
+      .then(async () => {
+        if (epoch !== answerWriteEpoch.current) return null;
+        const base = persistedSessionRef.current;
+        if (!base) throw new Error("Your saved case is not ready yet.");
+        const response = await fetch(endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "answers",
+            expected_version: base.record_version,
+            answers: answerSnapshot,
+            step: nextStep,
+            completed_step: completedStep,
+          }),
+        });
+        const body = await response.json();
+        if (!response.ok) throw new Error(body.error);
+        const saved = body.session as View;
+        persistedSessionRef.current = saved;
+        setSession(saved);
+        return saved;
+      })
+      .catch((cause: unknown) => {
+        if (epoch === answerWriteEpoch.current) {
+          answerWriteEpoch.current += 1;
+          const saved = persistedSessionRef.current;
+          if (saved) {
+            answersRef.current = saved.answers;
+            stepRef.current = saved.step;
+            setAnswers(saved.answers);
+            setStep(saved.step);
+          }
+          setError(
+            cause instanceof Error
+              ? cause.message
+              : "We could not save this answer. Please retry.",
+          );
+        }
+        return null;
+      })
+      .finally(() => {
+        answerWriteCount.current -= 1;
+        setAnswerSaving(answerWriteCount.current > 0);
+      });
+    answerWriteQueue.current = task;
+    return task;
+  }
   function select(key: keyof Answers, value: string, multi = false) {
-    setAnswers((a) => {
-      if (!multi) return { ...a, [key]: value };
-      const old = (a[key] as string[] | undefined) ?? [];
-      const exclusive = key === "attempts" ? "nothing" : "little";
-      return {
-        ...a,
-        [key]:
-          value === exclusive
+    if (!previewUx) {
+      setAnswers((current) => {
+        if (!multi) return { ...current, [key]: value };
+        const old = (current[key] as string[] | undefined) ?? [];
+        const exclusive = key === "attempts" ? "nothing" : "little";
+        return {
+          ...current,
+          [key]: value === exclusive
             ? [value]
             : old.includes(value)
-              ? old.filter((v) => v !== value)
-              : [...old.filter((v) => v !== exclusive), value],
-      };
-    });
+              ? old.filter((item) => item !== value)
+              : [...old.filter((item) => item !== exclusive), value],
+        };
+      });
+      return;
+    }
+    const currentStep = stepRef.current;
+    const currentAnswers = answersRef.current;
+    const nextAnswers = multi && (key === "attempts" || key === "impact")
+      ? toggleMultiAnswer(currentAnswers, key, value)
+      : { ...currentAnswers, [key]: value };
+    answersRef.current = nextAnswers;
+    setAnswers(nextAnswers);
+    setError("");
+
+    // Q9 is free text: persist it with the final submit immediately before analysis.
+    if (currentStep === 8) return;
+
+    const shouldAdvance = !multi && shouldAutoAdvance(currentStep, nextAnswers);
+    const nextStep = shouldAdvance ? Math.min(8, currentStep + 1) : currentStep;
+    if (shouldAdvance) {
+      stepRef.current = nextStep;
+      setStep(nextStep);
+    }
+    void persistAnswersInBackground(
+      nextAnswers,
+      nextStep,
+      shouldAdvance ? currentStep + 1 : undefined,
+    );
   }
   const reportedView = useRef("");
   useEffect(() => {
-    if (!session || busy) return;
+    if (!session || busy || answerSaving) return;
     const key = `${session.answer_revision}:${session.stage}`;
     if (reportedView.current === key) return;
     reportedView.current = key;
     // Acknowledge a committed rendered screen; provider completion is not a view.
     void fetch(endpoint, { method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ action: "view", stage: session.stage, answer_revision: session.answer_revision }) }).catch(() => { reportedView.current = ""; });
-  }, [session, busy]);
+  }, [session, busy, answerSaving]);
   const question = questions[step];
   const valid =
     step === 8 ||
@@ -131,29 +248,70 @@ export function DiagnosticV3() {
       (step !== 4 || Boolean(answers.frequency)));
   const isQuestions = session && (session.stage === "answering" || editing);
   async function navigate(next: number, analyze = false) {
-    const s = await send("answers", {
-      answers,
-      step: next,
-      completed_step: next >= step ? step + 1 : undefined,
-    });
-    if (!s) return;
-    if (analyze) {
-      setEditing(false);
-      await analyzePartial(s);
+    if (!previewUx) {
+      const saved = await send("answers", {
+        answers,
+        step: next,
+        completed_step: next >= step ? step + 1 : undefined,
+      });
+      if (!saved) return;
+      if (analyze) {
+        setEditing(false);
+        await analyzePartial(saved);
+      }
+      return;
     }
+    const currentStep = stepRef.current;
+    stepRef.current = next;
+    setStep(next);
+    void persistAnswersInBackground(
+      answersRef.current,
+      next,
+      next > currentStep ? currentStep + 1 : undefined,
+    );
   }
-  async function analyzePartial(s: View) {
+  async function analyzePartial(savedSession?: View) {
     if (lock.current) return;
+    if (!previewUx) {
+      const saved = savedSession ?? session;
+      if (!saved) return;
+      lock.current = true;
+      setBusy(true);
+      setError("");
+      try {
+        const response = await fetch(endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "partial", expected_version: saved.record_version }),
+        });
+        const body = await response.json();
+        if (!response.ok) throw new Error(body.error);
+        accept(body.session);
+      } catch (cause) {
+        setError(cause instanceof Error ? cause.message : "Please retry.");
+      } finally {
+        lock.current = false;
+        setBusy(false);
+      }
+      return;
+    }
+    setEditing(false);
+    setAnalysisMode("first");
+    setError("");
+    const saved = await persistAnswersInBackground(answersRef.current, 8, 9);
+    if (!saved) {
+      setAnalysisMode(null);
+      return;
+    }
     lock.current = true;
     setBusy(true);
-    setError("");
     try {
       const r = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           action: "partial",
-          expected_version: s.record_version,
+          expected_version: saved.record_version,
         }),
       });
       const b = await r.json();
@@ -164,20 +322,33 @@ export function DiagnosticV3() {
     } finally {
       lock.current = false;
       setBusy(false);
+      setAnalysisMode(null);
     }
+  }
+  async function identify() {
+    if (previewUx) setAnalysisMode("full");
+    await send("identify", { identity });
+    if (previewUx) setAnalysisMode(null);
   }
   const p = session?.partial,
     f = session?.full;
   return (
-    <section className="diagnostic-v3" aria-busy={busy}>
+    <section className="diagnostic-v3" aria-busy={busy || (previewUx && answerSaving) || Boolean(analysisMode)}>
       {session?.storage === "disposable_preview" && (
         <p className="v3-preview">
           QA Preview: disposable session storage. Email delivery and booking
           integrations are not being claimed as verified.
         </p>
       )}
+      {session?.qa_metadata && (
+        <p className="v3-preview" aria-label="Preview analysis source metadata">
+          QA analysis source — First Read: {session.qa_metadata.first_read_source ?? "pending"}; Full Read: {session.qa_metadata.full_read_source ?? "pending"}.
+        </p>
+      )}
       {!loaded ? (
         <p role="status">Loading your private case…</p>
+      ) : analysisMode ? (
+        <AnalysisProgress mode={analysisMode} />
       ) : !session || session.stage === "entry" ? (
         <>
           <h2 ref={heading} tabIndex={-1}>
@@ -223,17 +394,19 @@ export function DiagnosticV3() {
               <div className="v3-options">
                 {question.options.map(([value, title]) => {
                   const multi = "multi" in question;
+                  const selectedValues = multi
+                    ? (answers[question.id] as string[] | undefined) ?? []
+                    : [];
                   const selected = multi
-                    ? (answers[question.id] as string[] | undefined)?.includes(
-                        value,
-                      )
+                    ? selectedValues.includes(value)
                     : answers[question.id] === value;
+                  const atMultiLimit = previewUx && multi && selectedValues.length >= MAX_MULTI_SELECT && !selected;
                   return (
                     <button
                       type="button"
                       key={value}
                       aria-pressed={Boolean(selected)}
-                      disabled={busy}
+                      disabled={busy || atMultiLimit}
                       onClick={() => select(question.id, value, multi)}
                     >
                       {title}
@@ -241,6 +414,10 @@ export function DiagnosticV3() {
                   );
                 })}
               </div>
+              {previewUx && "multi" in question &&
+                ((answers[question.id] as string[] | undefined)?.length ?? 0) >= MAX_MULTI_SELECT && (
+                  <small className="v3-multi-limit">Choose up to 3</small>
+                )}
             </fieldset>
           ) : (
             <>
@@ -317,11 +494,16 @@ export function DiagnosticV3() {
             <button
               className="primary-link"
               disabled={busy || !valid}
-              onClick={() => navigate(Math.min(8, step + 1), step === 8)}
+              onClick={() => previewUx
+                ? step === 8
+                  ? void analyzePartial()
+                  : void navigate(Math.min(8, step + 1))
+                : void navigate(Math.min(8, step + 1), step === 8)}
             >
-              {busy ? "Saving…" : step === 8 ? "Analyze my case" : "Next"}
+              {step === 8 ? "Analyze my case" : "Next"}
             </button>
           </div>
+          {previewUx && answerSaving && <p className="v3-save-state" role="status">Saving your answer…</p>}
         </>
       ) : session.stage === "partial" && p ? (
         <>
@@ -355,7 +537,7 @@ export function DiagnosticV3() {
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              send("identify", { identity });
+              void identify();
             }}
           >
             <h3>I can take this one level deeper.</h3>
@@ -679,7 +861,7 @@ export function DiagnosticV3() {
           Retry analysis
         </button>
       )}
-      {busy && loaded && <p role="status">Working on your case…</p>}
+      {busy && loaded && !analysisMode && <p role="status">Working on your case…</p>}
       {error && (
         <div role="alert">
           <p>{error}</p>

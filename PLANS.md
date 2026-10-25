@@ -4752,7 +4752,7 @@ Implementation notes: Added a Preview-only snapshot checker, post-response trans
 
 ### Task 099 - Groq non-2xx diagnostic observability
 
-State: `in_progress`
+State: review
 Owner: Codex
 Lane: diagnostic-v3
 Branch: feature/diagnostic-v3
@@ -4764,3 +4764,18 @@ Scope: Read non-2xx response bodies; extract bounded safe error type/message and
 Out of scope: Prompt/schema/model/fallback/scoring/routing changes, Production access, secret or user-content logging, email E2E, and schema changes.
 
 Validation: Typecheck/diff review, deploy Preview only, then stop after one reproduced HTTP 400 or three consecutive successful Groq First Reads.
+
+### Task 100 - Diagnostic V3 interaction latency and analysis feedback
+
+State: `in_progress`
+Owner: Codex
+Lane: diagnostic-v3
+Branch: feature/diagnostic-v3
+
+Goal: Reduce question transition latency, cap multi-select choices at three, show honest analysis progress, and expose selected analysis source in Preview-only QA metadata.
+
+Scope: Diagnostic V3 client interaction, minimal visual feedback, Preview-only response metadata, and focused tests. Review email deliverability configuration without changing delivery behavior.
+
+Out of scope: Resend delivery logic, CTA host logic, prompts, scoring, routing, Production behavior, schema, migrations, Neon writes, and Production access.
+
+Validation: Focused UI-state/QA metadata tests, Diagnostic V3 suite, typecheck, build, and diff check. No real email or Production deployment.
