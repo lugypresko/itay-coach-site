@@ -224,6 +224,9 @@ export async function analyze(
   let providerStatus: number | undefined;
   let providerRequestId: string | undefined;
   let providerError: { type?: string; code?: string; message?: string } | undefined;
+  let retryAttempted = false;
+  let retryEventLogged = false;
+  let initialRetryRequestId: string | undefined;
   let reason =
     process.env.DIAGNOSTIC_V3_AI_ENABLED !== "true"
       ? "ai_disabled"
@@ -259,6 +262,22 @@ export async function analyze(
       provider_status: providerStatus,
     };
   }
+  function logRetry(outcome: "succeeded" | "failed", retryStatus?: number) {
+    if (process.env.VERCEL_ENV !== "preview") return;
+    retryEventLogged = true;
+    console.info(JSON.stringify({
+      event: "diagnostic_v3_groq_retry",
+      pass,
+      trigger: "http_400_json_validate_failed",
+      retry_attempt: 1,
+      initial_status: 400,
+      initial_request_id: initialRetryRequestId ?? null,
+      retry_status: retryStatus ?? null,
+      retry_request_id: providerRequestId ?? null,
+      outcome,
+      duration_ms: Date.now() - started,
+    }));
+  }
   if (
     process.env.DIAGNOSTIC_V3_AI_ENABLED === "true" &&
     process.env.GROQ_ZDR_VERIFIED === "true" &&
@@ -266,114 +285,120 @@ export async function analyze(
     sanitized.safe
   ) {
     const model = process.env.DIAGNOSTIC_V3_GROQ_MODEL ?? "openai/gpt-oss-20b";
-    try {
-      const schema = pass === "partial" ? partialSchema : fullSchema;
-      const response = await fetch(
-        "https://api.groq.com/openai/v1/chat/completions",
+    const schema = pass === "partial" ? partialSchema : fullSchema;
+    const requestBody = JSON.stringify({
+      model,
+      messages: [
+        { role: "system", content: (pass === "partial" ? FIRST_READ_SYSTEM : FULL_READ_SYSTEM) + PROVIDER_GUARDRAILS },
         {
-          method: "POST",
-          signal: AbortSignal.timeout(8000),
-          headers: {
-            Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            model,
-            messages: [
-              { role: "system", content: (pass === "partial" ? FIRST_READ_SYSTEM : FULL_READ_SYSTEM) + PROVIDER_GUARDRAILS },
-              {
-                role: "user",
-                content: JSON.stringify({
-                  answers: providerAnswers(sanitized.answers),
-                  previous_analysis: pass === "full" && previous ? partialSchema.parse(previous) : null,
-                  pass,
-                }),
-              },
-            ],
-            response_format: {
-              type: "json_schema",
-              json_schema: {
-                name: `diagnostic_${pass}`,
-                strict: true,
-                schema: z.toJSONSchema(schema),
-              },
-            },
-            max_completion_tokens: 2400,
+          role: "user",
+          content: JSON.stringify({
+            answers: providerAnswers(sanitized.answers),
+            previous_analysis: pass === "full" && previous ? partialSchema.parse(previous) : null,
+            pass,
           }),
         },
+      ],
+      response_format: {
+        type: "json_schema",
+        json_schema: {
+          name: `diagnostic_${pass}`,
+          strict: true,
+          schema: z.toJSONSchema(schema),
+        },
+      },
+      max_completion_tokens: 2400,
+    });
+    const requestInit = (): RequestInit => ({
+      method: "POST",
+      signal: AbortSignal.timeout(8000),
+      headers: {
+        Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: requestBody,
+    });
+    const readProviderError = async (response: Response) => {
+      let errorBody: unknown;
+      try {
+        errorBody = JSON.parse(await response.text());
+      } catch {
+        errorBody = undefined;
+      }
+      const root = errorBody && typeof errorBody === "object"
+        ? errorBody as Record<string, unknown>
+        : {};
+      const nested = root.error && typeof root.error === "object"
+        ? root.error as Record<string, unknown>
+        : {};
+      const safeToken = (value: unknown) => typeof value === "string"
+        ? value.replace(/[^a-zA-Z0-9_.:-]/g, "").slice(0, 100) || undefined
+        : undefined;
+      const rawMessage = typeof nested.message === "string"
+        ? nested.message
+        : typeof root.message === "string" ? root.message : undefined;
+      const normalizedMessage = rawMessage?.toLocaleLowerCase() ?? "";
+      const userText = Object.values(a)
+        .flatMap((value) => Array.isArray(value) ? value : [value])
+        .filter((value): value is string => typeof value === "string")
+        .map((value) => value.trim())
+        .filter((value) => value.length >= 4);
+      const overlapsSourceText = (text: string, width: number) => {
+        const normalized = text.toLocaleLowerCase();
+        if (normalized.length <= width) return normalizedMessage.includes(normalized);
+        for (let index = 0; index <= normalized.length - width; index++) {
+          if (normalizedMessage.includes(normalized.slice(index, index + width))) return true;
+        }
+        return false;
+      };
+      const messageEchoesUserText = userText.some((value) => overlapsSourceText(value, 12)) ||
+        [FIRST_READ_SYSTEM, FULL_READ_SYSTEM, PROVIDER_GUARDRAILS].some((prompt) => overlapsSourceText(prompt, 24));
+      providerError = {
+        type: safeToken(nested.type ?? root.type),
+        code: safeToken(nested.code ?? root.code),
+        message: rawMessage && !messageEchoesUserText
+          ? rawMessage
+            .replace(/\bBearer\s+\S+/gi, "Bearer [redacted]")
+            .replace(/\bsk-[a-zA-Z0-9_-]+\b|\bgsk_[a-zA-Z0-9_-]+\b/gi, "[redacted]")
+            .replace(/[\w.+-]+@[\w.-]+\.[a-z]{2,}/gi, "[redacted email]")
+            .replace(/https?:\/\/\S+/gi, "[redacted URL]")
+            .replace(/\s+/g, " ")
+            .slice(0, 300)
+          : rawMessage ? "[omitted: provider message echoed user input]" : undefined,
+      };
+    };
+    try {
+      let response = await fetch(
+        "https://api.groq.com/openai/v1/chat/completions",
+        requestInit(),
       );
       providerStatus = response.status;
-      const requestIdHeader =
-        response.headers.get("x-request-id") ??
-        response.headers.get("request-id");
-      providerRequestId = requestIdHeader
-        ?.replace(/[^a-zA-Z0-9_.:-]/g, "")
-        .slice(0, 100) || undefined;
+      const captureRequestId = (res: Response) => {
+        const requestIdHeader = res.headers.get("x-request-id") ?? res.headers.get("request-id");
+        return requestIdHeader?.replace(/[^a-zA-Z0-9_.:-]/g, "").slice(0, 100) || undefined;
+      };
+      providerRequestId = captureRequestId(response);
       if (!response.ok) {
-        let errorBody: unknown;
-        try {
-          errorBody = JSON.parse(await response.text());
-        } catch {
-          errorBody = undefined;
-        }
-        const root =
-          errorBody && typeof errorBody === "object"
-            ? (errorBody as Record<string, unknown>)
-            : {};
-        const nested =
-          root.error && typeof root.error === "object"
-            ? (root.error as Record<string, unknown>)
-            : {};
-        const safeToken = (value: unknown) =>
-          typeof value === "string"
-            ? value.replace(/[^a-zA-Z0-9_.:-]/g, "").slice(0, 100) || undefined
-            : undefined;
-        const rawMessage =
-          typeof nested.message === "string"
-            ? nested.message
-            : typeof root.message === "string"
-              ? root.message
-              : undefined;
-        const normalizedMessage = rawMessage?.toLocaleLowerCase() ?? "";
-        const userText = Object.values(a)
-          .flatMap((value) =>
-            Array.isArray(value) ? value : [value],
-          )
-          .filter((value): value is string => typeof value === "string")
-          .map((value) => value.trim())
-          .filter((value) => value.length >= 4);
-        const overlapsSourceText = (text: string, width: number) => {
-          const normalized = text.toLocaleLowerCase();
-          if (normalized.length <= width)
-            return normalizedMessage.includes(normalized);
-          for (let index = 0; index <= normalized.length - width; index++) {
-            if (normalizedMessage.includes(normalized.slice(index, index + width)))
-              return true;
+        await readProviderError(response);
+        if (pass === "partial" && response.status === 400 && providerError?.code === "json_validate_failed") {
+          retryAttempted = true;
+          initialRetryRequestId = providerRequestId;
+          try {
+            response = await fetch("https://api.groq.com/openai/v1/chat/completions", requestInit());
+          } catch (retryError) {
+            logRetry("failed");
+            throw retryError;
           }
-          return false;
-        };
-        const messageEchoesUserText =
-          userText.some((value) => overlapsSourceText(value, 12)) ||
-          [FIRST_READ_SYSTEM, FULL_READ_SYSTEM, PROVIDER_GUARDRAILS].some(
-            (prompt) => overlapsSourceText(prompt, 24),
-          );
-        providerError = {
-          type: safeToken(nested.type ?? root.type),
-          code: safeToken(nested.code ?? root.code),
-          message:
-            rawMessage && !messageEchoesUserText
-              ? rawMessage
-                  .replace(/\bBearer\s+\S+/gi, "Bearer [redacted]")
-                  .replace(/\bsk-[a-zA-Z0-9_-]+\b|\bgsk_[a-zA-Z0-9_-]+\b/gi, "[redacted]")
-                  .replace(/[\w.+-]+@[\w.-]+\.[a-z]{2,}/gi, "[redacted email]")
-                  .replace(/https?:\/\/\S+/gi, "[redacted URL]")
-                  .replace(/\s+/g, " ")
-                  .slice(0, 300)
-              : rawMessage
-                ? "[omitted: provider message echoed user input]"
-                : undefined,
-        };
-        throw new Error(`http_${response.status}`);
+          providerStatus = response.status;
+          providerRequestId = captureRequestId(response);
+          if (!response.ok) {
+            await readProviderError(response);
+            logRetry("failed", response.status);
+            throw new Error(`http_${response.status}`);
+          }
+        } else {
+          throw new Error(`http_${response.status}`);
+        }
       }
       const body = await response.json();
       const parsed = schema.parse(
@@ -383,6 +408,7 @@ export async function analyze(
       // Validate generated text for accidental identity/secret emission too.
       if (!sanitizeCase({ context: JSON.stringify(validated) }).safe)
         throw new Error("unsafe_output");
+      if (retryAttempted && !retryEventLogged) logRetry("succeeded", response.status);
       return {
         ...base,
         data: validated,
@@ -393,6 +419,7 @@ export async function analyze(
         ...telemetry("groq", model),
       };
     } catch (error) {
+      if (retryAttempted && !retryEventLogged) logRetry("failed");
       if (error instanceof z.ZodError) reason = "invalid_schema";
       else if (error instanceof SyntaxError) reason = "invalid_json";
       else if (

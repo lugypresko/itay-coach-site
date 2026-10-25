@@ -413,7 +413,7 @@ describe("provider diagnostics do not expose rejected output", () => {
     vi.stubEnv("GROQ_API_KEY", "never-print-this");
     vi.stubGlobal(
       "fetch",
-      vi.fn().mockResolvedValue({ ok: false, status: 401 }),
+      vi.fn().mockResolvedValue({ ok: false, status: 401, headers: new Headers(), text: async () => "{}" }),
     );
     const result = await analyze("synthetic", 1, answers, "partial");
     expect(result).toMatchObject({
@@ -438,6 +438,7 @@ describe("provider diagnostics do not expose rejected output", () => {
         .mockResolvedValue({
           ok: true,
           status: 200,
+          headers: new Headers(),
           json: async () => ({
             choices: [{ message: { content: JSON.stringify(unsafe) } }],
           }),

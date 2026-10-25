@@ -37,7 +37,7 @@ describe("approved two-pass prompts", () => {
     vi.stubEnv("GROQ_API_KEY", "test-only");
     const first = partialFallback(answers);
     const second = fallback(answers);
-    const fetch = vi.fn().mockResolvedValueOnce({ok: true, status: 200, json: async () => ({choices: [{message: {content: JSON.stringify(first)}}]})}).mockResolvedValueOnce({ok: true, status: 200, json: async () => ({choices: [{message: {content: JSON.stringify(second)}}]})});
+    const fetch = vi.fn().mockResolvedValueOnce({ok: true, status: 200, headers: new Headers(), json: async () => ({choices: [{message: {content: JSON.stringify(first)}}]})}).mockResolvedValueOnce({ok: true, status: 200, headers: new Headers(), json: async () => ({choices: [{message: {content: JSON.stringify(second)}}]})});
     vi.stubGlobal("fetch", fetch);
     expect((await analyze("private-session", 4, answers, "partial")).source).toBe("groq");
     expect((await analyze("private-session", 4, answers, "full", first, ["private-email", "private-company"])).source).toBe("groq");
@@ -47,6 +47,83 @@ describe("approved two-pass prompts", () => {
     expect(JSON.parse(requests[1].messages[1].content).previous_analysis).toEqual(first);
     expect(JSON.stringify(requests)).not.toMatch(/private-session|private-email|private-company/);
     expect(requests[1].response_format.json_schema.schema.additionalProperties).toBe(false);
+  });
+  it("retries a First Read json_validate_failed response once with the identical Groq request", async () => {
+    vi.stubEnv("DIAGNOSTIC_V3_AI_ENABLED", "true");
+    vi.stubEnv("GROQ_ZDR_VERIFIED", "true");
+    vi.stubEnv("GROQ_API_KEY", "test-only");
+    vi.stubEnv("VERCEL_ENV", "preview");
+    const retryData = partialFallback(answers);
+    const firstRequestId = "req-first";
+    const retryRequestId = "req-retry";
+    const failed = {
+      ok: false,
+      status: 400,
+      headers: new Headers({ "x-request-id": firstRequestId }),
+      text: async () => JSON.stringify({ error: { type: "invalid_request_error", code: "json_validate_failed", message: "schema rejected" } }),
+    };
+    const succeeded = {
+      ok: true,
+      status: 200,
+      headers: new Headers({ "x-request-id": retryRequestId }),
+      json: async () => ({ choices: [{ message: { content: JSON.stringify(retryData) } }] }),
+    };
+    const fetch = vi.fn().mockResolvedValueOnce(failed).mockResolvedValueOnce(succeeded);
+    vi.stubGlobal("fetch", fetch);
+    const log = vi.spyOn(console, "info").mockImplementation(() => {});
+
+    const result = await analyze("private-session", 4, answers, "partial");
+
+    expect(result.source).toBe("groq");
+    expect(fetch).toHaveBeenCalledTimes(2);
+    expect(fetch.mock.calls[1][1]).toMatchObject({ method: "POST", headers: { Authorization: "Bearer test-only", "Content-Type": "application/json" } });
+    expect(JSON.parse(String(fetch.mock.calls[1][1]?.body))).toEqual(JSON.parse(String(fetch.mock.calls[0][1]?.body)));
+    expect(log).toHaveBeenCalledWith(expect.stringContaining('"event":"diagnostic_v3_groq_retry"'));
+    expect(log.mock.calls.some(([line]) => String(line).includes('"outcome":"succeeded"') && String(line).includes(retryRequestId))).toBe(true);
+    expect(log.mock.calls.map(([line]) => String(line)).join(" ")).not.toMatch(/test-only|Two teams wait|private-session/);
+    log.mockRestore();
+  });
+  it("does not retry other 400 errors or Full Read failures", async () => {
+    vi.stubEnv("DIAGNOSTIC_V3_AI_ENABLED", "true");
+    vi.stubEnv("GROQ_ZDR_VERIFIED", "true");
+    vi.stubEnv("GROQ_API_KEY", "test-only");
+    const response = {
+      ok: false,
+      status: 400,
+      headers: new Headers(),
+      text: async () => JSON.stringify({ error: { code: "invalid_payload", message: "rejected" } }),
+    };
+    const fetch = vi.fn().mockResolvedValue(response);
+    vi.stubGlobal("fetch", fetch);
+
+    const partial = await analyze("private-session", 4, answers, "partial");
+    expect(partial.source).toBe("fallback");
+    expect(fetch).toHaveBeenCalledTimes(1);
+    await analyze("private-session", 4, answers, "full", partialFallback(answers));
+    expect(fetch).toHaveBeenCalledTimes(2);
+  });
+  it("keeps deterministic fallback and logs a bounded retry failure", async () => {
+    vi.stubEnv("DIAGNOSTIC_V3_AI_ENABLED", "true");
+    vi.stubEnv("GROQ_ZDR_VERIFIED", "true");
+    vi.stubEnv("GROQ_API_KEY", "test-only");
+    vi.stubEnv("VERCEL_ENV", "preview");
+    const bad = () => ({
+      ok: false,
+      status: 400,
+      headers: new Headers(),
+      text: async () => JSON.stringify({ error: { code: "json_validate_failed", message: "schema rejected" } }),
+    });
+    const fetch = vi.fn().mockResolvedValueOnce(bad()).mockResolvedValueOnce(bad());
+    vi.stubGlobal("fetch", fetch);
+    const log = vi.spyOn(console, "info").mockImplementation(() => {});
+
+    const result = await analyze("private-session", 4, answers, "partial");
+
+    expect(result.source).toBe("fallback");
+    expect(result.fallback_reason).toBe("http_400");
+    expect(fetch).toHaveBeenCalledTimes(2);
+    expect(log.mock.calls.some(([line]) => String(line).includes('"outcome":"failed"'))).toBe(true);
+    log.mockRestore();
   });
   it("invalidates legacy reads while retaining answers, identity and lead brief", () => {
     const s = newSession();
