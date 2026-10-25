@@ -1,3 +1,4 @@
+import * as diagnostic_v3 from './20261023_180000_diagnostic_v3';
 import * as migration_20260607_205054 from './20260607_205054';
 import * as migration_20260616_183918_add_factory_storage from './20260616_183918_add_factory_storage';
 import * as migration_20260617_150154_add_problem_pages from './20260617_150154_add_problem_pages';
@@ -48,4 +49,5 @@ export const migrations = [
     down: migration_20260926_160000_diagnostic_funnel_session_payload.down,
     name: '20260926_160000_diagnostic_funnel_session_payload',
   },
+  { up: diagnostic_v3.up, down: diagnostic_v3.down, name: '20261023_180000_diagnostic_v3' },
 ];

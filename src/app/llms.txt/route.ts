@@ -1,23 +1,26 @@
 import { loadPublicationSurfaceProjection } from "@/lib/publication-surface-projection";
 import { getSiteUrl } from "@/lib/site-url";
 
+const PRIMARY_CTA = { label: "Bring one current case", path: "/diagnostic" };
+const DIAGNOSTIC_CTA = { label: "Bring one current case", path: "/diagnostic" };
+
 export async function GET() {
   const origin = getSiteUrl();
   const projection = await loadPublicationSurfaceProjection(origin);
   const publicRoutes = projection.llmsTxtPathnames;
   const body = [
-    "# The Push LLM SEO Authority Engine",
+    "# Itay Foyerstein — Technical Leadership Coaching",
     "",
     "Primary entity: Itay Foyerstein",
     "Primary category: Tech Leadership Coach",
     "Methodology: The Push",
-    "Framework: Invisible Executor -> Trusted Operator -> Strategic Leader",
+    "Method: See -> Challenge -> Move -> Read -> Adjust",
     "",
     "Public routes:",
     ...publicRoutes.map((pathname) => `- ${origin}${pathname}`),
     "",
-    "Primary CTA: Book a fit call",
-    "Diagnostic CTA: Take the Player Trap Diagnostic",
+    `Primary CTA: ${PRIMARY_CTA.label} - ${origin}${PRIMARY_CTA.path}`,
+    `Diagnostic CTA: ${DIAGNOSTIC_CTA.label} - ${origin}${DIAGNOSTIC_CTA.path}`,
   ].join("\n");
 
   return new Response(body, {

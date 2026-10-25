@@ -1,3 +1,4 @@
+import { publicDescription } from "@/lib/public-offer";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
@@ -36,12 +37,12 @@ export async function generateMetadata({ params }: ContentPageProps): Promise<Me
 
   return {
     title,
-    description: page.record.seoDescription,
+    description: publicDescription(page.pathname, page.record.seoDescription),
     alternates: { canonical: page.canonicalUrl },
     robots: page.publicationDecision.indexable ? { index: true, follow: true } : { index: false, follow: false },
     openGraph: {
       title: `${title} | The Push`,
-      description: page.record.seoDescription,
+      description: publicDescription(page.pathname, page.record.seoDescription),
       url: page.canonicalUrl,
       type: "article",
     },

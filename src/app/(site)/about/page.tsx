@@ -1,3 +1,5 @@
+import Link from "next/link";
+import { buildItayPersonJsonLd } from "@/lib/public-schema";
 import type { Metadata } from "next";
 import { BrandPage } from "@/components/brand-page";
 const page = {
@@ -7,7 +9,7 @@ const page = {
   "sections": [
     {
       "heading": "",
-      "body": "I’m Itay Foyerstein. My background spans 25+ years across technology, product, delivery and organizational change, alongside 1,000+ coaching hours."
+      "body": "I’m Itay Foyerstein. My background spans 25+ years across technology, product, delivery and organizational change, alongside 1,000+ coaching hours. Based in Israel, working in Hebrew and English."
     },
     {
       "heading": "Experience",
@@ -24,4 +26,4 @@ const page = {
   ]
 };
 export const metadata: Metadata = {title:page.title,description:page.sections[0]?.body,alternates:{canonical:page.path},robots:{index:true,follow:true},openGraph:{title:page.title,description:page.sections[0]?.body,url:page.path,type:"website"}};
-export default function Page(){return <BrandPage page={page}></BrandPage>}
+export default function Page(){return <BrandPage page={page}><script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify(buildItayPersonJsonLd())}}/><nav aria-label="Related leadership situations"><Link href="/problems/cto-becomes-the-bottleneck">CTO decision bottlenecks</Link>{" · "}<Link href="/problems/vp-rnd-losing-execution-control">VP R&amp;D execution control</Link>{" · "}<Link href="/problems/engineering-managers-stuck-in-firefighting">Engineering manager firefighting</Link></nav></BrandPage>}

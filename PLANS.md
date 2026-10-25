@@ -74,6 +74,66 @@ Do not expand the system with new agents, collections, or workflows while the re
 
 The release target after verification is `Authority Engine Alpha`.
 
+### Task 097 - Approved HTML Homepage Implementation
+
+State: `completed`
+Lane: `homepage`, `frontend`
+Owner: Codex
+Branch: `codex/homepage-html-implementation-20260928`
+
+Goal:
+Implement the user-approved homepage HTML design in the existing Next.js app.
+
+Scope:
+- Match the approved HTML for homepage structure, copy, visual hierarchy, section order, responsive behavior, and pattern selector behavior.
+- Render the Itay photo exactly once in the About section.
+- Route all selected patterns to `/diagnostic?pattern=<selected-pattern>` using the approved keys: `decision`, `meeting`, `escalation`, and `stall`.
+- Keep the implementation native to the existing Next.js app and retain homepage metadata and analytics conventions.
+
+Out of scope:
+- No changes to `/diagnostic` or unrelated pages.
+- No use or merge of `fix/homepage-single-photo`.
+- No merge, deployment, or production data changes.
+
+Files expected to change:
+- `src/app/(site)/page.tsx`
+- `src/components/home-v3-selector.tsx`
+- Homepage-scoped styles in `src/styles/approved-homepage.css`
+- `src/app/(site)/layout.tsx`
+- `src/lib/homepage-patterns.ts`
+- `tests/unit/homepage-patterns.test.ts`
+- `PLANS.md`
+
+Data contracts affected:
+- None.
+
+Agent permissions affected:
+- None.
+
+Validation steps:
+- Run `npm test -- tests/unit/homepage-patterns.test.ts` to verify all four selector choices build the expected `/diagnostic?pattern=` destination.
+- Verify selecting a pattern updates both homepage CTAs.
+- Verify only one Itay photo is rendered and it appears inside About.
+- Run focused homepage tests, `npm run typecheck`, and `npm run build`.
+
+Acceptance criteria:
+- Homepage content and ordering match `The Push_ homepage(3).html`.
+- The page is responsive and remains accessible with keyboard navigation and reduced motion.
+- Exactly one Itay photo appears in the About section.
+- Every selector option carries its approved pattern to `/diagnostic`.
+- No files under `/diagnostic` or unrelated routes are changed.
+- Build and relevant tests pass; branch remains unmerged and undeployed.
+
+Verification notes:
+- Ported the approved HTML sections and copy into native Next.js components and homepage-scoped CSS.
+- Updated the selector to the approved `decision`, `meeting`, `escalation`, and `stall` keys; its selected value is carried into both diagnostic CTAs.
+- Rendered one Itay photo in the About section. The production HTML contains one `<img>`, all four selector keys, and the expected section anchors.
+- `npm test -- tests/unit/homepage-patterns.test.ts` passed (1 test).
+- `npm run typecheck` passed.
+- `npm run build` passed.
+- Full `npm test` reports 91/92 files and 459/463 tests passing; the four failures are in the existing diagnostic API route tests, which require `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` when the suite loads the route in production mode. The route tests pass when run in isolation with `NODE_ENV=test`.
+- No diagnostic route or unrelated page was modified. No merge or deployment was performed.
+
 ### Task 096 - Canonical Page Pattern Layer
 
 State: `review`
@@ -4630,3 +4690,130 @@ Scope: approved brand plan, single diagnostic contract, safe local review, rollb
 Out of scope: production writes/deployments, outreach, employer reporting.
 Validation: full tests/typecheck/lint, browser journeys and screenshots, checksum restore drill.
 DoD: local verified flows and site copy, checkpoints and documented external blockers.
+
+## SEO-CONTRAST-092 — approved audit remediation
+State: in_review
+Owner: Codex
+Scope: fix confirmed SEO/AEO and dark contrast issues; version 0.9.2; no merge or index-policy changes.
+Rollback: rollback/pre-0.9.2-2026-10-22 -> 6c3ac10; production dpl_8HcXUhpkWFTDKJYjTokouaRM9vB1.
+Evidence: user-approved audit and homepage offer (12 weeks, 6 sessions), existing page content only.
+Queries/entity: technical leadership coaching for engineering managers / Itay Foyerstein.
+CTA: bring one case through /diagnostic. Internal links: problem pages and frameworks.
+
+Verification: typecheck passed; lint passed with pre-existing warnings; 14 focused tests passed; full Next build passed. Final regenerated HTML checks and remote preview pending.
+
+## DIAGNOSTIC-V3 — approved conversion specification
+State: in_progress
+Owner: Codex
+Lane: diagnostic-v3 (no homepage or governed content changes)
+Scope: V3, scoring-v1, revision-safe private sessions, Groq with deterministic fallback, Preview only.
+Gap analysis completed before code: docs/contracts/diagnostic-v3.md.
+Checkpoint: rollback/pre-diagnostic-v3-2026-10-23 -> 6722fa3603e9292ef2b4b8275f7fae178f20b3fa.
+Production deployment: dpl_HLEjaT3vrfzQvDJDfyCftKuPMBtY. Branch: feature/diagnostic-v3.
+No production DB changes, no merge, no production release. V2 contracts remain intact.
+
+V3 verification: 41 new tests + 18 selected V2/homepage regressions passed; typecheck passed; targeted ESLint clean; full Next build passed. Production/homepage unchanged. Isolated DB migration, real Groq/ZDR, email, booking and mobile browser acceptance remain unverified. Preview has explicit disposable-storage and simulated-mail labels. PR #10.
+
+V3 Groq verification follow-up: user authorized synthetic Preview provider verification and a fill script. Added privacy-safe status/latency/fallback telemetry, fixed rejected-output fallback, Preview-only cached fixed-case check, and docs/contracts/diagnostic-v3-qa-script.md. 45 V3 tests, typecheck and targeted lint passed. Live provider check pending Preview deployment. No Production changes.
+
+Approved two-pass prompts integrated as analysis-v2: independent Q IDs, exact pass-specific strict field contracts, experiment review point, explicit unresolved question, legacy read invalidation without losing lead data. 50 V3 tests passed; typecheck and targeted ESLint passed. Scoring/homepage unchanged; no DB changes. Preview build/provider recheck pending.
+
+Persistent Preview/admin follow-up: provisioned Neon br-cold-credit-b9x1qomi under winter-resonance-15589128; V3 additive DDL, synthetic exact-payload preservation after compute restart, stale CAS rejection and RLS checks passed. Added server-side Payload administrator boundary, role-assignment protection and Preview DB fail-closed configuration. 60 V3 tests plus 5 role-access tests passed; typecheck, targeted lint and clean Next build passed. Vercel env list/create returned 403: no env changed, no application persistence/redeploy acceptance. Isolated Payload initialization/admin, internal audit/health surfaces and expanded Golden/E2E specification remain pending. No Production changes or main merge.
+
+Trace-schema acceptance resumed: six tables/RLS/FKs/indexes observed; 10 DB-health assertions and 9 rolled-back synthetic constraint assertions passed. Three deployed E2E routes blocked before start by HTTP 503. Current writer remains payload-only; normalized trace writer is not implemented. Fresh same-commit Preview redeploy requested for persistence evidence. Full acceptance and Production migration preparation remain blocked. See docs/contracts/diagnostic-v3-preview-acceptance.md. No Production changes.
+
+2026-10-24 Preview connectivity: redeployed feature/diagnostic-v3 as dpl_H2m657uBk9b9uTxdN2e7q4iHskwa; page 200, API 503. Temporary Preview-only sanitized logging deployed at 1fe3485 / dpl_GtMpUzPtc1ELrjj46HmdDDk7jpNm; reproduced once. Runtime Error (code null): V3 isolated database is not configured. DIAGNOSTIC_V3_DATABASE_URL absent/empty in running Preview; no Neon connection attempted. Direct Neon synthetic write/read/delete passed on winter-resonance-15589128 / br-cold-credit-b9x1qomi / ep-icy-fire-b9b5tsic / neondb. Temporary logging removed remotely at 89a8f19. No normalized wiring, Production changes or main merge. Blocked on Preview env configuration (connector env access 403).
+
+2026-10-24 normalized persistence implementation: answers/revisions, attempt lifecycle with separate rejected provider/fallback rows, identity, qualification snapshots/scoring, private brief and funnel events wired. payload retains only UI/return metadata. Row-lock + record_version CAS guards current selection; stale attempts remain unselected. Eight PostgreSQL/PGlite integration tests cover four routes, refresh/source-of-truth isolation, attempt fallback, stale race, edits and Role/Org-only changes. Existing 65 V3 tests pass; TypeScript, targeted lint and Next build pass. Live protected Preview browser E2E and Neon complete trace remain pending required Vercel login/passkey; no weakening of protection, Production changes or main merge.
+
+### Task 098 - Diagnostic V3 read-only watchdog
+
+State: review
+Owner: Codex
+Lane: diagnostic-v3
+Branch: feature/diagnostic-v3
+
+Goal: Add a small Preview-only read-only checker after persisted Diagnostic V3 transitions and an admin-only recent-session view.
+
+Scope: Validate revision, First/Full Read presence and linkage, provider/fallback status, lead and qualification/scoring/route persistence, selected-analysis count, payload allowlist, and stale pending analyses. Keep checks read-only and failures best-effort.
+
+Out of scope: Production access, migrations, auto-repair, scheduled sweep, AI, user-facing UX/scoring changes, and main merge.
+
+Files expected to change: `src/lib/diagnostic-v3/watchdog.ts`; `src/app/api/diagnostic/v3/route.ts`; new Preview-only admin API and `/admin/diagnostic-v3` view; `PLANS.md`.
+
+Data contracts affected: None; read existing V3 tables and events only.
+Agent permissions affected: None.
+
+Validation: TypeScript typecheck and code review of the SQL, authorization guard, and environment gate. No DB writes or Production access.
+
+Acceptance criteria: A start and each successful persisted transition schedule a best-effort read-only check; checker failures do not alter or block the user response; admin view requires the existing Payload administrator guard and is Preview-only; recent sessions show status, timeline, failed checks, and a copyable privacy-safe report; no schema or data changes.
+
+Implementation notes: Added a Preview-only snapshot checker, post-response transition hooks, and a Payload-admin-gated recent-session view. It reads only V3 normalized tables, excludes personal fields from responses/logs, and performs no repair or persistence. TypeScript typecheck and `git diff --check` pass. No database calls, tests, deploy, or Production actions were performed.
+
+### Task 099 - Groq non-2xx diagnostic observability
+
+State: review
+Owner: Codex
+Lane: diagnostic-v3
+Branch: feature/diagnostic-v3
+
+Goal: Capture only sanitized Groq error metadata for Preview non-2xx responses and verify fresh First Read provider behavior.
+
+Scope: Read non-2xx response bodies; extract bounded safe error type/message and request ID; emit them only in Preview logs. Keep existing persisted failure code and deterministic fallback unchanged.
+
+Out of scope: Prompt/schema/model/fallback/scoring/routing changes, Production access, secret or user-content logging, email E2E, and schema changes.
+
+Validation: Typecheck/diff review, deploy Preview only, then stop after one reproduced HTTP 400 or three consecutive successful Groq First Reads.
+
+### Task 100 - Diagnostic V3 interaction latency and analysis feedback
+
+State: review
+Owner: Codex
+Lane: diagnostic-v3
+Branch: feature/diagnostic-v3
+
+Goal: Reduce question transition latency, cap multi-select choices at three, show honest analysis progress, and expose selected analysis source in Preview-only QA metadata.
+
+Scope: Diagnostic V3 client interaction, minimal visual feedback, Preview-only response metadata, and focused tests. Review email deliverability configuration without changing delivery behavior.
+
+Out of scope: Resend delivery logic, CTA host logic, prompts, scoring, routing, Production behavior, schema, migrations, Neon writes, and Production access.
+
+Validation: Focused UI-state/QA metadata tests, Diagnostic V3 suite, typecheck, build, and diff check. No real email or Production deployment.
+
+### Task 101 - Diagnostic V3 complete event audit trail
+
+State: `review`
+Owner: Codex
+Lane: diagnostic-v3
+Branch: feature/diagnostic-v3
+
+Goal: Persist an idempotent, ordered, privacy-safe Neon event trail covering each meaningful user-visible and system transition in a Diagnostic V3 session.
+
+Scope: Existing `diagnostic_v3_events` writes, API/client event hooks, bounded non-sensitive event references, and verification against Neon Preview using a fresh browser session.
+
+Out of scope: New analytics/control-plane systems, event schema changes unless existing table cannot support the required audit, changes to scoring/prompts/routing/UX/Production behavior, or any Production access.
+
+Validation: Unit tests for deterministic event keys and privacy-safe events, Diagnostic V3 suite, typecheck/build/diff check, then one fresh Preview E2E and read-only Neon reconstruction from normalized records and event timeline.
+
+### Task 102 - Temporary Preview Diagnostic V3 model bake-off runner
+
+State: `in_progress`
+Owner: Codex
+Lane: diagnostic-v3
+Branch: feature/diagnostic-v3
+
+Goal: Execute and persist the controlled 24-run Diagnostic V3 Full Read model bake-off in Neon Preview.
+
+Scope: Add a temporary server-side benchmark route, authenticate with the existing Payload-admin boundary and Vercel Deployment Protection, hard-gate Preview plus feature/diagnostic-v3, verify Groq model availability/structured-output support, create synthetic isolated sessions, and persist attempts through the normalized V3 store.
+
+Out of scope: Production availability, changing normal user flows, prompts, JSON schemas, scoring/routing, email/booking/leads, SSO changes, general benchmark platform/schema, and unrelated workspace changes.
+
+Files expected to change: `src/app/api/diagnostic/v3/benchmark/route.ts` (new), `src/lib/diagnostic-v3/analysis.ts`, `src/lib/diagnostic-v3/store.ts`, `src/lib/diagnostic-v3/normalized-store.ts`, focused tests, and this plan.
+
+Data contracts affected: No migrations. Synthetic sessions/revisions/analysis attempts use existing V3 tables with `origin='synthetic'`; each Full Read run gets its own session.
+
+Agent permissions affected: None.
+
+Validation: Failing-first unit tests for environment gating, candidate allowlisting, answer/scenario validation, synthetic persistence behavior, and no identity/mail/booking side effects; typecheck/build/diff check; deploy only `feature/diagnostic-v3`; invoke via authenticated `vercel curl`; read back every run from Neon branch `br-cold-credit-b9x1qomi`.
+
+Acceptance criteria: Exactly 24 requested Full Read runs are attempted across four fixed Q1-Q9 cases, three account-verified structured-output models and two repetitions; every result is linked to a synthetic Neon session, immutable answer revision, selected analysis and provider attempt metadata; scoring-v1 is calculated and returned; Production and SSO remain unchanged; final model comparison and remaining limitations are reported; temporary runner files are identified for removal.

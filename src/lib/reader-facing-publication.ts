@@ -1,3 +1,4 @@
+import { CASE_CTA } from "./public-offer";
 import { buildProblemPageJsonLd } from "./problem-page-schema";
 import type { ProblemPageModel } from "./problem-pages";
 import type { PublicContentPageModel } from "./public-content";
@@ -60,11 +61,8 @@ function hrefForInternalLink(targetSlug: string, sourcePath?: string): string {
 }
 
 function publicContentCta(page: PublicContentPageModel): ReaderFacingCta {
-  if (page.pathname === "/frameworks/player-trap") {
-    return { href: "/player-trap", label: "Take the Player Trap Diagnostic", ctaType: "diagnostic" };
-  }
-
-  return { href: "/book-a-fit-call", label: "Book a Fit Call", ctaType: "fit_call" };
+  void page;
+  return { ...CASE_CTA, ctaType: "diagnostic" };
 }
 
 export function toReaderFacingPublicContentPage(page: PublicContentPageModel): ReaderFacingPublicContentPage {
@@ -107,9 +105,9 @@ export function toReaderFacingProblemPage(page: ProblemPageModel): ReaderFacingP
     whyItFailed: page.record.whyItFailed,
     diagnosis: page.record.diagnosis,
     primaryCta: {
-      label: page.record.primaryCTA.label,
-      href: page.record.primaryCTA.href,
-      ctaType: page.record.primaryCTA.href === "/player-trap" ? "diagnostic" : "fit_call",
+      label: CASE_CTA.label,
+      href: CASE_CTA.href,
+      ctaType: "diagnostic",
     },
     relatedFrameworks: page.record.relatedFrameworks.map((link) => ({ label: link.label, href: link.href })),
     relatedClusters: page.record.relatedClusters.map((link) => ({ label: link.label, href: link.href })),
