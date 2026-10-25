@@ -11,7 +11,7 @@ export const token = () => randomBytes(32).toString("base64url");
 export class Conflict extends Error {}
 export interface Store {
   recordViews?(s: Session, names: string[]): Promise<void>;
-  beginAnalysis?(s: Session, pass: "partial" | "full"): Promise<string>;
+  beginAnalysis?(s: Session, pass: "partial" | "full", modelOverride?: string): Promise<string>;
   finishAnalysis?(s: Session, id: string, read: Analysis<PartialAnalysis | FullAnalysis>): Promise<string>;
   failAnalysis?(s: Session, id: string, reason: string): Promise<void>;
   create(s: Session, auth: string): Promise<void>;

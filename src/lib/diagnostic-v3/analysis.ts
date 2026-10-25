@@ -188,6 +188,7 @@ export function providerAnswers(a: Answers) {
     }))
   ]));
 }
+export type AnalysisOptions = { modelOverride?: string; suppressTelemetry?: boolean };
 export async function analyze(
   sessionId: string,
   revision: number,
@@ -195,6 +196,7 @@ export async function analyze(
   pass: "partial",
   previous?: PartialAnalysis,
   privateTerms?: string[],
+  options?: AnalysisOptions,
 ): Promise<Analysis<PartialAnalysis>>;
 export async function analyze(
   sessionId: string,
@@ -203,6 +205,7 @@ export async function analyze(
   pass: "full",
   previous?: PartialAnalysis,
   privateTerms?: string[],
+  options?: AnalysisOptions,
 ): Promise<Analysis<FullAnalysis>>;
 export async function analyze(
   sessionId: string,
@@ -211,6 +214,7 @@ export async function analyze(
   pass: "partial" | "full",
   previous?: PartialAnalysis,
   privateTerms: string[] = [],
+  options: AnalysisOptions = {},
 ): Promise<Analysis<PartialAnalysis | FullAnalysis>> {
   let data: PartialAnalysis | FullAnalysis =
     pass === "partial" ? partialFallback(a) : fallback(a);
@@ -256,7 +260,7 @@ export async function analyze(
           }
         : {}),
     };
-    if (process.env.VERCEL_ENV === "preview")
+    if (process.env.VERCEL_ENV === "preview" && !options.suppressTelemetry)
       console.info(JSON.stringify(diagnostic));
     return {
       duration_ms: diagnostic.duration_ms,
@@ -264,7 +268,7 @@ export async function analyze(
     };
   }
   function logRetry(outcome: "succeeded" | "failed", retryStatus?: number) {
-    if (process.env.VERCEL_ENV !== "preview") return;
+    if (process.env.VERCEL_ENV !== "preview" || options.suppressTelemetry) return;
     retryEventLogged = true;
     console.info(JSON.stringify({
       event: "diagnostic_v3_groq_retry",
@@ -285,7 +289,7 @@ export async function analyze(
     process.env.GROQ_API_KEY &&
     sanitized.safe
   ) {
-    const model = process.env.DIAGNOSTIC_V3_GROQ_MODEL ?? "openai/gpt-oss-20b";
+    const model = options.modelOverride ?? process.env.DIAGNOSTIC_V3_GROQ_MODEL ?? "openai/gpt-oss-20b";
     const schema = pass === "partial" ? partialSchema : fullSchema;
     const requestBody = JSON.stringify({
       model,

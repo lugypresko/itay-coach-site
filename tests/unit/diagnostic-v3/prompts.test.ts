@@ -48,6 +48,26 @@ describe("approved two-pass prompts", () => {
     expect(JSON.stringify(requests)).not.toMatch(/private-session|private-email|private-company/);
     expect(requests[1].response_format.json_schema.schema.additionalProperties).toBe(false);
   });
+  it("allows a silent per-call model override without changing the configured model", async () => {
+    vi.stubEnv("DIAGNOSTIC_V3_AI_ENABLED", "true");
+    vi.stubEnv("GROQ_ZDR_VERIFIED", "true");
+    vi.stubEnv("GROQ_API_KEY", "test-only");
+    vi.stubEnv("DIAGNOSTIC_V3_GROQ_MODEL", "openai/gpt-oss-20b");
+    const response = { ok: true, status: 200, headers: new Headers(), json: async () => ({ choices: [{ message: { content: JSON.stringify(fallback(answers)) } }] }) };
+    const fetch = vi.fn().mockResolvedValue(response);
+    vi.stubGlobal("fetch", fetch);
+    const log = vi.spyOn(console, "info").mockImplementation(() => {});
+
+    await analyze("synthetic", 1, answers, "full", partialFallback(answers), [], {
+      modelOverride: "openai/gpt-oss-120b",
+      suppressTelemetry: true,
+    });
+
+    expect(JSON.parse(String(fetch.mock.calls[0][1]?.body)).model).toBe("openai/gpt-oss-120b");
+    expect(process.env.DIAGNOSTIC_V3_GROQ_MODEL).toBe("openai/gpt-oss-20b");
+    expect(log).not.toHaveBeenCalled();
+    log.mockRestore();
+  });
   it("retries a First Read json_validate_failed response once with the identical Groq request", async () => {
     vi.stubEnv("DIAGNOSTIC_V3_AI_ENABLED", "true");
     vi.stubEnv("GROQ_ZDR_VERIFIED", "true");

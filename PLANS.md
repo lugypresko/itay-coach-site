@@ -4782,7 +4782,7 @@ Validation: Focused UI-state/QA metadata tests, Diagnostic V3 suite, typecheck, 
 
 ### Task 101 - Diagnostic V3 complete event audit trail
 
-State: `in_progress`
+State: `review`
 Owner: Codex
 Lane: diagnostic-v3
 Branch: feature/diagnostic-v3
@@ -4794,3 +4794,26 @@ Scope: Existing `diagnostic_v3_events` writes, API/client event hooks, bounded n
 Out of scope: New analytics/control-plane systems, event schema changes unless existing table cannot support the required audit, changes to scoring/prompts/routing/UX/Production behavior, or any Production access.
 
 Validation: Unit tests for deterministic event keys and privacy-safe events, Diagnostic V3 suite, typecheck/build/diff check, then one fresh Preview E2E and read-only Neon reconstruction from normalized records and event timeline.
+
+### Task 102 - Temporary Preview Diagnostic V3 model bake-off runner
+
+State: `in_progress`
+Owner: Codex
+Lane: diagnostic-v3
+Branch: feature/diagnostic-v3
+
+Goal: Execute and persist the controlled 24-run Diagnostic V3 Full Read model bake-off in Neon Preview.
+
+Scope: Add a temporary server-side benchmark route, authenticate with the existing Payload-admin boundary and Vercel Deployment Protection, hard-gate Preview plus feature/diagnostic-v3, verify Groq model availability/structured-output support, create synthetic isolated sessions, and persist attempts through the normalized V3 store.
+
+Out of scope: Production availability, changing normal user flows, prompts, JSON schemas, scoring/routing, email/booking/leads, SSO changes, general benchmark platform/schema, and unrelated workspace changes.
+
+Files expected to change: `src/app/api/diagnostic/v3/benchmark/route.ts` (new), `src/lib/diagnostic-v3/analysis.ts`, `src/lib/diagnostic-v3/store.ts`, `src/lib/diagnostic-v3/normalized-store.ts`, focused tests, and this plan.
+
+Data contracts affected: No migrations. Synthetic sessions/revisions/analysis attempts use existing V3 tables with `origin='synthetic'`; each Full Read run gets its own session.
+
+Agent permissions affected: None.
+
+Validation: Failing-first unit tests for environment gating, candidate allowlisting, answer/scenario validation, synthetic persistence behavior, and no identity/mail/booking side effects; typecheck/build/diff check; deploy only `feature/diagnostic-v3`; invoke via authenticated `vercel curl`; read back every run from Neon branch `br-cold-credit-b9x1qomi`.
+
+Acceptance criteria: Exactly 24 requested Full Read runs are attempted across four fixed Q1-Q9 cases, three account-verified structured-output models and two repetitions; every result is linked to a synthetic Neon session, immutable answer revision, selected analysis and provider attempt metadata; scoring-v1 is calculated and returned; Production and SSO remain unchanged; final model comparison and remaining limitations are reported; temporary runner files are identified for removal.

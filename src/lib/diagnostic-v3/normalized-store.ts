@@ -15,7 +15,8 @@ const aliases: Record<string,string> = {
   multi_removed:'verification_checked',optional_text_changed:'verification_checked',qualification_shown:'diagnostic_view',
   role_selected:'verification_checked',org_size_selected:'verification_checked',scoring_result:'verification_checked',
   restored_result_shown:'full_result_view',booking_cta_shown:'diagnostic_view',return_link_opened:'diagnostic_view',
-  interaction_error:'verification_checked',
+  interaction_error:'verification_checked',benchmark_run:'verification_checked',
+  benchmark_score:'verification_checked',benchmark_run_completed:'verification_checked',
 };
 function metadata(s: Session) {
   return { step:s.step,stage:s.stage,identified_at:s.identified_at,return_hash:s.return_hash,
@@ -39,12 +40,12 @@ export function normalizedStore(pool: InstanceType<typeof pg.Pool>): Store {
       const colon=key.indexOf(':'); const rev=Number(key.slice(0,colon));
       const rawName=key.slice(colon+1).split(':')[0];
       const name=aliases[rawName] ?? rawName;
-      const actor = /^(analysis_|summary_email_|sales_brief_saved|scoring_result|route_)/.test(rawName) ? 'server' : 'visitor';
+      const actor = /^(analysis_|summary_email_|sales_brief_saved|scoring_result|route_|benchmark_)/.test(rawName) ? 'server' : 'visitor';
       const outcome = rawName === 'interaction_error' || rawName === 'analysis_failed' || rawName === 'summary_email_failed'
         ? 'fail'
         : rawName === 'summary_email_simulated' ? 'simulated'
           : rawName === 'analysis_started' || rawName === 'summary_email_requested' ? 'pending'
-          : /^(analysis_completed|analysis_fallback_used|summary_email_sent|qualification_submit|qualification_skipped|route_|scoring_result|sales_brief_saved|answer_selected|answer_changed|multi_added|multi_removed|optional_text_changed|question_shown|navigation_previous|navigation_next|qualification_shown|role_selected|org_size_selected|restored_result_shown|booking_cta_shown|return_link_opened|identity_submit|book_call_click|partial_result_view|full_result_view|diagnostic_view|view|q[1-9]_complete)/.test(rawName)
+          : /^(analysis_completed|analysis_fallback_used|summary_email_sent|qualification_submit|qualification_skipped|route_|scoring_result|sales_brief_saved|answer_selected|answer_changed|multi_added|multi_removed|optional_text_changed|question_shown|navigation_previous|navigation_next|qualification_shown|role_selected|org_size_selected|restored_result_shown|booking_cta_shown|return_link_opened|identity_submit|book_call_click|partial_result_view|full_result_view|diagnostic_view|view|q[1-9]_complete|benchmark_)/.test(rawName)
               ? 'pass' : null;
       const keyDetail = key.slice(colon+1).split(':').slice(1);
       const analysisId = rawName.startsWith('analysis_') && /^[0-9a-f-]{36}$/i.test(keyDetail[0] ?? '')
@@ -185,11 +186,13 @@ export function normalizedStore(pool: InstanceType<typeof pg.Pool>): Store {
         RETURNING session_id`,[hash(newAuth),hash(value)]);return r.rowCount===1;
     },
     async recordViews(s,names) {await transaction(c=>events(c,s,names.map(n=>n.startsWith(`${s.answer_revision}:`)?n:`${s.answer_revision}:${n}`)));},
-    async beginAnalysis(s,pass) {return transaction(async c=>{
+    async beginAnalysis(s,pass,modelOverride) {return transaction(async c=>{
+      if(modelOverride && s.origin!=='synthetic') throw new Error('Model override is restricted to synthetic sessions');
       const lock=await c.query('SELECT current_answer_revision FROM diagnostic_v3_sessions WHERE id=$1 FOR UPDATE',[s.id]);
       if(lock.rows[0]?.current_answer_revision!==s.answer_revision) throw new Error('Stale analysis input');
       const safe=sanitizeCase(s.answers,s.identity?[s.identity.first_name,s.identity.email,s.identity.company]:[]);
-      const provider=process.env.DIAGNOSTIC_V3_AI_ENABLED==='true'&&process.env.GROQ_ZDR_VERIFIED==='true'&&process.env.GROQ_API_KEY&&safe.safe?'groq':'deterministic';
+      const seededDeterministic=modelOverride==='deterministic-v1';
+      const provider=seededDeterministic?'deterministic':process.env.DIAGNOSTIC_V3_AI_ENABLED==='true'&&process.env.GROQ_ZDR_VERIFIED==='true'&&process.env.GROQ_API_KEY&&safe.safe?'groq':'deterministic';
       const first=pass==='full'?s.partial?.id:null;
       if(pass==='full') {
         const validated=await c.query("SELECT id FROM diagnostic_v3_analyses WHERE id=$1 AND session_id=$2 AND answer_revision=$3 AND analysis_version=$4 AND pass='partial' AND schema_valid AND semantic_valid AND status IN ('succeeded','fallback')",[first,s.id,s.answer_revision,ANALYSIS_VERSION]);
@@ -199,7 +202,7 @@ export function normalizedStore(pool: InstanceType<typeof pg.Pool>): Store {
       const id=randomUUID();
       await c.query(`INSERT INTO diagnostic_v3_analyses(id,session_id,answer_revision,analysis_version,pass,attempt_number,first_read_analysis_id,prompt_version,prompt_sha256,framework_version,validator_version,input_sha256,provider,requested_model)
         SELECT $1,$2,$3,$4,$5,COALESCE(MAX(attempt_number),0)+1,$6,$4,$7,'the-push-v1','evidence-v2',$8,$9,$10
-        FROM diagnostic_v3_analyses WHERE session_id=$2 AND answer_revision=$3 AND analysis_version=$4 AND pass=$5`,[id,s.id,s.answer_revision,ANALYSIS_VERSION,pass,first,hash((pass==='partial'?FIRST_READ_SYSTEM:FULL_READ_SYSTEM)+PROVIDER_GUARDRAILS),hash(JSON.stringify({answers:providerAnswers(safe.answers),previous_analysis:pass==='full'?s.partial?.data:null,pass})),provider,provider==='groq'?(process.env.DIAGNOSTIC_V3_GROQ_MODEL??'openai/gpt-oss-20b'):'deterministic-v1']);
+        FROM diagnostic_v3_analyses WHERE session_id=$2 AND answer_revision=$3 AND analysis_version=$4 AND pass=$5`,[id,s.id,s.answer_revision,ANALYSIS_VERSION,pass,first,hash((pass==='partial'?FIRST_READ_SYSTEM:FULL_READ_SYSTEM)+PROVIDER_GUARDRAILS),hash(JSON.stringify({answers:providerAnswers(safe.answers),previous_analysis:pass==='full'?s.partial?.data:null,pass})),provider,provider==='groq'?(modelOverride??process.env.DIAGNOSTIC_V3_GROQ_MODEL??'openai/gpt-oss-20b'):'deterministic-v1']);
       await events(c,s,[`${s.answer_revision}:analysis_started:${id}`]);
       return id;
     });},

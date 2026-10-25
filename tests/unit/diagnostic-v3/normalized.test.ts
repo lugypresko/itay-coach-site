@@ -42,6 +42,14 @@ async function journey(answers:Answers,qualification?:{role:'vp'|'other';org_siz
  return s;
 }
 describe('normalized PostgreSQL application persistence',()=>{
+ it('persists a per-run requested model without changing the Preview default',async()=>{
+   vi.stubEnv('DIAGNOSTIC_V3_AI_ENABLED','true');vi.stubEnv('GROQ_ZDR_VERIFIED','true');vi.stubEnv('GROQ_API_KEY','synthetic-key');vi.stubEnv('DIAGNOSTIC_V3_GROQ_MODEL','openai/gpt-oss-20b');
+   const s=newSession();s.origin='synthetic';s.answers=high;s.answer_revision=1;await store.create(s,'test-private');
+   const id=await store.beginAnalysis!(s,'partial','openai/gpt-oss-120b');
+   const row=await db.query<{provider:string;requested_model:string}>('SELECT provider,requested_model FROM diagnostic_v3_analyses WHERE id=$1',[id]);
+   expect(row.rows[0]).toEqual({provider:'groq',requested_model:'openai/gpt-oss-120b'});
+   expect(process.env.DIAGNOSTIC_V3_GROQ_MODEL).toBe('openai/gpt-oss-20b');
+ });
  it.each([
   ['conversation',high,{role:'vp',org_size:'51_100'},false],
   ['nurture',high,{role:'other',org_size:'51_100'},false],
