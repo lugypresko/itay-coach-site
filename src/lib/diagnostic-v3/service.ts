@@ -177,18 +177,15 @@ export async function deliverSummary(
   s.return_hash = hash(returnToken);
   s.return_expires_at = new Date(Date.now() + 7 * 86400000).toISOString();
   await save(store, s, expected);
-  const text = [
-    s.full.data.case_summary,
-    s.full.data.likely_explanation,
-    s.full.data.leadership_move,
-    s.full.data.manager_question,
-    JSON.stringify(s.full.data.seven_day_experiment),
-    s.full.data.success_signal,
-    `Return privately (7 days, one use): ${origin}/api/diagnostic/v3?return=${returnToken}`,
-  ].join("\n\n");
+  const returnUrl = `${origin}/api/diagnostic/v3?return=${returnToken}`;
+  const text = renderSummaryEmail(s.full.data, returnUrl);
+  const mailEnabled = process.env.DIAGNOSTIC_V3_MAIL_ENABLED === "true";
+  const previewMailEnabled =
+    process.env.VERCEL_ENV !== "preview" ||
+    process.env.DIAGNOSTIC_V3_PREVIEW_MAIL_ENABLED === "true";
   const live =
-    process.env.DIAGNOSTIC_V3_MAIL_ENABLED === "true" &&
-    process.env.VERCEL_ENV !== "preview" &&
+    mailEnabled &&
+    previewMailEnabled &&
     process.env.RESEND_API_KEY &&
     process.env.DIAGNOSTIC_V3_MAIL_FROM;
   if (!live) s.mail = "simulated";
@@ -218,4 +215,39 @@ export async function deliverSummary(
   // A concurrent edit wins. Do not overwrite its answers or result.
   await save(store, s, s.record_version);
   return s;
+}
+
+function limitWords(value: string, maxWords: number) {
+  const words = value.replace(/\s+/g, " ").trim().split(" ").filter(Boolean);
+  if (words.length <= maxWords) return words.join(" ");
+  return `${words.slice(0, maxWords).join(" ").replace(/[,;:]$/, "")}…`;
+}
+
+function firstSentence(value: string) {
+  const normalized = value.replace(/\s+/g, " ").trim();
+  const end = normalized.search(/[.!?](?=\s|$)/);
+  return limitWords(end === -1 ? normalized : normalized.slice(0, end + 1), 22);
+}
+
+export function renderSummaryEmail(
+  full: NonNullable<Session["full"]>["data"],
+  returnUrl: string,
+) {
+  return [
+    "What I noticed",
+    firstSentence(full.likely_explanation),
+    "",
+    "Your next move",
+    limitWords(full.leadership_move, 22),
+    "",
+    "One question to ask",
+    limitWords(full.manager_question, 20),
+    "",
+    "7-day success signal",
+    limitWords(full.success_signal, 20),
+    "",
+    "CTA",
+    "Open your full read",
+    returnUrl,
+  ].join("\n");
 }
