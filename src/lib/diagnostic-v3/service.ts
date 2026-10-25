@@ -206,7 +206,45 @@ export async function deliverSummary(
           text,
         }),
       });
-      if (!r.ok) throw new Error("delivery_failed");
+      if (!r.ok) {
+        if (process.env.VERCEL_ENV === "preview") {
+          const requestId =
+            r.headers.get("resend-id") ??
+            r.headers.get("x-resend-id") ??
+            r.headers.get("x-request-id");
+          let safeError: Record<string, string> = {};
+          try {
+            const body: unknown = await r.json();
+            if (body && typeof body === "object") {
+              const root = body as Record<string, unknown>;
+              const candidate =
+                root.error && typeof root.error === "object"
+                  ? (root.error as Record<string, unknown>)
+                  : root;
+              for (const key of ["name", "type", "code", "message"]) {
+                const value = candidate[key];
+                if (typeof value !== "string") continue;
+                const sanitized = value
+                  .replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi, "[email]")
+                  .replace(/\bBearer\s+\S+/gi, "Bearer [redacted]")
+                  .replace(/\bre_[A-Za-z0-9_-]+\b/g, "[redacted]")
+                  .replace(/https?:\/\/\S+/gi, "[url]")
+                  .replace(/[\r\n\t]+/g, " ")
+                  .slice(0, 240);
+                safeError[key] = sanitized;
+              }
+            }
+          } catch {
+            safeError = { message: "Response body was not valid JSON." };
+          }
+          console.error("diagnostic-v3-resend-non-2xx", {
+            status: r.status,
+            requestId,
+            error: safeError,
+          });
+        }
+        throw new Error("delivery_failed");
+      }
       s.mail = "sent";
     } catch {
       s.mail = "failed";
