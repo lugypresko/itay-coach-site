@@ -4725,3 +4725,27 @@ Trace-schema acceptance resumed: six tables/RLS/FKs/indexes observed; 10 DB-heal
 2026-10-24 Preview connectivity: redeployed feature/diagnostic-v3 as dpl_H2m657uBk9b9uTxdN2e7q4iHskwa; page 200, API 503. Temporary Preview-only sanitized logging deployed at 1fe3485 / dpl_GtMpUzPtc1ELrjj46HmdDDk7jpNm; reproduced once. Runtime Error (code null): V3 isolated database is not configured. DIAGNOSTIC_V3_DATABASE_URL absent/empty in running Preview; no Neon connection attempted. Direct Neon synthetic write/read/delete passed on winter-resonance-15589128 / br-cold-credit-b9x1qomi / ep-icy-fire-b9b5tsic / neondb. Temporary logging removed remotely at 89a8f19. No normalized wiring, Production changes or main merge. Blocked on Preview env configuration (connector env access 403).
 
 2026-10-24 normalized persistence implementation: answers/revisions, attempt lifecycle with separate rejected provider/fallback rows, identity, qualification snapshots/scoring, private brief and funnel events wired. payload retains only UI/return metadata. Row-lock + record_version CAS guards current selection; stale attempts remain unselected. Eight PostgreSQL/PGlite integration tests cover four routes, refresh/source-of-truth isolation, attempt fallback, stale race, edits and Role/Org-only changes. Existing 65 V3 tests pass; TypeScript, targeted lint and Next build pass. Live protected Preview browser E2E and Neon complete trace remain pending required Vercel login/passkey; no weakening of protection, Production changes or main merge.
+
+### Task 098 - Diagnostic V3 read-only watchdog
+
+State: review
+Owner: Codex
+Lane: diagnostic-v3
+Branch: feature/diagnostic-v3
+
+Goal: Add a small Preview-only read-only checker after persisted Diagnostic V3 transitions and an admin-only recent-session view.
+
+Scope: Validate revision, First/Full Read presence and linkage, provider/fallback status, lead and qualification/scoring/route persistence, selected-analysis count, payload allowlist, and stale pending analyses. Keep checks read-only and failures best-effort.
+
+Out of scope: Production access, migrations, auto-repair, scheduled sweep, AI, user-facing UX/scoring changes, and main merge.
+
+Files expected to change: `src/lib/diagnostic-v3/watchdog.ts`; `src/app/api/diagnostic/v3/route.ts`; new Preview-only admin API and `/admin/diagnostic-v3` view; `PLANS.md`.
+
+Data contracts affected: None; read existing V3 tables and events only.
+Agent permissions affected: None.
+
+Validation: TypeScript typecheck and code review of the SQL, authorization guard, and environment gate. No DB writes or Production access.
+
+Acceptance criteria: A start and each successful persisted transition schedule a best-effort read-only check; checker failures do not alter or block the user response; admin view requires the existing Payload administrator guard and is Preview-only; recent sessions show status, timeline, failed checks, and a copyable privacy-safe report; no schema or data changes.
+
+Implementation notes: Added a Preview-only snapshot checker, post-response transition hooks, and a Payload-admin-gated recent-session view. It reads only V3 normalized tables, excludes personal fields from responses/logs, and performs no repair or persistence. TypeScript typecheck and `git diff --check` pass. No database calls, tests, deploy, or Production actions were performed.

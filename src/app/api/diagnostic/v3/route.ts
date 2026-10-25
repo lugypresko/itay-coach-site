@@ -1,4 +1,4 @@
-import { NextResponse, type NextRequest } from "next/server";
+import { after, NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
 import {
   getStore,
@@ -13,6 +13,7 @@ import {
   publicSession,
   deliverSummary,
 } from "@/lib/diagnostic-v3/service";
+import { runTransitionCheck } from "@/lib/diagnostic-v3/watchdog";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 const COOKIE = "diagnostic_v3_session";
@@ -37,6 +38,15 @@ function enabled() {
     process.env.VERCEL_ENV !== "production" ||
     process.env.DIAGNOSTIC_V3_PRODUCTION_ENABLED === "true"
   );
+}
+function scheduleWatchdog(sessionId: string) {
+  if (process.env.VERCEL_ENV !== "preview") return;
+  try {
+    after(() => runTransitionCheck(sessionId));
+  } catch {
+    // Scheduling failure must never change a successfully persisted user action.
+    console.warn("diagnostic-v3-watchdog-schedule-unavailable");
+  }
 }
 
 const healthCache = globalThis as typeof globalThis & {
@@ -120,6 +130,7 @@ export async function POST(req: NextRequest) {
           event(s, "start");
           await save(store, s, expected);
         }
+        scheduleWatchdog(s.id);
         return json({ session: publicSession(s) });
       }
       const newAuth = token();
@@ -128,6 +139,7 @@ export async function POST(req: NextRequest) {
       event(s, "view");
       event(s, "start");
       await store.create(s, newAuth);
+      scheduleWatchdog(s.id);
       const r = json({ session: publicSession(s) });
       r.cookies.set(COOKIE, newAuth, options);
       return r;
@@ -163,6 +175,7 @@ export async function POST(req: NextRequest) {
     }
     if (input.action === "summary")
       s = await deliverSummary(store, s, req.nextUrl.origin, auth!);
+    scheduleWatchdog(s.id);
     const r = json({ session: publicSession(s) });
     if (s.identity)
       r.cookies.set(COOKIE, auth!, {
