@@ -4749,3 +4749,18 @@ Validation: TypeScript typecheck and code review of the SQL, authorization guard
 Acceptance criteria: A start and each successful persisted transition schedule a best-effort read-only check; checker failures do not alter or block the user response; admin view requires the existing Payload administrator guard and is Preview-only; recent sessions show status, timeline, failed checks, and a copyable privacy-safe report; no schema or data changes.
 
 Implementation notes: Added a Preview-only snapshot checker, post-response transition hooks, and a Payload-admin-gated recent-session view. It reads only V3 normalized tables, excludes personal fields from responses/logs, and performs no repair or persistence. TypeScript typecheck and `git diff --check` pass. No database calls, tests, deploy, or Production actions were performed.
+
+### Task 099 - Groq non-2xx diagnostic observability
+
+State: `in_progress`
+Owner: Codex
+Lane: diagnostic-v3
+Branch: feature/diagnostic-v3
+
+Goal: Capture only sanitized Groq error metadata for Preview non-2xx responses and verify fresh First Read provider behavior.
+
+Scope: Read non-2xx response bodies; extract bounded safe error type/message and request ID; emit them only in Preview logs. Keep existing persisted failure code and deterministic fallback unchanged.
+
+Out of scope: Prompt/schema/model/fallback/scoring/routing changes, Production access, secret or user-content logging, email E2E, and schema changes.
+
+Validation: Typecheck/diff review, deploy Preview only, then stop after one reproduced HTTP 400 or three consecutive successful Groq First Reads.

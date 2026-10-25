@@ -222,6 +222,8 @@ export async function analyze(
   const sanitized = sanitizeCase(a, privateTerms);
   const started = Date.now();
   let providerStatus: number | undefined;
+  let providerRequestId: string | undefined;
+  let providerError: { type?: string; code?: string; message?: string } | undefined;
   let reason =
     process.env.DIAGNOSTIC_V3_AI_ENABLED !== "true"
       ? "ai_disabled"
@@ -241,6 +243,14 @@ export async function analyze(
       duration_ms: Date.now() - started,
       provider_status: providerStatus ?? null,
       fallback_reason: failure ?? null,
+      ...(source === "fallback" && providerStatus !== undefined
+        ? {
+            provider_request_id: providerRequestId ?? null,
+            provider_error_type: providerError?.type ?? null,
+            provider_error_code: providerError?.code ?? null,
+            provider_error_message: providerError?.message ?? null,
+          }
+        : {}),
     };
     if (process.env.VERCEL_ENV === "preview")
       console.info(JSON.stringify(diagnostic));
@@ -293,7 +303,78 @@ export async function analyze(
         },
       );
       providerStatus = response.status;
-      if (!response.ok) throw new Error(`http_${response.status}`);
+      const requestIdHeader =
+        response.headers.get("x-request-id") ??
+        response.headers.get("request-id");
+      providerRequestId = requestIdHeader
+        ?.replace(/[^a-zA-Z0-9_.:-]/g, "")
+        .slice(0, 100) || undefined;
+      if (!response.ok) {
+        let errorBody: unknown;
+        try {
+          errorBody = JSON.parse(await response.text());
+        } catch {
+          errorBody = undefined;
+        }
+        const root =
+          errorBody && typeof errorBody === "object"
+            ? (errorBody as Record<string, unknown>)
+            : {};
+        const nested =
+          root.error && typeof root.error === "object"
+            ? (root.error as Record<string, unknown>)
+            : {};
+        const safeToken = (value: unknown) =>
+          typeof value === "string"
+            ? value.replace(/[^a-zA-Z0-9_.:-]/g, "").slice(0, 100) || undefined
+            : undefined;
+        const rawMessage =
+          typeof nested.message === "string"
+            ? nested.message
+            : typeof root.message === "string"
+              ? root.message
+              : undefined;
+        const normalizedMessage = rawMessage?.toLocaleLowerCase() ?? "";
+        const userText = Object.values(a)
+          .flatMap((value) =>
+            Array.isArray(value) ? value : [value],
+          )
+          .filter((value): value is string => typeof value === "string")
+          .map((value) => value.trim())
+          .filter((value) => value.length >= 4);
+        const overlapsSourceText = (text: string, width: number) => {
+          const normalized = text.toLocaleLowerCase();
+          if (normalized.length <= width)
+            return normalizedMessage.includes(normalized);
+          for (let index = 0; index <= normalized.length - width; index++) {
+            if (normalizedMessage.includes(normalized.slice(index, index + width)))
+              return true;
+          }
+          return false;
+        };
+        const messageEchoesUserText =
+          userText.some((value) => overlapsSourceText(value, 12)) ||
+          [FIRST_READ_SYSTEM, FULL_READ_SYSTEM, PROVIDER_GUARDRAILS].some(
+            (prompt) => overlapsSourceText(prompt, 24),
+          );
+        providerError = {
+          type: safeToken(nested.type ?? root.type),
+          code: safeToken(nested.code ?? root.code),
+          message:
+            rawMessage && !messageEchoesUserText
+              ? rawMessage
+                  .replace(/\bBearer\s+\S+/gi, "Bearer [redacted]")
+                  .replace(/\bsk-[a-zA-Z0-9_-]+\b|\bgsk_[a-zA-Z0-9_-]+\b/gi, "[redacted]")
+                  .replace(/[\w.+-]+@[\w.-]+\.[a-z]{2,}/gi, "[redacted email]")
+                  .replace(/https?:\/\/\S+/gi, "[redacted URL]")
+                  .replace(/\s+/g, " ")
+                  .slice(0, 300)
+              : rawMessage
+                ? "[omitted: provider message echoed user input]"
+                : undefined,
+        };
+        throw new Error(`http_${response.status}`);
+      }
       const body = await response.json();
       const parsed = schema.parse(
         JSON.parse(body.choices?.[0]?.message?.content ?? ""),
@@ -308,7 +389,7 @@ export async function analyze(
         source: "groq",
         model,
         returned_model: typeof body.model === "string" ? body.model : model,
-        provider_request_id: response.headers?.get?.("x-request-id") ?? (typeof body.id === "string" ? body.id : undefined),
+        provider_request_id: providerRequestId ?? (typeof body.id === "string" ? body.id : undefined),
         ...telemetry("groq", model),
       };
     } catch (error) {
