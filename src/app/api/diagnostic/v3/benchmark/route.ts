@@ -118,7 +118,7 @@ export async function POST(request: Request) {
       const larger = result.values.find((p) => p.model_id === PRIMARY_MODELS[1]);
       return json({
         models: result.values,
-        ready_to_run: Boolean(baseline?.listed && baseline.structured_output && larger?.listed && larger.structured_output && result.challenger),
+        ready_to_run: Boolean(baseline?.listed && larger?.listed && result.challenger),
         selected: {
           baseline,
           larger,
@@ -130,16 +130,12 @@ export async function POST(request: Request) {
     const available = await verifyModels();
     const baseline = available.values.find((p) => p.model_id === PRIMARY_MODELS[0]);
     const larger = available.values.find((p) => p.model_id === PRIMARY_MODELS[1]);
-    if (!baseline?.listed || !baseline.structured_output || !larger?.listed || !larger.structured_output || !available.challenger)
-      return json({ error: "The three required structured-output model candidates are not all available.", models: available.values, independent_challenger: available.challenger ?? null }, 409);
+    if (!baseline?.listed || !larger?.listed || !available.challenger)
+      return json({ error: "The two requested openai model IDs and one independent structured-output challenger are not all available.", models: available.values, independent_challenger: available.challenger ?? null }, 409);
     const eligible = [...PRIMARY_MODELS, available.challenger!];
     delete input.action;
     const run = parseBenchmarkRun(input, [...new Set(eligible)]);
     if (!(await answerSchema.safeParseAsync(run.answers)).success) return json({ error: "Invalid scenario answers." }, 400);
-    const key = process.env.GROQ_API_KEY!;
-    const reverified = await probeModel(run.model, key);
-    if (!reverified.structured_output) return json({ error: "Requested model no longer passes the structured-output capability check.", model_id: run.model, http_status: reverified.http_status ?? null }, 409);
-
     const scenario = benchmarkScenarios[run.scenario_id];
     const store = getStore();
     const s = sessionFor(run.answers, run.scenario_id, run.model, run.repetition);
