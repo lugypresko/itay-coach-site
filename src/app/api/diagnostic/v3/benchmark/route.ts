@@ -47,18 +47,22 @@ async function probeModel(modelId: string, apiKey: string): Promise<ModelProbe> 
   }
 }
 
+async function listGroqModelIds(apiKey: string): Promise<string[]> {
+  const listing = await fetch("https://api.groq.com/openai/v1/models", {
+    headers: { Authorization: `Bearer ${apiKey}` }, signal: AbortSignal.timeout(8000),
+  });
+  if (!listing.ok) throw new Error(`Groq model catalog returned HTTP ${listing.status}.`);
+  const body = await listing.json() as { data?: GroqModel[] };
+  return [...new Set((body.data ?? []).filter((item) => item.active !== false && typeof item.id === "string").map((item) => item.id as string))];
+}
+
 async function verifyModels(force = false) {
   const key = process.env.GROQ_API_KEY;
   if (!key || process.env.DIAGNOSTIC_V3_AI_ENABLED !== "true" || process.env.GROQ_ZDR_VERIFIED !== "true")
     throw new Error("Preview Groq runtime is not enabled for benchmark calls.");
   const cached = runtimeScope.__diagnosticV3BenchmarkModels;
   if (!force && cached && cached.until > Date.now()) return cached;
-  const listing = await fetch("https://api.groq.com/openai/v1/models", {
-    headers: { Authorization: `Bearer ${key}` }, signal: AbortSignal.timeout(8000),
-  });
-  if (!listing.ok) throw new Error(`Groq model catalog returned HTTP ${listing.status}.`);
-  const body = await listing.json() as { data?: GroqModel[] };
-  const ids = [...new Set((body.data ?? []).filter((item) => item.active !== false && typeof item.id === "string").map((item) => item.id as string))];
+  const ids = await listGroqModelIds(key);
   const probes: ModelProbe[] = PRIMARY_MODELS.map((model_id) => ({ model_id, listed: ids.includes(model_id), structured_output: false }));
   for (const modelId of PRIMARY_MODELS) {
     if (ids.includes(modelId)) Object.assign(probes.find((p) => p.model_id === modelId)!, await probeModel(modelId, key));
@@ -127,12 +131,14 @@ export async function POST(request: Request) {
       });
     }
     if (input.action !== "run") return json({ error: "Unknown benchmark action." }, 400);
-    const available = await verifyModels();
-    const baseline = available.values.find((p) => p.model_id === PRIMARY_MODELS[0]);
-    const larger = available.values.find((p) => p.model_id === PRIMARY_MODELS[1]);
-    if (!baseline?.listed || !larger?.listed || !available.challenger)
-      return json({ error: "The two requested openai model IDs and one independent structured-output challenger are not all available.", models: available.values, independent_challenger: available.challenger ?? null }, 409);
-    const eligible = [...PRIMARY_MODELS, available.challenger!];
+    const key = process.env.GROQ_API_KEY;
+    if (!key || process.env.DIAGNOSTIC_V3_AI_ENABLED !== "true" || process.env.GROQ_ZDR_VERIFIED !== "true")
+      return json({ error: "Preview Groq runtime is not enabled for benchmark calls." }, 503);
+    const modelIds = await listGroqModelIds(key);
+    const independentIds = modelIds.filter((id) => /qwen|minimax/i.test(id));
+    if (!PRIMARY_MODELS.every((model) => modelIds.includes(model)) || independentIds.length === 0)
+      return json({ error: "The two requested openai model IDs and one independent candidate are not all currently listed." }, 409);
+    const eligible = [...PRIMARY_MODELS, ...independentIds];
     delete input.action;
     const run = parseBenchmarkRun(input, [...new Set(eligible)]);
     if (!(await answerSchema.safeParseAsync(run.answers)).success) return json({ error: "Invalid scenario answers." }, 400);
