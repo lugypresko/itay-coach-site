@@ -30,8 +30,9 @@ async function journey(answers:Answers,qualification?:{role:'vp'|'other';org_siz
  const fields=['situation','absence','owner','authority','duration','attempts','impact','desired','context'] as const;
  const current:Answers={};
  for(let i=0;i<9;i++){
+   await store.recordViews!(s,[`question_shown:q${i+1}`]);
    Object.assign(current,{[fields[i]]:answers[fields[i]]});if(i===4)current.frequency=answers.frequency;
-   await act(store,s,{action:'answers',answers:{...current},step:Math.min(i+1,8),completed_step:i+1,expected_version:s.record_version});
+   await act(store,s,{action:'answers',answers:{...current},step:Math.min(i+1,8),completed_step:i+1,navigation:{direction:'next',from:i,to:Math.min(i+1,8),event_id:`00000000-0000-4000-8000-${String(i+1).padStart(12,'0')}`},expected_version:s.record_version});
  }
  await act(store,s,{action:'partial',expected_version:s.record_version});
  await store.recordViews!(s,['partial_result_view','identity_gate_view']);
@@ -59,6 +60,23 @@ describe('normalized PostgreSQL application persistence',()=>{
    await store.remove('test-private');expect(await store.read('test-private')).toBeNull();
    expect((await db.query('SELECT * FROM diagnostic_v3_analyses')).rows).toHaveLength(0);
  },30000);
+ it('writes privacy-safe, idempotent question, answer, navigation and linked-result events',async()=>{
+   const s=await journey(high,{role:'vp',org_size:'51_100'});
+   await store.recordViews!(s,['question_shown:q1','question_shown:q1']);
+   const rows=await db.query<{event_name:string;idempotency_key:string;actor_kind:string;outcome:string|null;analysis_id:string|null;qualification_id:string|null;occurred_at:Date|string|null}>('SELECT event_name,idempotency_key,actor_kind,outcome,analysis_id,qualification_id,occurred_at FROM diagnostic_v3_events WHERE session_id=$1 ORDER BY COALESCE(occurred_at,recorded_at),id',[s.id]);
+   const keys=rows.rows.map(r=>r.idempotency_key);
+   expect(keys.filter(k=>k==='9:question_shown:q1')).toHaveLength(1);
+   expect(keys).toContain('1:answer_selected:q1:situation');
+   expect(keys).toContain('6:multi_added:q6:attempts');
+   expect(keys).toContain('9:optional_text_changed:q9:context');
+   expect(keys.some(k=>k.includes(':navigation_next:'))).toBe(true);
+   expect(rows.rows.every(r=>r.actor_kind==='visitor'||r.actor_kind==='server')).toBe(true);
+   expect(rows.rows.every(r=>r.occurred_at!==null)).toBe(true);
+   expect(rows.rows.some(r=>r.event_name==='full_result_view'&&r.analysis_id===s.full?.id)).toBe(true);
+   const qualificationEvent=rows.rows.find(r=>r.idempotency_key.includes(':qualification_submit:'));
+   expect(qualificationEvent?.qualification_id).toBeTruthy();
+   expect(rows.rows.some(r=>r.idempotency_key.includes('Two teams wait'))).toBe(false);
+ },30000);
  it('persists validated Groq output and ignores contaminated legacy payload fields',async()=>{
    const s=await fresh();s.answers=high;s.answer_revision=1;await save(store,s,0);
    vi.stubEnv('DIAGNOSTIC_V3_AI_ENABLED','true');vi.stubEnv('GROQ_ZDR_VERIFIED','true');vi.stubEnv('GROQ_API_KEY','synthetic-key');
@@ -77,6 +95,26 @@ describe('normalized PostgreSQL application persistence',()=>{
    const rows=await db.query<{provider:string;status:string;is_selected:boolean;output:unknown}>('SELECT provider,status,is_selected,output FROM diagnostic_v3_analyses ORDER BY attempt_number');
    expect(rows.rows[0]).toMatchObject({provider:'groq',status:'rejected',is_selected:false,output:null});
    expect(rows.rows[1]).toMatchObject({provider:'deterministic',status:'fallback',is_selected:true});
+   vi.unstubAllGlobals();
+ },30000);
+ it('records both bounded Groq retry attempts with ordered linked events',async()=>{
+   const s=await fresh();s.answers=high;s.answer_revision=1;await save(store,s,0);
+   vi.stubEnv('DIAGNOSTIC_V3_AI_ENABLED','true');vi.stubEnv('GROQ_ZDR_VERIFIED','true');vi.stubEnv('GROQ_API_KEY','synthetic-key');
+   const retryOutput=partialFallback(high);
+   const fetchMock=vi.fn()
+     .mockResolvedValueOnce(new Response(JSON.stringify({error:{code:'json_validate_failed',message:'invalid response'}}),{status:400,headers:{'x-request-id':'qa-initial'}}))
+     .mockResolvedValueOnce(new Response(JSON.stringify({id:'qa-retry',model:'qa-model',choices:[{message:{content:JSON.stringify(retryOutput)}}]}),{status:200,headers:{'x-request-id':'qa-retry'}}));
+   vi.stubGlobal('fetch',fetchMock);
+   await act(store,s,{action:'partial',expected_version:s.record_version});
+   const rows=await db.query<{attempt_number:number;provider:string;status:string;provider_http_status:number|null;provider_request_id:string|null;is_selected:boolean}>('SELECT attempt_number,provider,status,provider_http_status,provider_request_id,is_selected FROM diagnostic_v3_analyses WHERE session_id=$1 ORDER BY attempt_number',[s.id]);
+   expect(rows.rows).toEqual([
+     expect.objectContaining({attempt_number:1,provider:'groq',status:'rejected',provider_http_status:400,provider_request_id:'qa-initial',is_selected:false}),
+     expect.objectContaining({attempt_number:2,provider:'groq',status:'succeeded',provider_http_status:200,provider_request_id:'qa-retry',is_selected:true}),
+   ]);
+   const events=await db.query<{event_name:string;analysis_id:string;outcome:string|null;occurred_at:Date|string}>('SELECT event_name,analysis_id,outcome,occurred_at FROM diagnostic_v3_events WHERE session_id=$1 ORDER BY COALESCE(occurred_at,recorded_at),id',[s.id]);
+   expect(events.rows.map(e=>e.event_name)).toEqual(['analysis_started','analysis_failed','analysis_started','analysis_completed']);
+   expect(events.rows.map(e=>e.outcome)).toEqual(['pending','fail','pending','pass']);
+   expect(events.rows[1].analysis_id).toBe(rows.rows[0].provider_request_id ? (await db.query<{id:string}>('SELECT id FROM diagnostic_v3_analyses WHERE session_id=$1 AND attempt_number=1',[s.id])).rows[0].id : '');
    vi.unstubAllGlobals();
  },30000);
  it('rejects stale selection but preserves its completed analysis attempt',async()=>{

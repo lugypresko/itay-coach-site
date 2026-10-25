@@ -135,6 +135,13 @@ export type Analysis<T> = {
   provider_request_id?: string;
   returned_model?: string;
   duration_ms?: number;
+  provider_attempts?: Array<{
+    status?: number;
+    request_id?: string;
+    outcome: "pass" | "fail";
+    error_code?: string;
+    duration_ms: number;
+  }>;
 };
 export type Route =
   | "unqualified_nurture"

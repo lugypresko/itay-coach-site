@@ -4767,7 +4767,7 @@ Validation: Typecheck/diff review, deploy Preview only, then stop after one repr
 
 ### Task 100 - Diagnostic V3 interaction latency and analysis feedback
 
-State: `in_progress`
+State: review
 Owner: Codex
 Lane: diagnostic-v3
 Branch: feature/diagnostic-v3
@@ -4779,3 +4779,18 @@ Scope: Diagnostic V3 client interaction, minimal visual feedback, Preview-only r
 Out of scope: Resend delivery logic, CTA host logic, prompts, scoring, routing, Production behavior, schema, migrations, Neon writes, and Production access.
 
 Validation: Focused UI-state/QA metadata tests, Diagnostic V3 suite, typecheck, build, and diff check. No real email or Production deployment.
+
+### Task 101 - Diagnostic V3 complete event audit trail
+
+State: `in_progress`
+Owner: Codex
+Lane: diagnostic-v3
+Branch: feature/diagnostic-v3
+
+Goal: Persist an idempotent, ordered, privacy-safe Neon event trail covering each meaningful user-visible and system transition in a Diagnostic V3 session.
+
+Scope: Existing `diagnostic_v3_events` writes, API/client event hooks, bounded non-sensitive event references, and verification against Neon Preview using a fresh browser session.
+
+Out of scope: New analytics/control-plane systems, event schema changes unless existing table cannot support the required audit, changes to scoring/prompts/routing/UX/Production behavior, or any Production access.
+
+Validation: Unit tests for deterministic event keys and privacy-safe events, Diagnostic V3 suite, typecheck/build/diff check, then one fresh Preview E2E and read-only Neon reconstruction from normalized records and event timeline.

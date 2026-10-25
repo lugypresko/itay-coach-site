@@ -13,6 +13,7 @@ export interface Store {
   recordViews?(s: Session, names: string[]): Promise<void>;
   beginAnalysis?(s: Session, pass: "partial" | "full"): Promise<string>;
   finishAnalysis?(s: Session, id: string, read: Analysis<PartialAnalysis | FullAnalysis>): Promise<string>;
+  failAnalysis?(s: Session, id: string, reason: string): Promise<void>;
   create(s: Session, auth: string): Promise<void>;
   read(auth: string): Promise<Session | null>;
   save(s: Session, expected: number): Promise<boolean>;

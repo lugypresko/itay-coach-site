@@ -10,6 +10,7 @@ import {
 import {
   act,
   event,
+  bookingUrl,
   publicSession,
   deliverSummary,
 } from "@/lib/diagnostic-v3/service";
@@ -115,10 +116,15 @@ export async function POST(req: NextRequest) {
     return json({ error: "Invalid request origin." }, 403);
   if (Number(req.headers.get("content-length") ?? 0) > 16000)
     return json({ error: "Request too large." }, 413);
+  let actionName = "unknown";
+  let requestEventId = "";
   try {
     const raw = await req.text();
     if (raw.length > 16000) return json({ error: "Request too large." }, 413);
     const input = JSON.parse(raw) as Record<string, unknown>;
+    const actionAllowlist = ["start", "answers", "partial", "identify", "qualification", "booking_click", "summary"];
+    actionName = typeof input.action === "string" && actionAllowlist.includes(input.action) ? input.action : "unknown";
+    requestEventId = typeof input.event_id === "string" && /^[0-9a-f-]{36}$/i.test(input.event_id) ? input.event_id : "";
     const store = getStore();
     const auth = req.cookies.get(COOKIE)?.value;
     let s = auth ? await store.read(auth) : null;
@@ -151,8 +157,24 @@ export async function POST(req: NextRequest) {
       );
     if (input.action === "view") {
       if (input.stage !== s.stage || input.answer_revision !== s.answer_revision) return json({ ok: false });
-      const names = s.stage === "full" ? ["full_result_view"] : s.stage === "partial" ? ["partial_result_view", "identity_gate_view"] : ["diagnostic_view"];
+      const names = s.stage === "full"
+        ? ["full_result_view", ...(!s.qualification && !s.qualification_skipped ? ["qualification_shown"] : []), ...(bookingUrl() && ["conversation", "conversation_override"].includes(s.scoring.route) ? ["booking_cta_shown"] : []), ...(s.events.some((key) => key.includes(":return_link_opened")) ? ["restored_result_shown"] : [])]
+        : s.stage === "partial"
+          ? ["partial_result_view", "identity_gate_view"]
+          : s.stage === "answering" && Number.isInteger(input.step) && Number(input.step) >= 0 && Number(input.step) <= 8
+            ? [`question_shown:q${Number(input.step) + 1}`]
+            : [];
       await store.recordViews?.(s, names);
+      return json({ ok: true });
+    }
+    if (input.action === "telemetry") {
+      const type = z.enum(["role_selected", "org_size_selected", "interaction_error"]).parse(input.event_type);
+      const id = z.uuid().parse(input.event_id);
+      const detail = type === "interaction_error"
+        ? z.enum(["start", "answers", "partial", "identify", "qualification", "booking_click", "summary", "network"]).parse(input.action_code)
+        : id;
+      event(s, type, type === "interaction_error" ? `${detail}:${id}` : id);
+      await store.recordViews?.(s, [`${s.answer_revision}:${type}:${type === "interaction_error" ? `${detail}:${id}` : id}`]);
       return json({ ok: true });
     }
     if (input.action === "delete") {
@@ -187,6 +209,19 @@ export async function POST(req: NextRequest) {
       });
     return r;
   } catch (e) {
+    const authForError = req.cookies.get(COOKIE)?.value;
+    if (authForError && actionName !== "unknown") {
+      try {
+        const latest = await getStore().read(authForError);
+        if (latest) {
+          const id = requestEventId || crypto.randomUUID();
+          event(latest, "interaction_error", `${actionName}:request_failed:${id}`);
+          await getStore().recordViews?.(latest, [`${latest.answer_revision}:interaction_error:${actionName}:request_failed:${id}`]);
+        }
+      } catch {
+        // Audit persistence is best-effort when the primary store is unavailable.
+      }
+    }
     if (e instanceof Conflict) return json({ error: e.message }, 409);
     if (e instanceof z.ZodError || e instanceof SyntaxError)
       return json({ error: "Please check your answers and try again." }, 400);

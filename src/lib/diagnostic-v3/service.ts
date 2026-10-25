@@ -1,9 +1,11 @@
 import { createHmac } from "node:crypto";
 import {
   answerSchema,
+  SCORING_VERSION,
   identitySchema,
   qualificationSchema,
   complete,
+  type Answers,
   type Session,
 } from "./contracts";
 import { analyze } from "./analysis";
@@ -26,9 +28,54 @@ export function brief(s: Session): string {
     2,
   );
 }
-export function event(s: Session, name: string) {
-  const key = `${s.answer_revision}:${name}`;
+const questionForField: Record<keyof Session["answers"], string> = {
+  situation: "q1",
+  absence: "q2",
+  owner: "q3",
+  authority: "q4",
+  duration: "q5",
+  frequency: "q5",
+  attempts: "q6",
+  attempts_context: "q6",
+  impact: "q7",
+  impact_context: "q7",
+  desired: "q8",
+  context: "q9",
+};
+
+export function event(s: Session, name: string, detail?: string) {
+  const suffix = detail ? `:${detail}` : "";
+  const key = `${s.answer_revision}:${name}${suffix}`;
   if (!s.events.includes(key)) s.events.push(key);
+}
+
+export function recordAnswerChanges(s: Session, previous: Answers, next: Answers) {
+  for (const field of Object.keys(next) as Array<keyof Answers>) {
+    const before = previous[field];
+    const after = next[field];
+    if (JSON.stringify(before) === JSON.stringify(after)) continue;
+    const question = questionForField[field];
+    if (Array.isArray(before) || Array.isArray(after)) {
+      const oldValues = new Set((before as string[] | undefined) ?? []);
+      const newValues = new Set((after as string[] | undefined) ?? []);
+      for (const _value of newValues) {
+        if (!oldValues.has(_value)) event(s, "multi_added", `${question}:${field}`);
+      }
+      for (const _value of oldValues) {
+        if (!newValues.has(_value)) event(s, "multi_removed", `${question}:${field}`);
+      }
+    } else {
+      event(
+        s,
+        field.endsWith("_context") || field === "context"
+          ? "optional_text_changed"
+          : before === undefined
+            ? "answer_selected"
+            : "answer_changed",
+        `${question}:${field}`,
+      );
+    }
+  }
 }
 export function publicSession(s: Session) {
   const qaMetadata = process.env.VERCEL_ENV === "preview"
@@ -55,6 +102,7 @@ export function publicSession(s: Session) {
     full: s.identity ? (s.full?.data ?? null) : null,
     route: s.identity ? s.scoring.route : null,
     mail: s.mail ?? null,
+    restored_from_return: s.events.some((key) => key.includes(":return_link_opened")),
     booking_url:
       s.identity &&
       ["conversation", "conversation_override"].includes(s.scoring.route)
@@ -90,9 +138,11 @@ export async function act(
       Number(input.step) > 8
     )
       throw new Error("Invalid step");
+    const previousAnswers = structuredClone(s.answers);
     if (JSON.stringify(answers) !== JSON.stringify(s.answers) || (Number.isInteger(input.completed_step) && !s.events.some(e => e.split(":")[1] === `q${input.completed_step}_complete`))) {
       s.answers = answers;
       s.answer_revision++;
+      recordAnswerChanges(s, previousAnswers, answers);
       delete s.partial;
       delete s.full;
       s.stage = "answering";
@@ -106,13 +156,27 @@ export async function act(
       Number(input.completed_step) <= 9
     )
       event(s, `q${input.completed_step}_complete`);
+    if (input.navigation && typeof input.navigation === "object") {
+      const navigation = input.navigation as Record<string, unknown>;
+      if (["previous", "next"].includes(String(navigation.direction)) &&
+          Number.isInteger(navigation.from) && Number.isInteger(navigation.to) &&
+          Number(navigation.from) >= 0 && Number(navigation.from) <= 8 &&
+          Number(navigation.to) >= 0 && Number(navigation.to) <= 8 &&
+          typeof navigation.event_id === "string" && /^[0-9a-f-]{36}$/i.test(navigation.event_id)) {
+        event(s, `navigation_${navigation.direction}`, `${navigation.from}_${navigation.to}:${navigation.event_id}`);
+      }
+    }
   } else if (input.action === "partial") {
     if (!complete(s.answers))
       throw new Error("Please finish the questions first.");
     if (s.partial?.answer_revision === s.answer_revision) return s;
-    event(s, "analysis_started");
     const attempt = await store.beginAnalysis?.(s, "partial");
-    s.partial = await analyze(s.id, s.answer_revision, s.answers, "partial");
+    try {
+      s.partial = await analyze(s.id, s.answer_revision, s.answers, "partial");
+    } catch (cause) {
+      if (attempt) await store.failAnalysis?.(s, attempt, "analysis_runtime_error");
+      throw cause;
+    }
     if (attempt) s.partial.id = await store.finishAnalysis!(s, attempt, s.partial);
     s.stage = "partial";
 
@@ -132,14 +196,19 @@ export async function act(
     }
     if (s.full?.answer_revision !== s.answer_revision) {
       const attempt = await store.beginAnalysis?.(s, "full");
-      s.full = await analyze(
-        s.id,
-        s.answer_revision,
-        s.answers,
-        "full",
-        s.partial.data,
-        [s.identity.first_name, s.identity.email, s.identity.company],
-      );
+      try {
+        s.full = await analyze(
+          s.id,
+          s.answer_revision,
+          s.answers,
+          "full",
+          s.partial.data,
+          [s.identity.first_name, s.identity.email, s.identity.company],
+        );
+      } catch (cause) {
+        if (attempt) await store.failAnalysis?.(s, attempt, "analysis_runtime_error");
+        throw cause;
+      }
       if (attempt) s.full.id = await store.finishAnalysis!(s, attempt, s.full);
     }
     s.stage = "full";
@@ -154,6 +223,7 @@ export async function act(
     s.qualification_skipped = input.skip === true;
     s.scoring = score(s.answers, s.qualification);
     event(s, input.skip === true ? "qualification_skipped" : "qualification_submit");
+    event(s, "scoring_result", SCORING_VERSION);
     // Include the decision snapshot to distinguish repeated qualification changes.
     event(s, `route_${s.scoring.route}`);
   } else if (input.action === "booking_click") {
@@ -170,6 +240,8 @@ export async function act(
       return s;
     // Reserve delivery before the side effect. Retries use the same provider idempotency key.
     s.mail = "queued";
+    const requestNumber = s.events.filter((key) => key.includes(":summary_email_requested:")).length + 1;
+    event(s, "summary_email_requested", `attempt_${requestNumber}`);
   } else throw new Error("Unknown diagnostic action");
   if (s.identity) s.sales_brief = brief(s);
   return save(store, s, expected);
@@ -261,6 +333,16 @@ export async function deliverSummary(
       s.mail = "failed";
     }
   }
+  const mailAttempt = s.events.filter((key) => key.includes(":summary_email_requested:")).length;
+  event(
+    s,
+    s.mail === "sent"
+      ? "summary_email_sent"
+      : s.mail === "simulated"
+        ? "summary_email_simulated"
+        : "summary_email_failed",
+    `attempt_${mailAttempt}`,
+  );
   // A concurrent edit wins. Do not overwrite its answers or result.
   await save(store, s, s.record_version);
   return s;

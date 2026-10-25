@@ -227,6 +227,7 @@ export async function analyze(
   let retryAttempted = false;
   let retryEventLogged = false;
   let initialRetryRequestId: string | undefined;
+  const providerAttempts: NonNullable<Analysis<PartialAnalysis | FullAnalysis>["provider_attempts"]> = [];
   let reason =
     process.env.DIAGNOSTIC_V3_AI_ENABLED !== "true"
       ? "ai_disabled"
@@ -368,6 +369,7 @@ export async function analyze(
       };
     };
     try {
+      let attemptStarted = Date.now();
       let response = await fetch(
         "https://api.groq.com/openai/v1/chat/completions",
         requestInit(),
@@ -380,12 +382,15 @@ export async function analyze(
       providerRequestId = captureRequestId(response);
       if (!response.ok) {
         await readProviderError(response);
+        providerAttempts.push({ status: response.status, request_id: providerRequestId, outcome: "fail", error_code: providerError?.code ?? `http_${response.status}`, duration_ms: Date.now() - attemptStarted });
         if (pass === "partial" && response.status === 400 && providerError?.code === "json_validate_failed") {
           retryAttempted = true;
           initialRetryRequestId = providerRequestId;
           try {
+            attemptStarted = Date.now();
             response = await fetch("https://api.groq.com/openai/v1/chat/completions", requestInit());
           } catch (retryError) {
+            providerAttempts.push({ outcome: "fail", error_code: "provider_unavailable", duration_ms: Date.now() - attemptStarted });
             logRetry("failed");
             throw retryError;
           }
@@ -393,12 +398,16 @@ export async function analyze(
           providerRequestId = captureRequestId(response);
           if (!response.ok) {
             await readProviderError(response);
+            providerAttempts.push({ status: response.status, request_id: providerRequestId, outcome: "fail", error_code: providerError?.code ?? `http_${response.status}`, duration_ms: Date.now() - attemptStarted });
             logRetry("failed", response.status);
             throw new Error(`http_${response.status}`);
           }
+          providerAttempts.push({ status: response.status, request_id: providerRequestId, outcome: "pass", duration_ms: Date.now() - attemptStarted });
         } else {
           throw new Error(`http_${response.status}`);
         }
+      } else {
+        providerAttempts.push({ status: response.status, request_id: providerRequestId, outcome: "pass", duration_ms: Date.now() - attemptStarted });
       }
       const body = await response.json();
       const parsed = schema.parse(
@@ -416,6 +425,7 @@ export async function analyze(
         model,
         returned_model: typeof body.model === "string" ? body.model : model,
         provider_request_id: providerRequestId ?? (typeof body.id === "string" ? body.id : undefined),
+        provider_attempts: providerAttempts,
         ...telemetry("groq", model),
       };
     } catch (error) {
@@ -439,6 +449,10 @@ export async function analyze(
             ? "invalid_evidence"
             : error.message;
       else reason = "provider_unavailable";
+      if (providerAttempts.length === 0) providerAttempts.push({ outcome: "fail", error_code: reason, duration_ms: Date.now() - started });
+      else if (providerAttempts.at(-1)?.outcome === "pass") {
+        providerAttempts[providerAttempts.length - 1] = { ...providerAttempts.at(-1)!, outcome: "fail", error_code: reason };
+      }
       // Never return a rejected provider result as fallback content.
       data = pass === "partial" ? partialFallback(a) : fallback(a);
     }
@@ -449,6 +463,7 @@ export async function analyze(
     source: "fallback",
     model: "deterministic-v1",
     fallback_reason: reason,
+    provider_attempts: providerAttempts,
     ...telemetry("fallback", "deterministic-v1", reason),
   };
 }

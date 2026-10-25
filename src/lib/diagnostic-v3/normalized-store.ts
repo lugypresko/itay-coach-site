@@ -8,8 +8,15 @@ import type { Store } from './store';
 const hash = (s: string) => createHash('sha256').update(s).digest('hex');
 type Client = { query: (sql: string, params?: unknown[]) => Promise<{ rows: pg.QueryResultRow[]; rowCount: number | null }> };
 type Read = Analysis<PartialAnalysis | FullAnalysis>;
-const aliases: Record<string,string> = { view:'diagnostic_view',start:'diagnostic_start',book_call_click:'booking_click' };
-const noCall = new Set(['ai_disabled','zdr_unverified','missing_key','unsafe_input']);
+const aliases: Record<string,string> = {
+  view:'diagnostic_view',start:'diagnostic_start',book_call_click:'booking_click',
+  question_shown:'diagnostic_view',navigation_previous:'verification_checked',navigation_next:'verification_checked',
+  answer_selected:'verification_checked',answer_changed:'verification_checked',multi_added:'verification_checked',
+  multi_removed:'verification_checked',optional_text_changed:'verification_checked',qualification_shown:'diagnostic_view',
+  role_selected:'verification_checked',org_size_selected:'verification_checked',scoring_result:'verification_checked',
+  restored_result_shown:'full_result_view',booking_cta_shown:'diagnostic_view',return_link_opened:'diagnostic_view',
+  interaction_error:'verification_checked',
+};
 function metadata(s: Session) {
   return { step:s.step,stage:s.stage,identified_at:s.identified_at,return_hash:s.return_hash,
     return_expires_at:s.return_expires_at,mail:s.mail,origin:s.origin ?? 'live' };
@@ -32,9 +39,27 @@ export function normalizedStore(pool: InstanceType<typeof pg.Pool>): Store {
       const colon=key.indexOf(':'); const rev=Number(key.slice(0,colon));
       const rawName=key.slice(colon+1).split(':')[0];
       const name=aliases[rawName] ?? rawName;
-      await c.query(`INSERT INTO diagnostic_v3_events(session_id,answer_revision,session_record_version,event_name,idempotency_key,actor_kind,origin)
-        SELECT $1,$2,$3,$4,$5,'visitor',$6 WHERE EXISTS(SELECT 1 FROM diagnostic_v3_revisions WHERE session_id=$1 AND answer_revision=$2)
-        ON CONFLICT(session_id,idempotency_key) DO NOTHING`,[s.id,rev,s.record_version,name,key,s.origin??'live']);
+      const actor = /^(analysis_|summary_email_|sales_brief_saved|scoring_result|route_)/.test(rawName) ? 'server' : 'visitor';
+      const outcome = rawName === 'interaction_error' || rawName === 'analysis_failed' || rawName === 'summary_email_failed'
+        ? 'fail'
+        : rawName === 'summary_email_simulated' ? 'simulated'
+          : rawName === 'analysis_started' || rawName === 'summary_email_requested' ? 'pending'
+          : /^(analysis_completed|analysis_fallback_used|summary_email_sent|qualification_submit|qualification_skipped|route_|scoring_result|sales_brief_saved|answer_selected|answer_changed|multi_added|multi_removed|optional_text_changed|question_shown|navigation_previous|navigation_next|qualification_shown|role_selected|org_size_selected|restored_result_shown|booking_cta_shown|return_link_opened|identity_submit|book_call_click|partial_result_view|full_result_view|diagnostic_view|view|q[1-9]_complete)/.test(rawName)
+              ? 'pass' : null;
+      const keyDetail = key.slice(colon+1).split(':').slice(1);
+      const analysisId = rawName.startsWith('analysis_') && /^[0-9a-f-]{36}$/i.test(keyDetail[0] ?? '')
+        ? keyDetail[0]
+        : ['partial_result_view','full_result_view','restored_result_shown','sales_brief_saved'].includes(rawName)
+          ? (rawName === 'partial_result_view' ? s.partial?.id : s.full?.id ?? s.partial?.id) ?? null
+          : null;
+      let qualificationId: string | null = null;
+      if (/^(qualification_submit|qualification_skipped|route_|scoring_result|sales_brief_saved)/.test(rawName)) {
+        const q = await c.query('SELECT id FROM diagnostic_v3_qualifications WHERE session_id=$1 AND answer_revision=$2 ORDER BY qualification_revision DESC LIMIT 1',[s.id,rev]);
+        qualificationId = q.rows[0]?.id ?? null;
+      }
+      await c.query(`INSERT INTO diagnostic_v3_events(session_id,answer_revision,session_record_version,event_name,idempotency_key,actor_kind,origin,outcome,analysis_id,qualification_id,occurred_at)
+        SELECT $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,clock_timestamp() WHERE EXISTS(SELECT 1 FROM diagnostic_v3_revisions WHERE session_id=$1 AND answer_revision=$2)
+        ON CONFLICT(session_id,idempotency_key) DO NOTHING`,[s.id,rev,s.record_version,name,key,actor,s.origin??'live',outcome,analysisId,qualificationId]);
     }
   }
   async function revision(c:Client,s:Session,origin=s.origin??'live') {
@@ -108,9 +133,9 @@ export function normalizedStore(pool: InstanceType<typeof pg.Pool>): Store {
       if(prev && prev.role===(s.qualification?.role??null) && prev.org_size===(s.qualification?.org_size??null) && prev.qualification_status===status && prev.scoring_version===q.scoring_version) qid=prev.id;
       else {
         qid=randomUUID();
-        if (status !== 'not_provided') await events(c,s,[`${s.answer_revision}:qualification_${status==='skipped'?'skipped':'submit'}:${qid}`,`${s.answer_revision}:route_${q.route}:${qid}`]);
         await c.query(`INSERT INTO diagnostic_v3_qualifications(id,session_id,answer_revision,qualification_revision,role,org_size,qualification_status,scoring_version,fit_status,fit,pain,urgency,readiness,total,score_components,route,routing_rule)
           VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)`,[qid,s.id,s.answer_revision,(prev?.qualification_revision??-1)+1,s.qualification?.role??null,s.qualification?.org_size??null,status,q.scoring_version,q.fit_status,q.fit,q.pain,q.urgency,q.readiness,q.total,{answers:s.answers,qualification:s.qualification??null,fit:q.fit,pain:q.pain,urgency:q.urgency,readiness:q.readiness},q.route,q.rule]);
+        if (status !== 'not_provided') await events(c,s,[`${s.answer_revision}:qualification_${status==='skipped'?'skipped':'submit'}:${qid}`,`${s.answer_revision}:route_${q.route}:${qid}`,`${s.answer_revision}:scoring_result:${qid}`]);
       }
       // Rebuild the brief from current normalized-bound inputs; never retain an old revision's brief.
       const brief={answers:s.answers,pattern:s.full?.data.primary_pattern??s.partial?.data.primary_pattern??null,
@@ -121,7 +146,7 @@ export function normalizedStore(pool: InstanceType<typeof pg.Pool>): Store {
       await c.query(`UPDATE diagnostic_v3_leads SET sales_brief=$1,brief_answer_revision=$2,brief_analysis_id=$3,brief_qualification_id=$4,brief_updated_at=now(),updated_at=now() WHERE session_id=$5`,[brief,s.answer_revision,ids.full??ids.partial,qid,s.id]);
       await events(c,s,[`${s.answer_revision}:sales_brief_saved:${s.record_version}`]);
     }
-    await events(c,s,s.events.filter(key=>!/^\d+:(qualification_submit|qualification_skipped|route_[a-z_]+)$/.test(key)));
+    await events(c,s,s.events.filter(key=>!/^\d+:(qualification_submit|qualification_skipped|route_[a-z_]+|scoring_result)(:.*)?$/.test(key)));
     await c.query(`UPDATE diagnostic_v3_sessions SET current_answer_revision=$1,current_analysis_version=$2,current_qualification_id=$3,normalized_at=COALESCE(normalized_at,now()),payload=$4,record_version=$5,expires_at=$6 WHERE id=$7`,[s.answer_revision,ANALYSIS_VERSION,qid,metadata(s),s.record_version,s.expires_at,s.id]);
   }
   const api:Store={
@@ -150,10 +175,16 @@ export function normalizedStore(pool: InstanceType<typeof pg.Pool>): Store {
     });},
     async remove(auth) {await pool.query('DELETE FROM diagnostic_v3_sessions WHERE auth_hash=$1',[hash(auth)]);},
     async consumeReturn(value,newAuth) {
-      const r=await pool.query(`UPDATE diagnostic_v3_sessions SET auth_hash=$1,record_version=record_version+1,payload=payload-'return_hash'-'return_expires_at'
-        WHERE payload->>'return_hash'=$2 AND (payload->>'return_expires_at')::timestamptz>now() AND expires_at>now()`,[hash(newAuth),hash(value)]);return r.rowCount===1;
+      const r=await pool.query(`WITH restored AS (
+          UPDATE diagnostic_v3_sessions SET auth_hash=$1,record_version=record_version+1,payload=payload-'return_hash'-'return_expires_at'
+          WHERE payload->>'return_hash'=$2 AND (payload->>'return_expires_at')::timestamptz>now() AND expires_at>now()
+          RETURNING id,current_answer_revision,record_version,COALESCE(payload->>'origin','live') AS origin
+        )
+        INSERT INTO diagnostic_v3_events(session_id,answer_revision,session_record_version,event_name,idempotency_key,actor_kind,origin,outcome,occurred_at)
+        SELECT id,current_answer_revision,record_version,'diagnostic_view',current_answer_revision||':return_link_opened','visitor',origin,'pass',clock_timestamp() FROM restored
+        RETURNING session_id`,[hash(newAuth),hash(value)]);return r.rowCount===1;
     },
-    async recordViews(s,names) {await transaction(c=>events(c,s,names.map(n=>`${s.answer_revision}:${n}`)));},
+    async recordViews(s,names) {await transaction(c=>events(c,s,names.map(n=>n.startsWith(`${s.answer_revision}:`)?n:`${s.answer_revision}:${n}`)));},
     async beginAnalysis(s,pass) {return transaction(async c=>{
       const lock=await c.query('SELECT current_answer_revision FROM diagnostic_v3_sessions WHERE id=$1 FOR UPDATE',[s.id]);
       if(lock.rows[0]?.current_answer_revision!==s.answer_revision) throw new Error('Stale analysis input');
@@ -176,16 +207,56 @@ export function normalizedStore(pool: InstanceType<typeof pg.Pool>): Store {
       await c.query('SELECT id FROM diagnostic_v3_sessions WHERE id=$1 FOR UPDATE',[s.id]);
       const row=(await c.query('SELECT * FROM diagnostic_v3_analyses WHERE id=$1 AND session_id=$2 AND answer_revision=$3 FOR UPDATE',[id,s.id,s.answer_revision])).rows[0];
       if(!row||row.status!=='pending') throw new Error('Analysis attempt unavailable');
-      if(read.source==='fallback'&&row.provider==='groq'&&!noCall.has(read.fallback_reason??'')) {
-        await c.query(`UPDATE diagnostic_v3_analyses SET status=$1,failure_code=$2,provider_http_status=$3,completed_at=now(),duration_ms=$4 WHERE id=$5`,[read.fallback_reason==='timeout'?'timeout':'rejected',read.fallback_reason??'provider_failed',read.provider_status??null,read.duration_ms??0,id]);
-        const next=randomUUID();
-        await c.query(`INSERT INTO diagnostic_v3_analyses(id,session_id,answer_revision,analysis_version,pass,attempt_number,first_read_analysis_id,prompt_version,prompt_sha256,framework_version,validator_version,input_sha256,provider,requested_model)
-          SELECT $1,session_id,answer_revision,analysis_version,pass,attempt_number+1,first_read_analysis_id,prompt_version,prompt_sha256,framework_version,validator_version,input_sha256,'deterministic','deterministic-v1' FROM diagnostic_v3_analyses WHERE id=$2`,[next,id]);id=next;
+      const providerAttempts=read.provider_attempts?.length ? read.provider_attempts : row.provider==='groq' && read.source==='fallback'
+        ? [{status:read.provider_status,request_id:read.provider_request_id,outcome:'fail' as const,error_code:read.fallback_reason??'provider_failed',duration_ms:read.duration_ms??0}]
+        : [];
+      const recordAttemptEvent=async(name:string,attemptId:string,outcome:string)=>{
+        await c.query(`INSERT INTO diagnostic_v3_events(session_id,answer_revision,session_record_version,event_name,idempotency_key,actor_kind,origin,outcome,analysis_id,occurred_at)
+          VALUES($1,$2,$3,$4,$5,'server',$6,$7,$8,clock_timestamp()) ON CONFLICT(session_id,idempotency_key) DO NOTHING`,[s.id,s.answer_revision,s.record_version,name,`${s.answer_revision}:${name}:${attemptId}`,s.origin??'live',outcome,attemptId]);
+      };
+      let attemptNumber=Number(row.attempt_number);
+      let selectedId=id;
+      if(row.provider==='groq') {
+        for(let index=0;index<providerAttempts.length;index++) {
+          const attempt=providerAttempts[index];
+          let attemptId=id;
+          if(index>0) {
+            attemptId=randomUUID();
+            attemptNumber++;
+            await c.query(`INSERT INTO diagnostic_v3_analyses(id,session_id,answer_revision,analysis_version,pass,attempt_number,first_read_analysis_id,prompt_version,prompt_sha256,framework_version,validator_version,input_sha256,provider,requested_model)
+              SELECT $1,session_id,answer_revision,analysis_version,pass,$3,first_read_analysis_id,prompt_version,prompt_sha256,framework_version,validator_version,input_sha256,'groq',requested_model FROM diagnostic_v3_analyses WHERE id=$2`,[attemptId,id,attemptNumber]);
+            await recordAttemptEvent('analysis_started',attemptId,'pending');
+          }
+          const finalSuccess=read.source==='groq' && index===providerAttempts.length-1 && attempt.outcome==='pass';
+          if(!finalSuccess) {
+            const status=attempt.error_code==='timeout'?'timeout':'rejected';
+            await c.query(`UPDATE diagnostic_v3_analyses SET status=$1,failure_code=$2,provider_http_status=$3,provider_request_id=$4,completed_at=now(),duration_ms=$5 WHERE id=$6`,[status,attempt.error_code??'provider_failed',attempt.status??null,attempt.request_id??null,attempt.duration_ms,attemptId]);
+            await recordAttemptEvent('analysis_failed',attemptId,'fail');
+          } else {
+            selectedId=attemptId;
+            await c.query(`UPDATE diagnostic_v3_analyses SET status='succeeded',provider='groq',returned_model=$1,provider_http_status=$2,schema_valid=true,semantic_valid=true,validation_checks=$3,fallback_reason=NULL,output=$4,completed_at=now(),duration_ms=$5,provider_request_id=$6 WHERE id=$7`,[read.returned_model??read.model,attempt.status??read.provider_status??null,{schema:true,evidence:true,sanitized:true},read.data,read.duration_ms??attempt.duration_ms,attempt.request_id??read.provider_request_id??null,attemptId]);
+            await recordAttemptEvent('analysis_completed',attemptId,'pass');
+          }
+        }
       }
-      await c.query(`UPDATE diagnostic_v3_analyses SET status=$1,provider=$2,returned_model=$3,provider_http_status=$4,schema_valid=true,semantic_valid=true,validation_checks=$5,fallback_reason=$6,output=$7,completed_at=now(),duration_ms=$8,provider_request_id=$10 WHERE id=$9`,[read.source==='groq'?'succeeded':'fallback',read.source==='groq'?'groq':'deterministic',read.returned_model??read.model,read.provider_status??null,{schema:true,evidence:true,sanitized:true},read.fallback_reason??null,read.data,read.duration_ms??0,id,read.provider_request_id??null]);
-      const name=read.source==='groq'?'analysis_completed':'analysis_fallback_used';
-      await c.query(`INSERT INTO diagnostic_v3_events(session_id,answer_revision,session_record_version,event_name,idempotency_key,actor_kind,origin,analysis_id) VALUES($1,$2,$3,$4,$5,'server',$6,$7) ON CONFLICT DO NOTHING`,[s.id,s.answer_revision,s.record_version,name,`${s.answer_revision}:${name}:${id}`,s.origin??'live',id]);
-      return id;
+      if(read.source==='fallback') {
+        if(row.provider==='groq') {
+          attemptNumber++;
+          selectedId=randomUUID();
+          await c.query(`INSERT INTO diagnostic_v3_analyses(id,session_id,answer_revision,analysis_version,pass,attempt_number,first_read_analysis_id,prompt_version,prompt_sha256,framework_version,validator_version,input_sha256,provider,requested_model)
+            SELECT $1,session_id,answer_revision,analysis_version,pass,$3,first_read_analysis_id,prompt_version,prompt_sha256,framework_version,validator_version,input_sha256,'deterministic','deterministic-v1' FROM diagnostic_v3_analyses WHERE id=$2`,[selectedId,id,attemptNumber]);
+          await recordAttemptEvent('analysis_started',selectedId,'pending');
+        }
+        await c.query(`UPDATE diagnostic_v3_analyses SET status='fallback',provider='deterministic',returned_model=$1,provider_http_status=$2,schema_valid=true,semantic_valid=true,validation_checks=$3,fallback_reason=$4,output=$5,completed_at=now(),duration_ms=$6,provider_request_id=$7 WHERE id=$8`,[read.model,read.provider_status??null,{schema:true,evidence:true,sanitized:true},read.fallback_reason??'deterministic',read.data,read.duration_ms??0,read.provider_request_id??null,selectedId]);
+        await recordAttemptEvent('analysis_fallback_used',selectedId,'pass');
+      }
+      return selectedId;
+    });},
+    async failAnalysis(s,id,reason) {return transaction(async c=>{
+      const updated=await c.query(`UPDATE diagnostic_v3_analyses SET status='error',failure_code=$1,completed_at=now()
+        WHERE id=$2 AND session_id=$3 AND answer_revision=$4 AND status='pending' RETURNING id`,[reason,id,s.id,s.answer_revision]);
+      if(updated.rows[0]) await c.query(`INSERT INTO diagnostic_v3_events(session_id,answer_revision,session_record_version,event_name,idempotency_key,actor_kind,origin,outcome,analysis_id,occurred_at)
+        VALUES($1,$2,$3,'analysis_failed',$4,'server',$5,'fail',$6,clock_timestamp()) ON CONFLICT(session_id,idempotency_key) DO NOTHING`,[s.id,s.answer_revision,s.record_version,`${s.answer_revision}:analysis_failed:${id}`,s.origin??'live',id]);
     });},
   };
   return api;

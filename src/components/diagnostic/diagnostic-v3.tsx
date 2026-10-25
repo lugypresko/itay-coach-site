@@ -66,6 +66,7 @@ export function DiagnosticV3({ previewUx = false }: { previewUx?: boolean } = {}
   const answerWriteQueue = useRef<Promise<View | null>>(Promise.resolve(null));
   const answerWriteCount = useRef(0);
   const answerWriteEpoch = useRef(0);
+  const telemetryQueue = useRef<Promise<void>>(Promise.resolve());
   const heading = useRef<HTMLHeadingElement>(null);
   function accept(s: View | null) {
     setSession(s);
@@ -110,21 +111,26 @@ export function DiagnosticV3({ previewUx = false }: { previewUx?: boolean } = {}
     lock.current = true;
     setBusy(true);
     setError("");
+    let responseReceived = false;
     try {
       const r = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           action,
+          event_id: crypto.randomUUID(),
           expected_version: session?.record_version,
           ...extra,
         }),
       });
+      responseReceived = true;
       const b = await r.json();
       if (!r.ok) throw new Error(b.error);
       accept(b.session);
       return b.session;
     } catch (e) {
+      if (!responseReceived && ["start", "answers", "partial", "identify", "qualification", "booking_click", "summary"].includes(action))
+        reportTelemetry("interaction_error", { action_code: "network" });
       setError(e instanceof Error ? e.message : "Please try again.");
       return null;
     } finally {
@@ -132,10 +138,26 @@ export function DiagnosticV3({ previewUx = false }: { previewUx?: boolean } = {}
       setBusy(false);
     }
   }
+  function reportTelemetry(
+    eventType: "role_selected" | "org_size_selected" | "interaction_error",
+    extra: { action_code?: string } = {},
+  ) {
+    if (!session) return Promise.resolve();
+    const payload = { action: "telemetry", event_type: eventType, event_id: crypto.randomUUID(), ...extra };
+    telemetryQueue.current = telemetryQueue.current.then(async () => {
+      await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+    }).catch(() => {});
+    return telemetryQueue.current;
+  }
   function persistAnswersInBackground(
     answerSnapshot: Answers,
     nextStep: number,
     completedStep?: number,
+    navigation?: { direction: "previous" | "next"; from: number; to: number; event_id: string },
   ): Promise<View | null> {
     const epoch = answerWriteEpoch.current;
     answerWriteCount.current += 1;
@@ -145,17 +167,21 @@ export function DiagnosticV3({ previewUx = false }: { previewUx?: boolean } = {}
         if (epoch !== answerWriteEpoch.current) return null;
         const base = persistedSessionRef.current;
         if (!base) throw new Error("Your saved case is not ready yet.");
+        let responseReceived = false;
         const response = await fetch(endpoint, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             action: "answers",
+            event_id: crypto.randomUUID(),
             expected_version: base.record_version,
             answers: answerSnapshot,
             step: nextStep,
             completed_step: completedStep,
+            navigation,
           }),
         });
+        responseReceived = true;
         const body = await response.json();
         if (!response.ok) throw new Error(body.error);
         const saved = body.session as View;
@@ -164,6 +190,7 @@ export function DiagnosticV3({ previewUx = false }: { previewUx?: boolean } = {}
         return saved;
       })
       .catch((cause: unknown) => {
+        if (cause instanceof TypeError) reportTelemetry("interaction_error", { action_code: "answers" });
         if (epoch === answerWriteEpoch.current) {
           answerWriteEpoch.current += 1;
           const saved = persistedSessionRef.current;
@@ -227,18 +254,19 @@ export function DiagnosticV3({ previewUx = false }: { previewUx?: boolean } = {}
       nextAnswers,
       nextStep,
       shouldAdvance ? currentStep + 1 : undefined,
+      shouldAdvance ? { direction: "next", from: currentStep, to: nextStep, event_id: crypto.randomUUID() } : undefined,
     );
   }
   const reportedView = useRef("");
   useEffect(() => {
     if (!session || busy || answerSaving) return;
-    const key = `${session.answer_revision}:${session.stage}`;
+    const key = `${session.answer_revision}:${session.stage}:${step}`;
     if (reportedView.current === key) return;
     reportedView.current = key;
     // Acknowledge a committed rendered screen; provider completion is not a view.
     void fetch(endpoint, { method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "view", stage: session.stage, answer_revision: session.answer_revision }) }).catch(() => { reportedView.current = ""; });
-  }, [session, busy, answerSaving]);
+      body: JSON.stringify({ action: "view", stage: session.stage, answer_revision: session.answer_revision, step }) }).catch(() => { reportedView.current = ""; });
+  }, [session, busy, answerSaving, step]);
   const question = questions[step];
   const valid =
     step === 8 ||
@@ -268,6 +296,7 @@ export function DiagnosticV3({ previewUx = false }: { previewUx?: boolean } = {}
       answersRef.current,
       next,
       next > currentStep ? currentStep + 1 : undefined,
+      next !== currentStep ? { direction: next > currentStep ? "next" : "previous", from: currentStep, to: next, event_id: crypto.randomUUID() } : undefined,
     );
   }
   async function analyzePartial(savedSession?: View) {
@@ -685,9 +714,9 @@ export function DiagnosticV3({ previewUx = false }: { previewUx?: boolean } = {}
               className="v3-qualification"
               onSubmit={(e) => {
                 e.preventDefault();
-                send("qualification", {
+                void telemetryQueue.current.then(() => send("qualification", {
                   qualification: { role, org_size: size } as Qualification,
-                });
+                }));
               }}
             >
               <h3>One quick check to suggest the right next step</h3>
@@ -703,7 +732,7 @@ export function DiagnosticV3({ previewUx = false }: { previewUx?: boolean } = {}
                   <select
                     required
                     value={role}
-                    onChange={(e) => setRole(e.target.value)}
+                    onChange={(e) => { setRole(e.target.value); reportTelemetry("role_selected"); }}
                   >
                     <option value="">Choose your role</option>
                     {roles.map(([v, t]) => (
@@ -723,7 +752,7 @@ export function DiagnosticV3({ previewUx = false }: { previewUx?: boolean } = {}
                   <select
                     required
                     value={size}
-                    onChange={(e) => setSize(e.target.value)}
+                    onChange={(e) => { setSize(e.target.value); reportTelemetry("org_size_selected"); }}
                   >
                     <option value="">Choose size</option>
                     {sizes.map(([v, t]) => (

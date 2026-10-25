@@ -164,8 +164,8 @@ const snapshotSql = `
   LEFT JOIN LATERAL (
     SELECT jsonb_agg(jsonb_build_object('event_name', t.event_name, 'recorded_at', t.recorded_at,
       'actor_kind', t.actor_kind, 'outcome', t.outcome) ORDER BY t.recorded_at, t.id) AS timeline
-    FROM (SELECT id, event_name, recorded_at, actor_kind, outcome
-      FROM diagnostic_v3_events WHERE session_id=s.id ORDER BY recorded_at DESC, id DESC LIMIT 20) t
+    FROM (SELECT id, event_name, COALESCE(occurred_at,recorded_at) AS recorded_at, actor_kind, outcome
+      FROM diagnostic_v3_events WHERE session_id=s.id ORDER BY COALESCE(occurred_at,recorded_at) DESC, id DESC LIMIT 20) t
   ) ev ON true
 `;
 
