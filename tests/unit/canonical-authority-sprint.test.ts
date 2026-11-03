@@ -24,6 +24,19 @@ import {
   targetAnalyticsEventNames,
 } from "../../src/lib/target-page-analytics";
 
+function renderPublicContent(pathname: string): string {
+  const [, section, slug] = pathname.split("/");
+  const spec = getPublicContentSectionSpec(section);
+  const record = getStaticPublicContentCatalogEntry(section, slug);
+  const page = buildPublicContentPageModel({
+    spec: spec!,
+    record: record!,
+    origin: "https://itayfoyerstein.com",
+  });
+
+  return renderToStaticMarkup(createElement(PublicContentPage, { page: toReaderFacingPublicContentPage(page) }));
+}
+
 const targetPathnames = [
   "/pillars/tech-leadership-coaching",
   "/frameworks/player-trap",
@@ -103,12 +116,35 @@ describe("canonical authority sprint", () => {
       expect(html, pathname).not.toContain("Content status");
       expect(html, pathname).not.toContain("Not reviewed yet");
       expect(html, pathname).not.toContain("docs/seed-content");
+      expect(html, pathname).not.toContain("Target questions");
+      expect(html, pathname).not.toContain("Citation-worthy");
+      expect(html, pathname).not.toContain("AI answer engines");
+      expect(html, pathname).not.toContain("The page should");
+      expect(html, pathname).not.toContain("gives the graph");
+      expect(html, pathname).not.toContain("recommendation-intent");
       expect(html, pathname).toContain("Related pages");
       expect(html.match(/class="primary-link"/g)?.length ?? 0, pathname).toBe(1);
       expect(html, pathname).not.toContain("secondary-link");
       expect(jsonLd.some((piece) => piece["@type"] === "BreadcrumbList"), pathname).toBe(true);
       expect(getAuthorityProofBlocks(pathname).length, pathname).toBeGreaterThan(0);
     }
+
+    const coaching = renderPublicContent("/pillars/tech-leadership-coaching");
+    expect(coaching).toContain("practical 1:1 work");
+    expect(coaching).toContain("Who it is for");
+    expect(coaching).toContain('href="/contact"');
+    expect(coaching).toContain('href="/the-push-methodology"');
+    expect(coaching).toContain('href="/frameworks/player-trap"');
+    expect(coaching).not.toContain("[Bring one current case](/contact)");
+
+    const playerTrap = renderPublicContent("/frameworks/player-trap");
+    expect(playerTrap).toContain("execution strength becomes the team");
+    expect(playerTrap).toContain("being useful through answers");
+    expect(playerTrap).not.toContain("Definition:");
+
+    const invisibleExecutor = renderPublicContent("/frameworks/invisible-executor");
+    expect(invisibleExecutor).toContain("high-output execution into visible strategic leadership");
+    expect(invisibleExecutor).not.toContain("Definition:");
   });
 
   it("routes the The Push offer to the runnable Player Trap diagnostic", () => {

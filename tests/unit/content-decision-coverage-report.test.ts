@@ -5,7 +5,7 @@ import { contentDecisionPageDecisions, contentDecisionPageMappings } from "../..
 import { contentDecisionVocabulary } from "../../src/ai/content-decision/vocabulary";
 
 describe("ContentDecision coverage report", () => {
-  it("passes the five GO metrics for the Phase 0 mapping baseline", () => {
+  it("records that the engineering-manager decision is outside the validation window", () => {
     const report = buildContentDecisionCoverageReport({
       pages: contentDecisionPageMappings,
       decisions: contentDecisionPageDecisions,
@@ -13,16 +13,30 @@ describe("ContentDecision coverage report", () => {
     });
 
     expect(report.totalPages).toBe(12);
-    expect(report.completePages).toBe(11);
+    expect(report.mappedPages).toBe(11);
+    expect(report.completePages).toBe(10);
+    expect(report.incompletePages).toBe(1);
     expect(report.excludedPages).toEqual([{ canonicalPath: "/contact", reason: "Routing surface only; it is not a canonical authority or content-decision owner." }]);
+    expect(report.failures).toEqual([
+      {
+        canonicalPath: "/engineering-manager-coach",
+        failureCodes: ["stale_validation"],
+        details: ["lastValidatedAt is outside the allowed validation window."],
+      },
+      {
+        canonicalPath: "__batch__",
+        failureCodes: ["stale_validation"],
+        details: ["lastValidatedAt is outside the allowed validation window."],
+      },
+    ]);
     expect(report.goMetrics).toEqual({
-      decisionCoverage: true,
-      explicitSubgraphResolution: true,
+      decisionCoverage: false,
+      explicitSubgraphResolution: false,
       graphCleanliness: true,
       evidenceCoverage: true,
       deterministicRepeatability: true,
     });
-    expect(report.go).toBe(true);
+    expect(report.go).toBe(false);
   });
 
   it("is deterministic for identical inputs", () => {
