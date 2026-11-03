@@ -291,3 +291,13 @@ This file is the project’s single append-only decision record. New decisions a
 - Context: User minor-revision request on `2026-07-26`; `PLANS.md` Task 095; `DEC-20260726-03`; `DEC-20260726-04`.
 - Rationale: Improve semantic and conversion clarity without changing canonical meaning or governed page structure.
 - Consequences: Version 2/hash `9080366c4cfaeac6b2f8e575c1770e885ce7cdaccd510bf16f152f31a6f0c5c9` is superseded by draft version 3/hash `28b0ea1c56e8a8e527851ed1fa00077095c5eb904c3d8293d4a22565aa944788`; no approval or publication is granted.
+
+## DEC-20261103-01 - Three public routes serve repo reader-facing copy
+
+- Date: `2026-11-03`
+- Status: `implementation`
+- Scope: `/pillars/tech-leadership-coaching`, `/frameworks/player-trap`, and `/frameworks/invisible-executor`.
+- Decision: When a public request explicitly allows the static catalog, these three routes serve the visitor-facing copy stored in the repo. Stale Payload records that still contain planning notes are not rendered on those routes.
+- Context: User content correction on `2026-11-03`; live pages on itayfoyerstein.com; `src/lib/public-content.ts`; `src/lib/public-content-loader.ts`; `src/seed/authority-surface-seed.ts`; `DEC-20260713-03`.
+- Rationale: The public frontend is supposed to receive reader-facing content only. The live Payload copies for these routes were planning notes, while the corrected copy now lives in the static catalog.
+- Consequences: A later CMS edit does not replace these three pages until the route stops preferring the repo copy. Reseeding the authority surface stores the corrected copy for the pillar and Invisible Executor records.
