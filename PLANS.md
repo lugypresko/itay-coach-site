@@ -4817,3 +4817,18 @@ Agent permissions affected: None.
 Validation: Failing-first unit tests for environment gating, candidate allowlisting, answer/scenario validation, synthetic persistence behavior, and no identity/mail/booking side effects; typecheck/build/diff check; deploy only `feature/diagnostic-v3`; invoke via authenticated `vercel curl`; read back every run from Neon branch `br-cold-credit-b9x1qomi`.
 
 Acceptance criteria: Exactly 24 requested Full Read runs are attempted across four fixed Q1-Q9 cases, three account-verified structured-output models and two repetitions; every result is linked to a synthetic Neon session, immutable answer revision, selected analysis and provider attempt metadata; scoring-v1 is calculated and returned; Production and SSO remain unchanged; final model comparison and remaining limitations are reported; temporary runner files are identified for removal.
+
+### Task 103 - Approved Cal.com booking target
+
+State: `done`
+Owner: Cursor
+Lane: booking-link
+Branch: cursor/cal-com-booking-url-98e2
+
+Goal: Point the campaign funnel and Diagnostic V3 operator docs at the approved Cal.com Leadership Diagnostic without hardcoding that URL in `bookingUrl()`.
+
+Scope: `campaigns/lp-shared.js` `BOOKING_URL`; `.env.example`; diagnostic-v3 ops/docs that name `DIAGNOSTIC_V3_BOOKING_URL`; the V3 result CTA label so it matches the paid 75-minute session.
+
+Out of scope: Groq/Resend/Neon wiring, Production flags, setting Vercel env, replacing the `/book-a-fit-call` lead form.
+
+Validation: Constant and docs match `https://cal.com/itayfoyer/leadership-diagnostic-75-minutes`. `bookingUrl()` still reads `process.env.DIAGNOSTIC_V3_BOOKING_URL` and accepts only https.

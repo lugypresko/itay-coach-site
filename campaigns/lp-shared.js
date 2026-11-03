@@ -9,12 +9,14 @@
  * 3. Fires a lp_view event — plug GA4 / Meta Pixel / LinkedIn Insight
  *    into the `track` stub below.
  *
- * CONFIG: set BOOKING_URL to the real scheduler (Cal.com / Calendly / etc).
+ * CONFIG: BOOKING_URL is the approved Cal.com Leadership Diagnostic
+ * (paid 75 minutes, $225). Diagnostic V3 uses DIAGNOSTIC_V3_BOOKING_URL
+ * instead of this constant.
  */
 (function () {
   'use strict';
 
-  var BOOKING_URL = 'https://itayfoyerstein.com/fit-call'; // TODO: replace with real booking link
+  var BOOKING_URL = 'https://cal.com/itayfoyer/leadership-diagnostic-75-minutes';
 
   var UTM_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'];
 

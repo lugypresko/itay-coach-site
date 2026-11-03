@@ -12,7 +12,7 @@ No production action is authorized in this task.
 ## Provider controls
 - Groq is off unless `DIAGNOSTIC_V3_AI_ENABLED=true`, `GROQ_ZDR_VERIFIED=true` and `GROQ_API_KEY` are present. Verify account Data Controls before setting the verification flag. Model: `DIAGNOSTIC_V3_GROQ_MODEL` default `openai/gpt-oss-20b`; use only a current strict Structured Outputs model.
 - Preview runs fallback with no provider request by default. No fabricated evidence or unvalidated provider text is rendered. Unsafe case input forces fallback.
-- `DIAGNOSTIC_V3_BOOKING_URL`: approved HTTPS 20-minute scheduler. No URL configured -> honest unavailable message, no broken booking link. Booking completion requires a separately verified provider webhook, not a click.
+- `DIAGNOSTIC_V3_BOOKING_URL`: approved HTTPS booking target. Approved example, and the value to set on Vercel Preview: `https://cal.com/itayfoyer/leadership-diagnostic-75-minutes` (paid 75-minute Leadership Diagnostic, $225). `bookingUrl()` reads this env var and returns it only for https URLs; the Cal.com URL is not hardcoded in the service. No URL configured -> honest unavailable message, no broken booking link. Booking completion requires a separately verified provider webhook, not a click. Do not enable Production from this note.
 - Email to the user is explicit and one message per answer revision. `DIAGNOSTIC_V3_MAIL_ENABLED=true`, `DIAGNOSTIC_V3_MAIL_FROM`, `RESEND_API_KEY` required. Preview always simulates (no live test recipient configured).
 - Sales Brief is retained server-side in the same private V3 record, including unknown-fit leads. No extra CRM workflow or private data in client DTO. Operational notification recipient is not yet configured; no brief email is sent.
 

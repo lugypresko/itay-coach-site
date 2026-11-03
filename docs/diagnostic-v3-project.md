@@ -174,6 +174,12 @@ The diagnostic sanitizes free-text case input before external inference.
 
 Do not expose API keys, secrets or full connection strings in logs, documentation or debugging output.
 
+Approved booking target for the post-diagnostic CTA (env only; not hardcoded in `bookingUrl()`):
+
+- `DIAGNOSTIC_V3_BOOKING_URL=https://cal.com/itayfoyer/leadership-diagnostic-75-minutes`
+
+That Cal.com event is the paid 75-minute Leadership Diagnostic ($225). Set the same value on Vercel Preview. An unset or non-https value hides the booking link. Do not enable Production from this note.
+
 ---
 
 ## 6. scoring-v1

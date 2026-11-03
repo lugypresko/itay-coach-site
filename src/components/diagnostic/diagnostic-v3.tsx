@@ -798,8 +798,9 @@ export function DiagnosticV3({ previewUx = false }: { previewUx?: boolean } = {}
                         });
                       }}
                     >
-                      Book 20-minute case review
+                      Book the 75-minute Leadership Diagnostic
                     </a>
+                    <p>Paid session, $225.</p>
                   ) : (
                     <p>
                       Scheduling is not configured in this Preview. Your case

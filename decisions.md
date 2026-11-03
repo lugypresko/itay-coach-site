@@ -331,3 +331,8 @@ This file is the project’s single append-only decision record. New decisions a
 - Analysis: Persist pending and completed attempts, retain separate rejected Groq and deterministic fallback records, and link Full Read to its exact First Read. Role/Org changes produce scoring snapshots without calling Groq. Screen-view events require browser acknowledgement.
 - Compatibility: Legacy answer-only sessions can be imported as legacy_snapshot. Legacy sessions with identity/analyses are preserved and require a separately verified offline snapshot import before Production. No historical events/timings are invented.
 - Release: Push only feature/diagnostic-v3 and use automatic Preview deployment. No Production migration/deployment, main merge or weaker Preview authentication.
+
+## DEC-20261103-01 — Approved diagnostic and campaign booking target
+- Context: Product-owner approved Cal.com event for the diagnostic and campaign funnel; `src/lib/diagnostic-v3/service.ts` (`bookingUrl()`); `campaigns/lp-shared.js`; `.env.example`; `docs/contracts/diagnostic-v3-operations.md`; `docs/contracts/diagnostic-v3.md`.
+- Decision: The post-diagnostic and static-campaign booking target is `https://cal.com/itayfoyer/leadership-diagnostic-75-minutes`, a paid 75-minute Leadership Diagnostic ($225). Diagnostic V3 keeps reading `DIAGNOSTIC_V3_BOOKING_URL` and returns only https URLs. The Cal.com URL is not hardcoded in the service. Campaign `BOOKING_URL` uses that same URL. `/book-a-fit-call` stays the lead-qualification form.
+- Release: Document the env for Vercel Preview. Do not set Vercel env in this change, and do not enable Production flags.

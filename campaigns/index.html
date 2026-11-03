@@ -24,7 +24,7 @@
 </head>
 <body>
   <h1>Campaign Landing Pages</h1>
-  <p class="sub">5 conversion-ready landing pages, each a different creative angle on the same offer: a 20-minute fit call. All share <code>lp-shared.js</code> — UTM capture, booking-link tagging, and an analytics hook (GA4/Pixel stubs included).</p>
+  <p class="sub">5 conversion-ready landing pages. Booking CTAs (<code>href="#"</code> or <code>data-cta="book"</code>) are rewritten by <code>lp-shared.js</code> to the approved Cal.com Leadership Diagnostic: a paid 75-minute session ($225). The script also captures UTMs and exposes an analytics hook (GA4/Pixel stubs included). Page body copy on the five LPs still describes a 20-minute fit call and needs a separate copy review before paid traffic.</p>
 
   <div class="grid">
     <div class="card">
@@ -74,7 +74,7 @@
   </div>
 
   <div class="note">
-    <b>Before launch:</b> set the real booking URL in <code>lp-shared.js</code> (BOOKING_URL), and drop your GA4 / Pixel code into the <code>track()</code> stub.
+    <b>Booking URL:</b> <code>BOOKING_URL</code> in <code>lp-shared.js</code> is <code>https://cal.com/itayfoyer/leadership-diagnostic-75-minutes</code>. Diagnostic V3 does not read that constant; set <code>DIAGNOSTIC_V3_BOOKING_URL</code> to the same URL in Vercel Preview. Drop GA4 / Pixel code into the <code>track()</code> stub before launch.
     Booking clicks are reported as <code>book_click</code> events with full UTM attribution.
     Deploy: drop this folder into the site's <code>/public</code> (served at <code>/campaigns/...</code>) or publish as a separate Vercel static project.
   </div>
