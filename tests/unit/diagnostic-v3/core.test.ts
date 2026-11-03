@@ -20,6 +20,7 @@ import {
 } from "@/lib/diagnostic-v3/store";
 import {
   act,
+  bookingUrl,
   publicSession,
   deliverSummary,
 } from "@/lib/diagnostic-v3/service";
@@ -448,5 +449,23 @@ describe("provider diagnostics do not expose rejected output", () => {
     expect(result.fallback_reason).toBe("unsafe_output");
     expect(result.data).toEqual(fallback(answers));
     expect(JSON.stringify(result.data)).not.toContain("someone@example.com");
+  });
+});
+describe("bookingUrl", () => {
+  it("returns only an https scheduler from DIAGNOSTIC_V3_BOOKING_URL", () => {
+    vi.stubEnv("DIAGNOSTIC_V3_BOOKING_URL", "");
+    expect(bookingUrl()).toBeNull();
+    vi.stubEnv(
+      "DIAGNOSTIC_V3_BOOKING_URL",
+      "http://cal.com/itayfoyer/leadership-diagnostic-75-minutes",
+    );
+    expect(bookingUrl()).toBeNull();
+    vi.stubEnv(
+      "DIAGNOSTIC_V3_BOOKING_URL",
+      "https://cal.com/itayfoyer/leadership-diagnostic-75-minutes",
+    );
+    expect(bookingUrl()).toBe(
+      "https://cal.com/itayfoyer/leadership-diagnostic-75-minutes",
+    );
   });
 });

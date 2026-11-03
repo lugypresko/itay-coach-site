@@ -787,19 +787,22 @@ export function DiagnosticV3({ previewUx = false }: { previewUx?: boolean } = {}
                 <>
                   <h3>I think this is worth looking at together.</h3>
                   {session.booking_url ? (
-                    <a
-                      className="primary-link"
-                      href={session.booking_url}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        send("booking_click").then((s) => {
-                          if (s?.booking_url)
-                            window.location.assign(s.booking_url);
-                        });
-                      }}
-                    >
-                      Book 20-minute case review
-                    </a>
+                    <>
+                      <a
+                        className="primary-link"
+                        href={session.booking_url}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          send("booking_click").then((s) => {
+                            if (s?.booking_url)
+                              window.location.assign(s.booking_url);
+                          });
+                        }}
+                      >
+                        Book the 75-minute Leadership Diagnostic
+                      </a>
+                      <p>Paid session, $225.</p>
+                    </>
                   ) : (
                     <p>
                       Scheduling is not configured in this Preview. Your case
