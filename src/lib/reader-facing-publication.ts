@@ -28,10 +28,11 @@ export function getReaderFacingDescription(content: string): string {
   const paragraph = content
     .split(/\n{2,}/)
     .map((item) => item.trim())
-    .find((item) => item && !/^#{1,6}\s/.test(item) && !/^[-*]\s/m.test(item));
+    .find((item) => item && !/^#{1,6}\s/.test(item) && !/^[-*]\s/m.test(item) && !/^\d+\.\s/m.test(item));
 
   return (paragraph ?? "")
-    .replace(/\[([^\]]+)\]\([^\s)]+\)/g, "$1")
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+    .replace(/\*\*([^*]+)\*\*/g, "$1")
     .replace(/\s+/g, " ")
     .trim();
 }

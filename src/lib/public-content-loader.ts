@@ -16,6 +16,19 @@ interface PublicContentLoaderOptions {
   allowStaticFallback?: boolean;
 }
 
+// Production Payload rows for these slugs still contain planning notes, and a
+// renderable CMS row used to win even when the page allowed the static catalog.
+// The public route passes allowStaticFallback, so these slugs serve the repo copy.
+const repoOwnedPublicRoutes = new Set([
+  "pillars/tech-leadership-coaching",
+  "frameworks/player-trap",
+  "frameworks/invisible-executor",
+]);
+
+function prefersRepoPublicCopy(section: string, slug: string, allowStaticFallback?: boolean): boolean {
+  return allowStaticFallback === true && repoOwnedPublicRoutes.has(`${section}/${slug}`);
+}
+
 export async function loadPublishedPublicContent(
   section: PublicContentSection,
   slug: string,
@@ -25,6 +38,10 @@ export async function loadPublishedPublicContent(
   const spec = getPublicContentSectionSpec(section);
   if (!spec) {
     return null;
+  }
+
+  if (prefersRepoPublicCopy(section, slug, options.allowStaticFallback)) {
+    return loadStaticFallback(section, slug, origin, true);
   }
 
   try {
