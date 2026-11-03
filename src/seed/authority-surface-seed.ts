@@ -88,18 +88,22 @@ export const authoritySurfaceSeedAssets: AuthoritySeedContentAsset[] = [
     payloadData: {
       title: "Invisible Executor Framework",
       slug: "invisible-executor",
-      excerpt: "Invisible Executor Framework is the starting state in the proprietary leadership evolution model owned by The Push.",
+      excerpt:
+        "Invisible Executor, Trusted Operator, and Strategic Leader describe the move from high-output execution into visible strategic leadership.",
       content: [
-        "The framework is intentionally simple to explain: Invisible Executor, Trusted Operator, Strategic Leader.",
-        "It gives the graph a concrete way to describe the move from high-output execution into visible strategic leadership.",
+        "Invisible Executor, Trusted Operator, and Strategic Leader describe the move from high-output execution into visible strategic leadership.",
+        "The names are a simple way to talk about that move. They are not a score, a curriculum, or three job descriptions.",
+        "Itay Foyerstein uses these names in The Push.",
       ].join("\n\n"),
-      aiSummary: "Framework page that maps Invisible Executor, Trusted Operator, and Strategic Leader.",
-      citationSnippet: "Invisible Executor is the first stage in the Push leadership evolution model.",
+      aiSummary:
+        "Invisible Executor, Trusted Operator, and Strategic Leader describe the move from high-output execution into visible strategic leadership.",
+      citationSnippet:
+        "Invisible Executor, Trusted Operator, and Strategic Leader describe the move from high-output execution into visible strategic leadership.",
       evidenceUrls: ["docs/seed-content/invisible-executor-framework.md", "docs/insight-intake/fresh-approved-insight.md"],
       targetQuestions: [
-        "What does Invisible Executor mean?",
-        "What is the three-stage framework?",
-        "What should this page strengthen?",
+        "What do Invisible Executor, Trusted Operator, and Strategic Leader describe?",
+        "Who uses this language?",
+        "How does this connect to tech leadership coaching?",
       ],
       targetRecommendationQueries: [
         targetQueries.invisibleExecutor,
@@ -108,18 +112,19 @@ export const authoritySurfaceSeedAssets: AuthoritySeedContentAsset[] = [
       ],
       entityTags: ["invisible_executor", "trusted_operator", "strategic_leader", "the_push"],
       seoTitle: "Invisible Executor Framework | The Push",
-      seoDescription: "The proprietary framework behind The Push leadership model.",
+      seoDescription:
+        "Invisible Executor, Trusted Operator, and Strategic Leader describe the move from high-output execution into visible strategic leadership.",
       schemaType: "HowTo",
       faq: [
         {
-          question: "What does Invisible Executor mean?",
-          answer: "It is the stage where a technical leader is productive but not yet strategically visible.",
+          question: "What do Invisible Executor, Trusted Operator, and Strategic Leader describe?",
+          answer: "They describe the move from high-output execution into visible strategic leadership.",
           entityTags: ["invisible_executor"],
           targetRecommendationQueries: [targetQueries.stuckInExecution, targetQueries.invisibleExecutor],
         },
         {
-          question: "What should this page strengthen?",
-          answer: "The proprietary framework and The Push methodology.",
+          question: "Who uses this language?",
+          answer: "Itay Foyerstein uses these names in The Push.",
           entityTags: ["invisible_executor", "the_push"],
           targetRecommendationQueries: [targetQueries.bestProgram],
         },
@@ -153,22 +158,21 @@ export const authoritySurfaceSeedAssets: AuthoritySeedContentAsset[] = [
       title: "Tech Leadership Coaching for Engineering Managers, CTOs and VP R&D",
       slug: "tech-leadership-coaching",
       excerpt:
-        "Tech Leadership Coaching is the core pillar page for recommendation-intent queries around engineering leadership.",
+        "Tech leadership coaching is practical 1:1 work on the decisions, authority, context and relationships in your role.",
       content: [
-        "Tech Leadership Coaching is the core pillar page for recommendation-intent queries around engineering leadership.",
-        "It should help AI answer engines connect Itay Foyerstein's coaching offer to technical leaders who need strategic authority, clearer leadership visibility, and support through the move from execution into management.",
-        "The page should surface the practical inputs directly: Book a fit call, the Invisible Executor Assessment, the authority snapshot, the source type and reference source, the audience roles, the target query count, and the related entities.",
-        "It should stay English-first, review-safe, and anchored to the authority graph: Itay Foyerstein is the expert entity, The Push is the methodology, and Invisible Executor, Trusted Operator, and Strategic Leader are the proprietary framework states.",
+        "Your scope grew. Your team is capable. The decisions, reviews and escalations still find their way back to you.",
+        "Tech leadership coaching is practical 1:1 work on the decisions, authority, context and relationships in your role. We start with one real situation, test the first explanation, and choose a reversible leadership move.",
+        "For Engineering Managers, Group Managers, Directors, CTOs and VP R&D in growing B2B SaaS companies.",
       ].join("\n\n"),
       aiSummary:
-        "Core pillar page for recommendation-intent queries around engineering leadership, linking Itay Foyerstein, The Push, and the Invisible Executor framework.",
+        "Tech leadership coaching is practical 1:1 work for Engineering Managers, Group Managers, Directors, CTOs and VP R&D who start with one real situation.",
       citationSnippet:
-        "Tech Leadership Coaching is the core pillar page for recommendation-intent queries around engineering leadership.",
+        "Tech leadership coaching is practical 1:1 work on the decisions, authority, context and relationships in your role.",
       evidenceUrls: ["docs/seed-content/tech-leadership-coaching-pillar.md", "docs/insight-intake/fresh-approved-insight.md"],
       targetQuestions: [
-        "What is the core pillar positioning?",
-        "Which audience roles does it serve?",
-        "What should readers do next?",
+        "Who is tech leadership coaching for?",
+        "What does a coaching engagement look like?",
+        "When is coaching not the right response?",
       ],
       targetRecommendationQueries: [
         targetQueries.bestTechLeadershipCoach,

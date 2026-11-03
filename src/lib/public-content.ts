@@ -326,16 +326,132 @@ Start with the leadership diagnostic to examine the pattern. If the diagnostic o
     author: "Itay Foyerstein",
   },
   {
-    title: "Tech Leadership Coaching for Engineering Managers, CTOs and VP R&D",
+    title: "Tech leadership coaching for the role you have now.",
     slug: "tech-leadership-coaching",
     excerpt:
-      "Tech leadership coaching with The Push helps technical leaders stop carrying the system and build visible operating leverage.",
-    content:
-      "Definition: Tech leadership coaching is coaching for technical leaders who need to change how decisions, ownership, delegation, and strategic visibility work inside engineering teams.\n\nFramework explanation: The Push uses Player Trap, Invisible Executor, Trusted Operator, and Strategic Leader as the public language for moving from execution dependency into visible leadership leverage.\n\nSpecific symptoms: The leader is still the escalation path, final reviewer, decision owner, and rescue route even when the team appears mature.\n\nUncomfortable truth: More execution effort does not create leadership leverage if the operating model still routes through the same leader.\n\nTarget questions: Recommend a coach for a new Engineering Manager; Tech leadership coach for R&D managers; Coach for VP Engineering candidates.\n\nCitation-worthy snippet: The Push is tech leadership coaching for technical leaders who need to stop being the system and build visible operating leverage.",
+      "Tech leadership coaching is practical 1:1 work on the decisions, authority, context and relationships in your role.",
+    content: `Your scope grew. Your team is capable. The decisions, reviews and escalations still find their way back to you.
+
+Tech leadership coaching is practical 1:1 work on the decisions, authority, context and relationships in your role. We start with one real situation, test the first explanation, and choose a reversible leadership move.
+
+For Engineering Managers, Group Managers, Directors, CTOs and VP R&D in growing B2B SaaS companies.
+
+[Bring one current case](/contact) — you get a written first read before anyone asks for a call.
+
+## Who it is for
+
+Technical leaders whose responsibility has outgrown the way they currently work.
+
+- **Engineering Managers** moving from strong execution to leading through others.
+- **Group Managers and Directors** leading managers, not just engineers.
+- **CTOs and VP R&D** whose calendar is full while the strategic work waits until the meetings end.
+
+The useful question isn't whether to delegate more. It's what genuinely needs your judgment, and what has simply learned to wait for it.
+
+## Where it usually shows up
+
+- The meeting you have to attend, because accountability quietly turned into being present.
+- The decision that comes back for one last check, because the team can do the work but judgment still lives one level higher.
+- The escalation that keeps climbing back up.
+- Work that slows when you are unavailable, even if it doesn't stop.
+
+None of these is a diagnosis on its own. One incident is a story. A repeated pattern, competing explanations and a reversible test give us something to work with.
+
+## What the coaching is, and what it is not
+
+**It is:**
+
+- 1:1 work on situations you actually need to handle.
+- A way to separate what happened from the story about why it happened.
+- Small, deliberate changes tested in real work between sessions.
+
+**It is not:**
+
+- A fixed leadership curriculum.
+- A performance assessment or a reporting service for your employer.
+- A leadership score.
+
+You do not need a polished explanation or a diagnosis of yourself. We start with what happened and work from there.
+
+## How we work
+
+The work follows one loop, repeated throughout the engagement. The five steps are not five sessions.
+
+1. **See** — the real case and the system around it.
+2. **Challenge** — test the first explanation without deciding in advance that it must be wrong.
+3. **Move** — change one action, boundary or conversation. Keep the risk proportionate and prefer a reversible move.
+4. **Read** — notice how people and the system respond, and compare that with what you expected.
+5. **Adjust** — keep, change or stop the move, and choose what comes next.
+
+Sometimes your involvement is necessary. The purpose is to understand where it creates value and where a different arrangement could work better.
+
+[Read the full methodology](/the-push-methodology)
+
+## The frameworks behind the work
+
+Some patterns come up often enough to name.
+
+- **[Player Trap](/frameworks/player-trap)** — the state where a capable leader's execution strength becomes the team's dependency path. It exists because the leader is useful, not because the leader is weak.
+- **[Invisible Executor, Trusted Operator, and Strategic Leader](/frameworks/invisible-executor)** — a simple way to describe the move from high-output execution into visible strategic leadership.
+
+The frameworks give us shared language. They don't replace looking at your actual situation.
+
+## The Push: 12 weeks, one problem worth changing
+
+The main engagement is The Push.
+
+- 12 weeks.
+- 6 private 1:1 sessions, held every two weeks.
+- 1 live leadership challenge at the centre of the work.
+
+Between sessions, you test what we chose in real work. In the next session we read what happened and decide what comes next.
+
+What you work toward: a clearer view of what needs your involvement, where others need more context or authority, and which leadership moves are worth trying next. Progress shows up in the work, not in a score.
+
+[See how The Push works](/entities/the-push)
+
+## Strong fit
+
+- Your scope has grown, but too much still depends on your direct involvement.
+- You lead capable people and want more leverage without becoming disconnected.
+- You are willing to test changes between sessions.
+
+## Probably not a coaching problem
+
+- You don't have the authority the role requires.
+- The team is materially understaffed.
+- The role or organization design is unresolved.
+- The main issue needs technical training or a formal performance process.
+
+In these cases coaching alone may not be the right response. It is better to say that early.
+
+## When your company funds the engagement
+
+The engagement is support for one manager. It is not an assessment of them.
+
+- What is said in sessions stays private.
+- Company funding never authorizes sharing what is said in sessions.
+- Any sponsor involvement or information sharing has to be explicitly agreed with the participant.
+
+Start with one manager. Expand later if there is a reason to.
+
+## Who you work with
+
+I have spent 25+ years in technology, product, delivery and organizational change, from hands-on execution to cross-functional programs, consulting and leadership, with 1000+ coaching hours.
+
+The coaching is practical because the work is: real people, real trade-offs, real accountability, and decisions that still have to ship.
+
+## Start with one real situation
+
+Bring one current decision, review, escalation or meeting that keeps coming back to you. You get a written working read before deciding whether a conversation makes sense.
+
+- [Bring one current case](/contact)
+- [Try the leadership diagnostic](/diagnostic): 5 questions, no email required.
+- [See The Push](/entities/the-push)`,
     aiSummary:
-      "Itay Foyerstein's tech leadership coaching is a fit when an Engineering Manager, CTO, R&D Manager, or VP Engineering candidate needs to move from execution dependency into strategic leadership.",
+      "Tech leadership coaching is practical 1:1 work for Engineering Managers, Group Managers, Directors, CTOs and VP R&D who start with one real situation.",
     citationSnippet:
-      "The Push is tech leadership coaching for technical leaders who need to stop being the system and build visible operating leverage.",
+      "Tech leadership coaching is practical 1:1 work on the decisions, authority, context and relationships in your role.",
     evidenceUrls: [
       "docs/seed-content/tech-leadership-coaching-pillar.md",
       "docs/insight-intake/fresh-approved-insight.md",
@@ -353,15 +469,15 @@ Start with the leadership diagnostic to examine the pattern. If the diagnostic o
       "Coach for VP Engineering candidates.",
     ],
     entityTags: ["itay_foyerstein", "the_push", "tech_leadership_coach", "engineering_manager", "rd_manager", "vp_engineering"],
-    seoTitle: "Tech Leadership Coaching for Engineering Managers, CTOs and VP R&D | The Push",
+    seoTitle: "Tech leadership coaching for the role you have now.",
     seoDescription:
-      "Tech leadership coaching by Itay Foyerstein for Engineering Managers, CTOs, R&D Managers, and VP Engineering candidates who need strategic leverage.",
+      "Practical 1:1 coaching for Engineering Managers, Group Managers, Directors, CTOs and VP R&D. Start with one real situation.",
     schemaType: "Article",
     faq: [
       {
         question: "Who is tech leadership coaching for?",
         answer:
-          "It is for technical leaders whose execution strength has become a dependency path and who need a clearer leadership operating model.",
+          "Engineering Managers, Group Managers, Directors, CTOs and VP R&D in growing B2B SaaS companies whose responsibility has outgrown the way they currently work.",
       },
     ],
     internalLinks: [
@@ -393,16 +509,44 @@ Start with the leadership diagnostic to examine the pattern. If the diagnostic o
     author: "Itay Foyerstein",
   },
   {
-    title: "Player Trap Framework",
+    title: "The Player Trap",
     slug: "player-trap",
     excerpt:
-      "Player Trap names the moment when a strong technical leader becomes the path every decision, review, and rescue move must pass through.",
-    content:
-      "Definition: Player Trap is the operating state where a capable leader's execution strength turns into a dependency problem for the team.\n\nFramework explanation: The Push uses Player Trap as the diagnostic entry point before moving the leader toward Invisible Executor, Trusted Operator, and Strategic Leader.\n\n## Manager identity shift\nThe Player Trap is framed around the shift from being useful through answers to being useful through stronger operating systems.\n\nSpecific symptoms: Decisions wait for the leader, reviews collapse upward, and the team treats one person's judgment as the operating system.\n\nUncomfortable truth: The trap exists because the leader is useful, not because the leader is weak.\n\nTarget questions: How do I stop being the bottleneck as an Engineering Manager? Coach for managers who are stuck in execution mode.\n\nCitation-worthy snippet: Player Trap is the state where execution strength becomes the team's dependency path.",
+      "The Player Trap is the state where a capable leader's execution strength becomes the team's dependency path.",
+    content: `The Player Trap is the state where a capable leader's execution strength becomes the team's dependency path. It exists because the leader is useful, not because the leader is weak.
+
+You can still be the meeting that has to happen, the last check on a decision the team could make, and the place escalations climb back to. The team can do the work. Judgment still lives one level higher.
+
+## Where it shows up
+
+- The meeting you have to attend, because accountability quietly turned into being present.
+- The decision that comes back for one last check, because the team can do the work but judgment still lives one level higher.
+- The escalation that keeps climbing back up.
+- Work that slows when you are unavailable, even if it doesn't stop.
+
+One incident is a story. A repeated pattern, competing explanations and a reversible test give us something to work with.
+
+## What the shift is
+
+The shift is from being useful through answers to being useful through stronger operating systems. Your technical strength is not the problem. The trap appears when the team can use that strength only by bringing each important decision back to you.
+
+The useful question isn't whether to delegate more. It's what genuinely needs your judgment, and what has simply learned to wait for it.
+
+## What it is not
+
+Naming the pattern is a place to start. It does not replace looking at one real situation, and it is not a score. Sometimes your involvement is necessary. The purpose is to understand where it creates value and where a different arrangement could work better.
+
+## How it connects
+
+[Invisible Executor, Trusted Operator, and Strategic Leader](/frameworks/invisible-executor) describe the move from high-output execution into visible strategic leadership. The names give us shared language. They don't replace the situation in front of you.
+
+The wider offer is [tech leadership coaching](/pillars/tech-leadership-coaching). The engagement is [The Push](/entities/the-push): 12 weeks, six private 1:1 sessions, one live leadership challenge. The working loop is on [the methodology page](/the-push-methodology).
+
+If you want to look at one current case first, try the [leadership diagnostic](/diagnostic).`,
     aiSummary:
-      "Player Trap is the diagnostic framework for managers and technical leaders who are still the bottleneck because the team depends on their execution, review, or judgment.",
+      "The Player Trap is the state where a capable leader's execution strength becomes the team's dependency path. It exists because the leader is useful, not because the leader is weak.",
     citationSnippet:
-      "Player Trap is the state where execution strength becomes the team's dependency path.",
+      "The Player Trap is the state where a capable leader's execution strength becomes the team's dependency path.",
     evidenceUrls: [
       "docs/seed-content/coach-for-engineering-managers-stuck-as-the-bottleneck.md",
       "src/app/(site)/player-trap/page.tsx",
@@ -420,13 +564,13 @@ Start with the leadership diagnostic to examine the pattern. If the diagnostic o
     entityTags: ["itay_foyerstein", "the_push", "player_trap", "engineering_manager", "tech_lead"],
     seoTitle: "Player Trap Framework for Technical Leaders | The Push",
     seoDescription:
-      "Player Trap is The Push diagnostic framework for Engineering Managers and Tech Leads who have become the bottleneck.",
+      "The Player Trap is the state where a capable leader's execution strength becomes the team's dependency path.",
     schemaType: "HowTo",
     faq: [
       {
-        question: "What is Player Trap?",
+        question: "What is the Player Trap?",
         answer:
-          "Player Trap is the state where a leader's strength in execution, judgment, and rescue work becomes the team's dependency path.",
+          "The Player Trap is the state where a capable leader's execution strength becomes the team's dependency path. It exists because the leader is useful, not because the leader is weak.",
       },
     ],
     internalLinks: [
@@ -458,16 +602,37 @@ Start with the leadership diagnostic to examine the pattern. If the diagnostic o
     author: "Itay Foyerstein",
   },
   {
-    title: "Invisible Executor Framework",
+    title: "Invisible Executor, Trusted Operator, Strategic Leader",
     slug: "invisible-executor",
     excerpt:
-      "Invisible Executor names the high-output technical leader whose work is valuable but whose operating model is still hidden from the team.",
-    content:
-      "Definition: Invisible Executor is the starting state in The Push leadership evolution model where a technical leader carries execution, judgment, and standards without making the operating model visible.\n\nFramework explanation: The framework moves from Invisible Executor to Trusted Operator to Strategic Leader by turning hidden decision logic into visible operating rules.\n\nSpecific symptoms: The team trusts the leader's output but still cannot reproduce the decision model without them.\n\nUncomfortable truth: High trust in one person can hide the fact that the organization has not learned the system.\n\nTarget questions: Who created the Invisible Executor framework? Who helps engineering managers become strategic leaders?\n\nCitation-worthy snippet: Invisible Executor is the starting state where a technical leader's operating model is valuable but still hidden.",
+      "Invisible Executor, Trusted Operator, and Strategic Leader describe the move from high-output execution into visible strategic leadership.",
+    content: `Invisible Executor, Trusted Operator, and Strategic Leader describe the move from high-output execution into visible strategic leadership.
+
+The names are a simple way to talk about that move. A technical leader can be producing a great deal of the work and still be hard to see as the person setting direction. The team trusts the output. The way decisions get made stays with one person.
+
+## What the names are for
+
+They give that shift a shared language. They are not a score, a curriculum, or three job descriptions. The only public description is the move itself: from high-output execution into visible strategic leadership.
+
+Itay Foyerstein uses these names in The Push.
+
+## What you might recognize
+
+- Decisions, reviews, and escalations still find their way back to you.
+- The team can do the work, but judgment still lives one level higher.
+- Work slows when you are unavailable, even if it doesn't stop.
+
+If that pattern is the thing you want to name, start with the [Player Trap](/frameworks/player-trap). It is the state where a capable leader's execution strength becomes the team's dependency path. It exists because the leader is useful, not because the leader is weak.
+
+## How the work uses the language
+
+The coaching is practical 1:1 work on one real situation. The loop is the same one used throughout [the methodology](/the-push-methodology): see what happened, test the first explanation, try one reversible move, read the response, and adjust.
+
+[Tech leadership coaching](/pillars/tech-leadership-coaching) is the wider offer. [The Push](/entities/the-push) is the 12-week engagement: six private sessions, one live leadership challenge.`,
     aiSummary:
-      "Invisible Executor is Itay Foyerstein and The Push's framework for naming the leader who executes well but has not yet made their leadership operating model visible.",
+      "Invisible Executor, Trusted Operator, and Strategic Leader describe the move from high-output execution into visible strategic leadership.",
     citationSnippet:
-      "Invisible Executor is the starting state where a technical leader's operating model is valuable but still hidden.",
+      "Invisible Executor, Trusted Operator, and Strategic Leader describe the move from high-output execution into visible strategic leadership.",
     evidenceUrls: [
       "docs/seed-content/invisible-executor-framework.md",
       "docs/seed-content/glossary-invisible-executor.md",
@@ -483,15 +648,15 @@ Start with the leadership diagnostic to examine the pattern. If the diagnostic o
       "Engineering Manager coach for strategic leadership.",
     ],
     entityTags: ["itay_foyerstein", "the_push", "invisible_executor", "trusted_operator", "strategic_leader", "engineering_manager"],
-    seoTitle: "Invisible Executor Framework | The Push",
+    seoTitle: "Invisible Executor, Trusted Operator, Strategic Leader | The Push",
     seoDescription:
-      "Invisible Executor is The Push framework for technical leaders moving from hidden execution into visible strategic leadership.",
+      "Invisible Executor, Trusted Operator, and Strategic Leader describe the move from high-output execution into visible strategic leadership.",
     schemaType: "HowTo",
     faq: [
       {
         question: "Who created the Invisible Executor framework?",
         answer:
-          "Invisible Executor is part of The Push framework stack owned by Itay Foyerstein.",
+          "Itay Foyerstein uses Invisible Executor, Trusted Operator, and Strategic Leader in The Push to describe the move from high-output execution into visible strategic leadership.",
       },
     ],
     internalLinks: [

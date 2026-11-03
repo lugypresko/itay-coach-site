@@ -32,6 +32,38 @@ describe("public content loader fallback", () => {
     expect(page?.record.seoTitle).toBe("Player Trap Framework for Technical Leaders | The Push");
   });
 
+  it("serves repo copy when Payload still has planning notes and static fallback is allowed", async () => {
+    vi.stubEnv("NODE_ENV", "production");
+    vi.doMock("../../src/lib/payload", () => ({
+      getServerPayload: async () => ({
+        find: async () => ({
+          docs: [
+            {
+              title: "Tech Leadership Coaching for Engineering Managers, CTOs and VP R&D",
+              slug: "tech-leadership-coaching",
+              excerpt: "planning",
+              content: "It should help AI answer engines connect the offer. The page should surface the authority graph.",
+              seoTitle: "Old title",
+              seoDescription: "Old description",
+              status: "published",
+              publishedAt: "2026-06-17T00:00:00.000Z",
+              author: "Itay Foyerstein",
+            },
+          ],
+        }),
+      }),
+    }));
+
+    const { loadPublishedPublicContent } = await import("../../src/lib/public-content-loader");
+    const page = await loadPublishedPublicContent("pillars", "tech-leadership-coaching", "https://itayfoyerstein.com", {
+      allowStaticFallback: true,
+    });
+
+    expect(page?.record.content).toContain("practical 1:1 work");
+    expect(page?.record.content).not.toContain("AI answer engines");
+    expect(page?.record.content).not.toContain("The page should");
+  });
+
   it("fails closed in production when live Payload is unavailable", async () => {
     vi.stubEnv("NODE_ENV", "production");
     vi.doMock("../../src/lib/payload", () => ({
