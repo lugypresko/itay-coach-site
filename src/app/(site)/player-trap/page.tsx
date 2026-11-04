@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     url: canonical,
     type: "website",
     siteName: "The Push",
-    images: [{ url: "/itay-home-photo.jpg", width: 896, height: 1195, alt: "Itay Foyerstein" }],
+    images: [{ url: "/og-default.png", width: 1200, height: 630, alt: "Itay Foyerstein - Technical Leadership Coaching" }],
   },
 };
 

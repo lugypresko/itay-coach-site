@@ -1,3 +1,4 @@
+import { publicDescription, languageAlternates } from "@/lib/public-offer";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
@@ -28,8 +29,8 @@ export async function generateMetadata({ params }: ProblemPageProps): Promise<Me
 
   return {
     title,
-    description: page.record.seoDescription,
-    alternates: { canonical: page.canonicalUrl },
+    description: publicDescription(page.pathname, page.record.seoDescription),
+    alternates: { canonical: page.canonicalUrl, ...(slug === "product-engineering-misalignment" ? {languages: languageAlternates} : {}) },
     robots: page.publicationDecision.indexable ? { index: true, follow: true } : { index: false, follow: false },
   };
 }

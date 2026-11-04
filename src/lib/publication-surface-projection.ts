@@ -52,6 +52,12 @@ export interface FixedPublicationSurfaceRoute {
   llmsTxtEligible: boolean;
 }
 
+const revisedRoutes = new Set(["/", "/about", "/the-push-methodology", "/he/problems/product-engineering-misalignment", "/pillars/tech-leadership-coaching", "/problems/cto-becomes-the-bottleneck", "/problems/product-engineering-misalignment"]);
+const revisionDate = new Date("2026-10-22T00:00:00.000Z");
+function reviewedDate(pathname: string, source?: Date) {
+  if (!revisedRoutes.has(pathname)) return source;
+  return source && source > revisionDate ? source : revisionDate;
+}
 const fixedPublicationLastModified = new Date("2026-09-12T00:00:00.000Z");
 
 function contentLastModified(record: { updatedAt?: string | Date | null; lastReviewedAt?: string | Date | null; publishedAt?: string | Date | null }) {
@@ -163,7 +169,7 @@ export function buildPublicContentSurfaceEntry(input: {
   return {
     pathname: page.pathname,
     publicationDecision,
-    lastModified: contentLastModified(basePage.record),
+    lastModified: reviewedDate(page.pathname, contentLastModified(basePage.record)),
     sourceKind: "public_content",
     publicContentPage: page,
   };
@@ -194,7 +200,7 @@ export function buildProblemPageSurfaceEntry(input: {
     // Static catalog records are reviewed source material even when the legacy
     // catalog predates the publishedAt field. Keep their deterministic review
     // date; Payload records without a source date stay out of the sitemap.
-    lastModified: contentLastModified(normalized) ?? (input.trustStaticApproval ? fixedPublicationLastModified : undefined),
+    lastModified: reviewedDate(pathname, contentLastModified(normalized) ?? (input.trustStaticApproval ? fixedPublicationLastModified : undefined)),
     sourceKind: "problem_page",
     problemPage: page,
   };
@@ -204,7 +210,7 @@ function buildFixedEntries(origin: string): PublicationSurfaceEntry[] {
   return fixedPublicationSurfaceRoutes.map(({ pathname, llmsTxtEligible }) => ({
     pathname,
     sourceKind: "fixed",
-    lastModified: fixedPublicationLastModified,
+    lastModified: reviewedDate(pathname, fixedPublicationLastModified),
     publicationDecision: buildPublicationDecision(
       {
         slug: pathname === "/" ? "home" : pathname.slice(1),

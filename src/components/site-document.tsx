@@ -1,0 +1,78 @@
+import type { ReactNode } from "react";
+import type { Metadata } from "next";
+import Link from "next/link";
+import { Analytics } from "@vercel/analytics/react";
+
+import { getSiteUrl } from "@/lib/site-url";
+import "../styles/tokens.css";
+import "../styles/base.css";
+import "../styles/typography.css";
+import "../styles/layout.css";
+import "../styles/components.css";
+import "../styles/campaign-concepts.css";
+import "../styles/home-v3.css";
+import "../styles/home-v3-reference.css";
+import "../styles/approved-homepage.css";
+
+type SiteLayoutProps = {
+  children: ReactNode;
+  lang?: "en" | "he";
+};
+
+export const siteMetadata: Metadata = {
+  title: {
+    default: "Itay Foyerstein - Tech Leadership Coach | The Push",
+    template: "%s | The Push",
+  },
+  description:
+    "Tech Leadership Coach for Engineering Managers, Tech Leads, R&D Managers, and VP Engineering candidates. The Push is a 12-week coaching and advisory engagement.",
+  other: { "application-version": "0.9.2" },
+  metadataBase: new URL(getSiteUrl()),
+  openGraph: {
+    title: "Itay Foyerstein | Technical Leadership Coaching",
+    description: "Technical leadership coaching for Engineering Managers, Group Managers, and Directors.",
+    url: getSiteUrl(),
+    siteName: "The Push",
+    type: "website",
+    images: [{ url: "/og-default.png", width: 1200, height: 630, alt: "Itay Foyerstein - Technical Leadership Coaching" }],
+  },
+};
+
+export function SiteDocument({ children, lang = "en" }: SiteLayoutProps) {
+  return (
+    <html lang={lang}>
+      <body>
+        <a className="skip-link" href="#main-content">Skip to content</a><div className="site-frame">
+          <header className="site-header">
+            <Link href="/" className="site-brand" aria-label="The Push home">
+              <span className="site-brand-mark" aria-hidden="true">
+                TP
+              </span>
+              <span className="site-brand-name">The Push</span>
+            </Link>
+            <nav className="site-nav" aria-label="Primary">
+              <Link href="/about">About</Link>
+              <Link href="/the-push-methodology">Method</Link>
+              <Link href="/faq">FAQ</Link>
+              <Link href="/contact">Contact</Link>
+              <Link href="/entities/the-push">The Push</Link>
+              <Link href="/diagnostic" className="site-nav-cta">
+                Bring one situation
+              </Link>
+            </nav>
+          </header>
+          {children}
+          <footer className="site-footer">
+            <p>&copy; 2026 The Push. All rights reserved.</p>
+            <nav className="site-footer-nav" aria-label="Footer">
+              <a href="https://www.linkedin.com/in/itayfoyerstein/" target="_blank" rel="noreferrer">LinkedIn</a>
+              <Link href="/privacy">Privacy Policy</Link>
+              <Link href="/terms">Terms of Use</Link>
+            </nav>
+          </footer>
+        </div>
+        <Analytics />
+      </body>
+    </html>
+  );
+}

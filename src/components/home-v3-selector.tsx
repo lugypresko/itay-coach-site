@@ -1,23 +1,56 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { track } from "@vercel/analytics";
-
-const choices = [
-  ["decision", "A decision", "“Can you make the final call?”"],
-  ["review", "A review", "“Can you take one last look?”"],
-  ["escalation", "An escalation", "“We need you in this one.”"],
-  ["meeting", "A meeting", "“You should probably be there.”"],
-] as const;
+import { buildHomepagePatternHref, homepagePatterns, type HomepagePattern } from "@/lib/homepage-patterns";
 
 export function HomeV3Selector() {
-  const [selected, setSelected] = useState<string | null>(null);
-  return <div>
-    <div className="choices">
-      {choices.map(([value, label, hint]) => <button className={`choice${selected === value ? " selected" : ""}`} data-angle={value} aria-pressed={selected === value} type="button" key={value} onClick={() => { setSelected(value); const params = new URLSearchParams(window.location.search); params.set("pattern", value); window.history.replaceState(null, "", `${window.location.pathname}?${params.toString()}`); window.dispatchEvent(new CustomEvent("homepage-pattern-change", { detail: { pattern: value } })); track("homepage_selector_choice", { pattern: value }); }}>
-        {label}<small>{hint}</small>
-      </button>)}
+  const [selected, setSelected] = useState<HomepagePattern | null>(null);
+  const [search, setSearch] = useState("");
+
+  function selectPattern(pattern: HomepagePattern) {
+    setSelected(pattern);
+    setSearch(window.location.search);
+    window.dispatchEvent(new CustomEvent("homepage-pattern-change", { detail: { pattern } }));
+    track("homepage_selector_choice", { pattern });
+  }
+
+  const destination = selected ? buildHomepagePatternHref(search, selected) : "/diagnostic";
+  const selectedLabel = homepagePatterns.find(({ value }) => value === selected)?.label;
+
+  return (
+    <div className="pick">
+      <div>
+        <h2>What comes back to you most often?</h2>
+        <p>Pick the closest one. It won&apos;t diagnose you. It gives the first read a better place to start, and your choice carries into the form.</p>
+      </div>
+      <div>
+        <div className="ch" role="group" aria-label="Pattern">
+          {homepagePatterns.map(({ value, label }) => (
+            <button
+              aria-pressed={selected === value}
+              data-p={value}
+              key={value}
+              onClick={() => selectPattern(value)}
+              type="button"
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+        <div className="go">
+          <Link
+            aria-disabled={!selected}
+            className={`btn dark${selected ? "" : " off"}`}
+            href={destination}
+            id="go"
+            onClick={() => selected && track("homepage_cta_click", { destination })}
+          >
+            {selectedLabel ? `Continue: ${selectedLabel}` : "Continue with this pattern"}
+          </Link>
+        </div>
+      </div>
     </div>
-    <div className="commit-status" id="commitStatus">{selected ? "Got it. We’ll carry this into the diagnostic — you can change it there." : "Pick one. Your selection will carry into the diagnostic."}</div>
-  </div>;
+  );
 }

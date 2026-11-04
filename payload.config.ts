@@ -1,4 +1,5 @@
 import path from "node:path";
+import { payloadDatabaseUrl } from "./src/lib/diagnostic-v3/database-config";
 import { fileURLToPath } from "node:url";
 
 import { postgresAdapter } from "@payloadcms/db-postgres";
@@ -78,7 +79,7 @@ export default buildConfig({
   ],
   db: postgresAdapter({
     pool: {
-      connectionString: process.env.DATABASE_URL ?? "",
+      connectionString: payloadDatabaseUrl(),
     },
   }),
   graphQL: {

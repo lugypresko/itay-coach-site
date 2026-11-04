@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { Metadata } from "next";
 import { BrandPage } from "@/components/brand-page";
 const page = {
@@ -40,4 +41,4 @@ const page = {
   ]
 };
 export const metadata: Metadata = {title:page.title,description:page.sections[0].body,alternates:{canonical:page.path},robots:{index:true,follow:true},openGraph:{title:page.title,description:page.sections[0].body,url:page.path,type:"website"}};
-export default function Page(){return <BrandPage page={page}/>}
+export default function Page(){return <BrandPage page={page}><nav aria-label="Related frameworks"><Link href="/frameworks/player-trap">Player Trap framework</Link>{" · "}<Link href="/frameworks/invisible-executor">Invisible Executor framework</Link></nav></BrandPage>}

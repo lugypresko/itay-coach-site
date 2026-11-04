@@ -1,3 +1,4 @@
+import { CASE_CTA } from "./public-offer";
 import { buildProblemPageJsonLd } from "./problem-page-schema";
 import type { ProblemPageModel } from "./problem-pages";
 import type { PublicContentPageModel } from "./public-content";
@@ -112,9 +113,9 @@ export function toReaderFacingProblemPage(page: ProblemPageModel): ReaderFacingP
     whyItFailed: page.record.whyItFailed,
     diagnosis: page.record.diagnosis,
     primaryCta: {
-      label: page.record.primaryCTA.label,
-      href: page.record.primaryCTA.href,
-      ctaType: page.record.primaryCTA.href === "/player-trap" ? "diagnostic" : "fit_call",
+      label: CASE_CTA.label,
+      href: CASE_CTA.href,
+      ctaType: "diagnostic",
     },
     relatedFrameworks: page.record.relatedFrameworks.map((link) => ({ label: link.label, href: link.href })),
     relatedClusters: page.record.relatedClusters.map((link) => ({ label: link.label, href: link.href })),
