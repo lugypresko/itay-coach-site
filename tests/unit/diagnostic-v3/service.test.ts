@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { FullAnalysis, Session } from "@/lib/diagnostic-v3/contracts";
-import { act, deliverSummary, publicSession, renderSummaryEmail } from "@/lib/diagnostic-v3/service";
+import { act, deliverSummary, publicSession, renderSummaryEmail, shouldAutoSendSummary } from "@/lib/diagnostic-v3/service";
 import { partialFallback } from "@/lib/diagnostic-v3/analysis";
 import type { Store } from "@/lib/diagnostic-v3/store";
 
@@ -208,6 +208,26 @@ describe("Diagnostic V3 summary email", () => {
 
     expect(session.mail).toBe("sent");
     expect(fetchMock).toHaveBeenCalledOnce();
+  });
+});
+
+describe("Diagnostic V3 summary auto-send", () => {
+  it("queues one summary after identify and does not send it again for the same read", () => {
+    const session = mailSession();
+    session.mail = undefined;
+    expect(shouldAutoSendSummary("identify", session)).toBe(true);
+    session.mail = "simulated";
+    expect(shouldAutoSendSummary("identify", session)).toBe(false);
+    expect(shouldAutoSendSummary("qualification", session)).toBe(false);
+  });
+
+  it("still auto-sends after qualification only for non-conversation routes", () => {
+    const session = mailSession();
+    session.mail = undefined;
+    expect(shouldAutoSendSummary("qualification", session)).toBe(true);
+    session.scoring.route = "conversation";
+    expect(shouldAutoSendSummary("qualification", session)).toBe(false);
+    expect(shouldAutoSendSummary("summary", session)).toBe(false);
   });
 });
 

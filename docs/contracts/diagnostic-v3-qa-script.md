@@ -41,3 +41,12 @@ The Preview-only /api/diagnostic/v3/check runs two bounded server-side calls on 
 - invalid_json / invalid_schema / invalid_evidence / unsafe_output: response rejected; fallback content must be deterministic, never the rejected text.
 
 For the ACTUAL visitor flow, inspect Preview runtime records named diagnostic_v3_analysis: one partial and one full source=groq for the active revision, with model, HTTP status and duration. Changing qualification produces no analysis record. These logs contain no identity, case text, key, cookie or session token. The synthetic check validates provider integration, not the browser flow or persistence.
+
+## Conversion UX checks (no booking, no payment)
+- View the page source for /diagnostic. The Ziv Baruch quote is in the HTML under the hero, before any client render.
+- With fast UX on (the default), a single-choice answer advances without a blocking save. Q6 and Q7 show "Choose up to 3". Partial and full analysis show "Reading your answers…" or "Looking for the pattern…".
+- Sticky progress reads `Question N of 9` and the time cue, including on a 390px-wide viewport, and does not cover the answer controls at rest.
+- QA banners for disposable storage, analysis source, and simulated delivery appear only on Preview.
+- After identify, Preview says email delivery was simulated and does not claim a message was sent. A second identify does not send again.
+- On a conversation route with a booking URL, the card appears at the top of the full read and again at the end. It shows `75 min · online`, three deliverables, and `Book the 75-min session`. It shows no dollar amount. The link carries name, email, and a human pattern note, and keeps existing query params. Do not complete a booking or payment.
+- Rollback check: `DIAGNOSTIC_V3_FAST_UX=false` restores blocking Next. Empty `DIAGNOSTIC_V3_BOOKING_DURATION_MIN` hides the card.

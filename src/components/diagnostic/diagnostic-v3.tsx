@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Link from "next/link";
 import {
   questions,
@@ -13,14 +13,115 @@ import type {
   Qualification,
 } from "@/lib/diagnostic-v3/contracts";
 import {
+  DIAGNOSTIC_ENTRY_TIME_CUE,
   MAX_MULTI_SELECT,
+  questionProgressLabel,
   shouldAutoAdvance,
   toggleMultiAnswer,
 } from "@/lib/diagnostic-v3/ui-state";
 import type { publicSession } from "@/lib/diagnostic-v3/service";
 import "./diagnostic-v3.css";
 type View = ReturnType<typeof publicSession>;
+type BookingOffer = NonNullable<View["booking_offer"]>;
 const endpoint = "/api/diagnostic/v3";
+
+function showsPrice(value: string) {
+  return /\$|£|€/.test(value);
+}
+
+function BookingCard({
+  offer,
+  href,
+  position,
+  busy,
+  onBook,
+}: {
+  offer: BookingOffer;
+  href: string;
+  position: "top" | "bottom";
+  busy: boolean;
+  onBook: (position: "top" | "bottom") => void;
+}) {
+  if ([offer.meta, offer.cta, offer.microcopy, ...offer.deliverables].some(showsPrice)) return null;
+  const titleId = `v3-booking-${position}`;
+  return (
+    <section className="v3-booking" aria-labelledby={titleId} data-booking-card-position={position}>
+      <h3 id={titleId}>Your case fits a working session with Itay</h3>
+      <p className="v3-booking__meta">{offer.meta}</p>
+      <p>You get:</p>
+      <ul>
+        {offer.deliverables.map((item) => (
+          <li key={item}>{item}</li>
+        ))}
+      </ul>
+      <a
+        className="primary-link"
+        href={href}
+        onClick={(event) => {
+          event.preventDefault();
+          if (!busy) onBook(position);
+        }}
+      >
+        {offer.cta}
+      </a>
+      <p className="v3-booking__note">{offer.microcopy}</p>
+    </section>
+  );
+}
+
+function WrittenRead({
+  session,
+  previewQa,
+  busy,
+  onSend,
+}: {
+  session: View;
+  previewQa: boolean;
+  busy: boolean;
+  onSend: () => void;
+}) {
+  const email = session.contact_email;
+  if (session.mail === "sent" && email) {
+    return (
+      <p className="v3-written-read" role="status">
+        Not now. Your written read is on its way to {email}.
+      </p>
+    );
+  }
+  if (session.mail === "simulated") {
+    if (!previewQa) {
+      return (
+        <p className="v3-written-read" role="status">
+          Your written read stays on this page.
+        </p>
+      );
+    }
+    return (
+      <p className="v3-written-read" role="status">
+        Preview only: email delivery was simulated. No email was sent.
+      </p>
+    );
+  }
+  if (session.mail === "queued") {
+    return (
+      <p className="v3-written-read" role="status">
+        Sending your written read…
+      </p>
+    );
+  }
+  return (
+    <>
+      {session.mail === "failed" && (
+        <p role="alert">
+          Email could not be sent. Your read is still available here; please retry.
+        </p>
+      )}
+      <button type="button" className="v3-text-link" disabled={busy} onClick={onSend}>
+        {session.route === "self_service" ? "Email me the experiment" : "Email me this read instead"}
+      </button>
+    </>
+  );
+}
 
 function AnalysisProgress({ mode }: { mode: "first" | "full" }) {
   return (
@@ -41,7 +142,15 @@ function AnalysisProgress({ mode }: { mode: "first" | "full" }) {
   );
 }
 
-export function DiagnosticV3({ previewUx = false }: { previewUx?: boolean } = {}) {
+export function DiagnosticV3({
+  fastUx = true,
+  previewQa = false,
+  trustVariant = "ziv_baruch",
+}: {
+  fastUx?: boolean;
+  previewQa?: boolean;
+  trustVariant?: "ziv_baruch";
+} = {}) {
   const [session, setSession] = useState<View | null>(null),
     [answers, setAnswers] = useState<Answers>({}),
     [step, setStep] = useState(0),
@@ -100,8 +209,17 @@ export function DiagnosticV3({ previewUx = false }: { previewUx?: boolean } = {}
       active = false;
     };
   }, []);
-  useEffect(() => {
-    if (loaded) heading.current?.focus();
+  useLayoutEffect(() => {
+    if (!loaded) return;
+    heading.current?.focus({ preventScroll: true });
+    const progress = document.querySelector<HTMLElement>(".diagnostic-v3 .v3-progress");
+    if (!progress) return;
+    const headerBottom = document.querySelector(".site-header")?.getBoundingClientRect().bottom ?? 0;
+    const previous = progress.style.position;
+    progress.style.position = "static";
+    const docTop = progress.getBoundingClientRect().top + window.scrollY;
+    progress.style.position = previous;
+    window.scrollTo({ top: Math.max(0, docTop - headerBottom - 8), behavior: "auto" });
   }, [step, session?.stage, loaded]);
   async function send(
     action: string,
@@ -216,7 +334,7 @@ export function DiagnosticV3({ previewUx = false }: { previewUx?: boolean } = {}
     return task;
   }
   function select(key: keyof Answers, value: string, multi = false) {
-    if (!previewUx) {
+    if (!fastUx) {
       setAnswers((current) => {
         if (!multi) return { ...current, [key]: value };
         const old = (current[key] as string[] | undefined) ?? [];
@@ -265,8 +383,15 @@ export function DiagnosticV3({ previewUx = false }: { previewUx?: boolean } = {}
     reportedView.current = key;
     // Acknowledge a committed rendered screen; provider completion is not a view.
     void fetch(endpoint, { method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "view", stage: session.stage, answer_revision: session.answer_revision, step }) }).catch(() => { reportedView.current = ""; });
-  }, [session, busy, answerSaving, step]);
+      body: JSON.stringify({
+      action: "view",
+      stage: session.stage,
+      answer_revision: session.answer_revision,
+      step,
+      fast_ux: fastUx,
+      trust_variant: trustVariant,
+    }) }).catch(() => { reportedView.current = ""; });
+  }, [session, busy, answerSaving, step, fastUx, trustVariant]);
   const question = questions[step];
   const valid =
     step === 8 ||
@@ -276,7 +401,7 @@ export function DiagnosticV3({ previewUx = false }: { previewUx?: boolean } = {}
       (step !== 4 || Boolean(answers.frequency)));
   const isQuestions = session && (session.stage === "answering" || editing);
   async function navigate(next: number, analyze = false) {
-    if (!previewUx) {
+    if (!fastUx) {
       const saved = await send("answers", {
         answers,
         step: next,
@@ -301,7 +426,7 @@ export function DiagnosticV3({ previewUx = false }: { previewUx?: boolean } = {}
   }
   async function analyzePartial(savedSession?: View) {
     if (lock.current) return;
-    if (!previewUx) {
+    if (!fastUx) {
       const saved = savedSession ?? session;
       if (!saved) return;
       lock.current = true;
@@ -355,21 +480,29 @@ export function DiagnosticV3({ previewUx = false }: { previewUx?: boolean } = {}
     }
   }
   async function identify() {
-    if (previewUx) setAnalysisMode("full");
+    if (fastUx) setAnalysisMode("full");
     await send("identify", { identity });
-    if (previewUx) setAnalysisMode(null);
+    if (fastUx) setAnalysisMode(null);
+  }
+  function book(position: "top" | "bottom") {
+    void send("booking_click", { booking_card_position: position }).then((saved) => {
+      if (saved?.booking_url) window.location.assign(saved.booking_url);
+    });
   }
   const p = session?.partial,
     f = session?.full;
+  const conversation =
+    session?.route === "conversation" || session?.route === "conversation_override";
+  const canBook = Boolean(conversation && session?.booking_url && session.booking_offer);
   return (
-    <section className="diagnostic-v3" aria-busy={busy || (previewUx && answerSaving) || Boolean(analysisMode)}>
-      {session?.storage === "disposable_preview" && (
+    <section className="diagnostic-v3" aria-busy={busy || (fastUx && answerSaving) || Boolean(analysisMode)}>
+      {previewQa && session?.storage === "disposable_preview" && (
         <p className="v3-preview">
           QA Preview: disposable session storage. Email delivery and booking
           integrations are not being claimed as verified.
         </p>
       )}
-      {session?.qa_metadata && (
+      {previewQa && session?.qa_metadata && (
         <p className="v3-preview" aria-label="Preview analysis source metadata">
           QA analysis source — First Read: {session.qa_metadata.first_read_source ?? "pending"}; Full Read: {session.qa_metadata.full_read_source ?? "pending"}.
         </p>
@@ -408,11 +541,14 @@ export function DiagnosticV3({ previewUx = false }: { previewUx?: boolean } = {}
           >
             Diagnose one current case
           </button>
+          <p className="v3-time-cue">{DIAGNOSTIC_ENTRY_TIME_CUE}</p>
         </>
       ) : isQuestions ? (
         <>
-          <p className="eyebrow">Question {step + 1} of 9</p>
-          <progress aria-label="Diagnostic progress" value={step + 1} max={9} />
+          <div className="v3-progress">
+            <p aria-live="polite">{questionProgressLabel(step)}</p>
+            <progress aria-label="Diagnostic progress" value={step + 1} max={9} />
+          </div>
           <h2 ref={heading} tabIndex={-1}>
             {question.title}
           </h2>
@@ -429,7 +565,7 @@ export function DiagnosticV3({ previewUx = false }: { previewUx?: boolean } = {}
                   const selected = multi
                     ? selectedValues.includes(value)
                     : answers[question.id] === value;
-                  const atMultiLimit = previewUx && multi && selectedValues.length >= MAX_MULTI_SELECT && !selected;
+                  const atMultiLimit = fastUx && multi && selectedValues.length >= MAX_MULTI_SELECT && !selected;
                   return (
                     <button
                       type="button"
@@ -443,10 +579,9 @@ export function DiagnosticV3({ previewUx = false }: { previewUx?: boolean } = {}
                   );
                 })}
               </div>
-              {previewUx && "multi" in question &&
-                ((answers[question.id] as string[] | undefined)?.length ?? 0) >= MAX_MULTI_SELECT && (
-                  <small className="v3-multi-limit">Choose up to 3</small>
-                )}
+              {fastUx && "multi" in question && (
+                <small className="v3-multi-limit">Choose up to 3</small>
+              )}
             </fieldset>
           ) : (
             <>
@@ -523,7 +658,7 @@ export function DiagnosticV3({ previewUx = false }: { previewUx?: boolean } = {}
             <button
               className="primary-link"
               disabled={busy || !valid}
-              onClick={() => previewUx
+              onClick={() => fastUx
                 ? step === 8
                   ? void analyzePartial()
                   : void navigate(Math.min(8, step + 1))
@@ -532,7 +667,7 @@ export function DiagnosticV3({ previewUx = false }: { previewUx?: boolean } = {}
               {step === 8 ? "Analyze my case" : "Next"}
             </button>
           </div>
-          {previewUx && answerSaving && <p className="v3-save-state" role="status">Saving your answer…</p>}
+          {fastUx && answerSaving && <p className="v3-save-state" role="status">Saving your answer…</p>}
         </>
       ) : session.stage === "partial" && p ? (
         <>
@@ -640,6 +775,15 @@ export function DiagnosticV3({ previewUx = false }: { previewUx?: boolean } = {}
         </>
       ) : f ? (
         <>
+          {canBook && session.booking_offer && session.booking_url && (
+            <BookingCard
+              offer={session.booking_offer}
+              href={session.booking_url}
+              position="top"
+              busy={busy}
+              onBook={book}
+            />
+          )}
           <p className="eyebrow">Your case, as I see it</p>
           <h2 ref={heading} tabIndex={-1}>
             What is happening
@@ -781,81 +925,51 @@ export function DiagnosticV3({ previewUx = false }: { previewUx?: boolean } = {}
               </div>
             </form>
           ) : (
-            <div className="v3-route">
-              {session.route === "conversation" ||
-              session.route === "conversation_override" ? (
-                <>
+            <>
+              {conversation && !canBook && (
+                <div className="v3-route">
                   <h3>I think this is worth looking at together.</h3>
-                  {session.booking_url ? (
-                    <>
-                      <a
-                        className="primary-link"
-                        href={session.booking_url}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          send("booking_click").then((s) => {
-                            if (s?.booking_url)
-                              window.location.assign(s.booking_url);
-                          });
-                        }}
-                      >
-                        Book the 75-minute Leadership Diagnostic
-                      </a>
-                      <p>Paid session, $225.</p>
-                    </>
-                  ) : (
-                    <p>
-                      Scheduling is not configured in this Preview. Your case
-                      and next question are saved for review.
-                    </p>
-                  )}
-                </>
-              ) : session.route === "self_service" ? (
-                <>
+                  <p>
+                    Scheduling is not configured in this Preview. Your case
+                    and next question are saved for review.
+                  </p>
+                </div>
+              )}
+              {session.route === "self_service" && (
+                <div className="v3-route">
                   <h3>I don’t think you need a conversation with me yet.</h3>
                   <p>
                     Try this experiment first. Come back if the same pattern
                     continues after you test it.
                   </p>
-                </>
-              ) : (
-                <>
+                </div>
+              )}
+              {!conversation && session.route !== "self_service" && (
+                <div className="v3-route">
                   <h3>Try this for 7 days</h3>
                   <p>
                     Use the experiment above and record what happens. You can
                     return to this case.
                   </p>
-                </>
+                </div>
               )}
-              <button
-                className="secondary-link"
-                disabled={
-                  busy ||
-                  session.mail === "sent" ||
-                  session.mail === "simulated"
-                }
-                onClick={() => send("summary")}
-              >
-                {session.route === "self_service"
-                  ? "Email me the experiment"
-                  : "Send me the written read first"}
-              </button>
-            </div>
+            </>
           )}
-          {session.mail === "simulated" && (
-            <p role="status">
-              Preview only: email delivery was simulated. No email was sent.
-            </p>
+          {canBook && session.booking_offer && session.booking_url && (
+            <BookingCard
+              offer={session.booking_offer}
+              href={session.booking_url}
+              position="bottom"
+              busy={busy}
+              onBook={book}
+            />
           )}
-          {session.mail === "sent" && (
-            <p role="status">Your written read was sent.</p>
-          )}
-          {session.mail === "failed" && (
-            <p role="alert">
-              Email could not be sent. Your read is still available here; please
-              retry.
-            </p>
-          )}
+          <WrittenRead
+            session={session}
+            previewQa={previewQa}
+            busy={busy}
+            onSend={() => void send("summary")}
+          />
           <div className="v3-actions">
             <button
               className="secondary-link"

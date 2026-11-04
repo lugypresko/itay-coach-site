@@ -13,7 +13,9 @@ import {
   bookingUrl,
   publicSession,
   deliverSummary,
+  shouldAutoSendSummary,
 } from "@/lib/diagnostic-v3/service";
+import { bookingOffer } from "@/lib/diagnostic-v3/booking";
 import { runTransitionCheck } from "@/lib/diagnostic-v3/watchdog";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -157,13 +159,20 @@ export async function POST(req: NextRequest) {
       );
     if (input.action === "view") {
       if (input.stage !== s.stage || input.answer_revision !== s.answer_revision) return json({ ok: false });
+      const bookingCard = Boolean(
+        bookingUrl() &&
+        bookingOffer() &&
+        ["conversation", "conversation_override"].includes(s.scoring.route),
+      );
       const names = s.stage === "full"
-        ? ["full_result_view", ...(!s.qualification && !s.qualification_skipped ? ["qualification_shown"] : []), ...(bookingUrl() && ["conversation", "conversation_override"].includes(s.scoring.route) ? ["booking_cta_shown"] : []), ...(s.events.some((key) => key.includes(":return_link_opened")) ? ["restored_result_shown"] : [])]
+        ? ["full_result_view", ...(!s.qualification && !s.qualification_skipped ? ["qualification_shown"] : []), ...(bookingCard ? ["booking_cta_shown", "booking_card_position:top", "booking_card_position:bottom"] : []), ...(s.events.some((key) => key.includes(":return_link_opened")) ? ["restored_result_shown"] : [])]
         : s.stage === "partial"
           ? ["partial_result_view", "identity_gate_view"]
           : s.stage === "answering" && Number.isInteger(input.step) && Number(input.step) >= 0 && Number(input.step) <= 8
             ? [`question_shown:q${Number(input.step) + 1}`]
             : [];
+      if (input.fast_ux === true || input.fast_ux === false) names.push(`fast_ux:${input.fast_ux}`);
+      if (input.trust_variant === "ziv_baruch") names.push("trust_variant:ziv_baruch");
       await store.recordViews?.(s, names);
       return json({ ok: true });
     }
@@ -184,18 +193,13 @@ export async function POST(req: NextRequest) {
       return r;
     }
     s = await act(store, s, input);
-    if (
-      input.action === "qualification" &&
-      !["conversation", "conversation_override"].includes(s.scoring.route) &&
-      !s.mail
-    ) {
+    if (shouldAutoSendSummary(input.action, s)) {
       s = await act(store, s, {
         action: "summary",
         expected_version: s.record_version,
       });
       s = await deliverSummary(store, s, req.nextUrl.origin, auth!);
-    }
-    if (input.action === "summary")
+    } else if (input.action === "summary")
       s = await deliverSummary(store, s, req.nextUrl.origin, auth!);
     scheduleWatchdog(s.id);
     const r = json({ session: publicSession(s) });

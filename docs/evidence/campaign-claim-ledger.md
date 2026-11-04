@@ -19,6 +19,8 @@ This ledger separates public positioning from proof. A framework definition or p
 | C011 | Concept A/D/E | The Push is tested in production or produces documented client outcomes. | proof/outcome claim | evidence gap | Replace with practical-work language until records exist. |
 | C012 | `/book-a-fit-call` | A fit call is a 20-minute working conversation. | operational commitment | in review | Publish only if duration and delivery are consistently true. |
 | C013 | `/about` | Itay has 1,000+ coaching hours. | owner-attested claim | owner-approved | Publish as an owner-attested claim; do not imply independently verified outcomes. |
+| C014 | `/diagnostic` | The conversation booking card offers a 75-minute online working session and does not state a price. | operational commitment | owner-approved | Show duration and the three deliverables only. Do not display a currency amount on this surface. |
+| C015 | `/` and `/diagnostic` | Ziv Baruch, R&D Director, said Itay helped him fine-tune his leadership approach and scale his impact as an R&D Director. | named testimonial | owner-approved | Use the shared quote constant on the homepage and under the diagnostic hero. |
 
 ## Allowed Wording
 
@@ -36,3 +38,5 @@ This ledger separates public positioning from proof. A framework definition or p
 - `scientifically validated framework`
 - `you have the diagnosis` when the tool is a reflection checklist
 - `the OS runs without you` as a guaranteed outcome
+
+C012 stays on `/book-a-fit-call`. The diagnostic conversation card uses C014 and does not present that fit call or a price.

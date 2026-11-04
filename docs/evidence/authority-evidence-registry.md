@@ -17,6 +17,8 @@ This is the durable source map for reader-facing proof. Owner-attested approvals
 | E011 | The Push has documented client outcomes. | case_study | The Push | canonical pages | missing approved before/after records | evidence gap | Collect approved records before publishing. |
 | E012 | A fit call is a 20-minute working conversation. | operational_commitment | Fit call | `/book-a-fit-call` | operating process | in review | Approve only if consistently delivered. |
 | E013 | Itay has 1,000+ coaching hours. | owner_attested_claim | Itay Foyerstein | `/about` | owner attestation | owner-approved | Exact owner-approved wording; no implied outcomes. |
+| E014 | The diagnostic conversation card offers a 75-minute online working session and does not state a price. | operational_commitment | Diagnostic | `/diagnostic` | owner approval 2026-11-04 | owner-approved | Duration and three deliverables only. No currency amount on this surface. |
+| E015 | Ziv Baruch, R&D Director, said Itay helped him fine-tune his leadership approach and scale his impact as an R&D Director. | named_testimonial | Itay Foyerstein | `/` and `/diagnostic` | owner approval 2026-11-04; homepage quote | owner-approved | Shared quote constant only. Do not add it to other pages without a new approval. |
 
 ## Missing Evidence Queue
 
@@ -24,4 +26,4 @@ This is the durable source map for reader-facing proof. Owner-attested approvals
 - Named testimonials with permission and relationship context.
 - Company-specific relationship records for stronger wording.
 - External research for AI review/governance claims.
-- Confirmation of fit-call duration as an operational commitment.
+- Confirmation of fit-call duration as an operational commitment. E012 remains limited to `/book-a-fit-call`. E014 is the diagnostic session claim and does not display a price.
