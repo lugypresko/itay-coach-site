@@ -245,9 +245,10 @@ describe("public content helpers", () => {
     const record = getStaticPublicContentCatalogEntry("frameworks", "player-trap");
 
     expect(record).toBeTruthy();
-    expect(record?.content).toContain("## Manager identity shift");
     expect(record?.content).toContain("being useful through answers");
     expect(record?.content).toContain("stronger operating systems");
+    expect(record?.content).not.toContain("Target questions");
+    expect(record?.content).not.toContain("Citation-worthy");
   });
 
   it("maps proof-backed trust blocks to the target customer-path routes", () => {

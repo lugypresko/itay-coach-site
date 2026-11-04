@@ -336,3 +336,23 @@ This file is the project’s single append-only decision record. New decisions a
 - Context: Product-owner approved Cal.com event for the diagnostic and campaign funnel; `src/lib/diagnostic-v3/service.ts` (`bookingUrl()`); `campaigns/lp-shared.js`; `.env.example`; `docs/contracts/diagnostic-v3-operations.md`; `docs/contracts/diagnostic-v3.md`.
 - Decision: The post-diagnostic and static-campaign booking target is `https://cal.com/itayfoyer/leadership-diagnostic-75-minutes`, a paid 75-minute Leadership Diagnostic ($225). Diagnostic V3 keeps reading `DIAGNOSTIC_V3_BOOKING_URL` and returns only https URLs. The Cal.com URL is not hardcoded in the service. Campaign `BOOKING_URL` uses that same URL. `/book-a-fit-call` stays the lead-qualification form.
 - Release: Document the env for Vercel Preview. Do not set Vercel env in this change, and do not enable Production flags.
+
+## DEC-20261103-01 - Three public routes serve repo reader-facing copy
+
+- Date: `2026-11-03`
+- Status: `implementation`
+- Scope: `/pillars/tech-leadership-coaching`, `/frameworks/player-trap`, and `/frameworks/invisible-executor`.
+- Decision: When a public request explicitly allows the static catalog, these three routes serve the visitor-facing copy stored in the repo. Stale Payload records that still contain planning notes are not rendered on those routes.
+- Context: User content correction on `2026-11-03`; live pages on itayfoyerstein.com; `src/lib/public-content.ts`; `src/lib/public-content-loader.ts`; `src/seed/authority-surface-seed.ts`; `DEC-20260713-03`.
+- Rationale: The public frontend is supposed to receive reader-facing content only. The live Payload copies for these routes were planning notes, while the corrected copy now lives in the static catalog.
+- Consequences: A later CMS edit does not replace these three pages until the route stops preferring the repo copy. Reseeding the authority surface stores the corrected copy for the pillar and Invisible Executor records.
+
+## DEC-20261104-01 — Diagnostic V3 line keeps the public-route visitor copy
+
+- Date: `2026-11-04`
+- Status: `implementation`
+- Scope: Merge `origin/main` into `feature/diagnostic-v3` before the pull request into `main`.
+- Decision: Keep Diagnostic V3 code from `feature/diagnostic-v3`. Keep the visitor-facing copy and public-page calls to action already on `main` for `/pillars/tech-leadership-coaching`, `/frameworks/player-trap`, and `/frameworks/invisible-executor`. Do not change Vercel Production environment variables, Neon, or Deployment Protection in this change.
+- Context: User GO on `2026-11-04` (Asia/Jerusalem); `DEC-20261103-01` public-route entry merged in #11; `DEC-20261103-01` booking entry on `feature/diagnostic-v3`; `src/lib/public-content.ts`; `src/lib/public-content-loader.ts`; `src/lib/reader-facing-publication.ts`; `src/seed/authority-surface-seed.ts`.
+- Rationale: Both decision entries were already appended on different branches and are preserved verbatim, including the shared identifier. The public-route entry is the copy that is live on itayfoyerstein.com. Replacing it with the diagnostic branch's older pillar description, a metadata override of that description, or a single diagnostic call to action on every public content page would regress that visitor copy.
+- Consequences: Opening the pull request does not by itself deploy Production or set Production flags. Problem-page calls to action that already point at the Diagnostic V3 case flow stay as they are on `feature/diagnostic-v3`.

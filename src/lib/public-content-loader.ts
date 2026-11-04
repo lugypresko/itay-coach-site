@@ -16,6 +16,19 @@ interface PublicContentLoaderOptions {
   allowStaticFallback?: boolean;
 }
 
+// These three routes already have visitor-facing copy in the repo. Live Payload
+// records for the same slugs still contain planning notes, so a request that
+// explicitly allows the static catalog serves that copy instead.
+const repoOwnedPublicRoutes = new Set([
+  "pillars/tech-leadership-coaching",
+  "frameworks/player-trap",
+  "frameworks/invisible-executor",
+]);
+
+function prefersRepoPublicCopy(section: string, slug: string, allowStaticFallback?: boolean): boolean {
+  return allowStaticFallback === true && repoOwnedPublicRoutes.has(`${section}/${slug}`);
+}
+
 export async function loadPublishedPublicContent(
   section: PublicContentSection,
   slug: string,
@@ -25,6 +38,10 @@ export async function loadPublishedPublicContent(
   const spec = getPublicContentSectionSpec(section);
   if (!spec) {
     return null;
+  }
+
+  if (prefersRepoPublicCopy(section, slug, options.allowStaticFallback)) {
+    return loadStaticFallback(section, slug, origin, true);
   }
 
   try {

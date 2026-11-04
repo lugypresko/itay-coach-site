@@ -28,10 +28,11 @@ export function getReaderFacingDescription(content: string): string {
   const paragraph = content
     .split(/\n{2,}/)
     .map((item) => item.trim())
-    .find((item) => item && !/^#{1,6}\s/.test(item) && !/^[-*]\s/m.test(item));
+    .find((item) => item && !/^#{1,6}\s/.test(item) && !/^[-*]\s/m.test(item) && !/^\d+\.\s/m.test(item));
 
   return (paragraph ?? "")
-    .replace(/\[([^\]]+)\]\([^\s)]+\)/g, "$1")
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+    .replace(/\*\*([^*]+)\*\*/g, "$1")
     .replace(/\s+/g, " ")
     .trim();
 }
@@ -61,8 +62,15 @@ function hrefForInternalLink(targetSlug: string, sourcePath?: string): string {
 }
 
 function publicContentCta(page: PublicContentPageModel): ReaderFacingCta {
-  void page;
-  return { ...CASE_CTA, ctaType: "diagnostic" };
+  if (page.pathname === "/frameworks/player-trap") {
+    return { href: "/player-trap", label: "Take the Player Trap Diagnostic", ctaType: "diagnostic" };
+  }
+
+  if (page.pathname === "/pillars/tech-leadership-coaching") {
+    return { href: "/contact", label: "Bring one current case", ctaType: "fit_call" };
+  }
+
+  return { href: "/book-a-fit-call", label: "Book a Fit Call", ctaType: "fit_call" };
 }
 
 export function toReaderFacingPublicContentPage(page: PublicContentPageModel): ReaderFacingPublicContentPage {

@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { POST as createSession } from "../../src/app/api/diagnostic/session/route";
 import { POST as saveAnswer } from "../../src/app/api/diagnostic/answer/route";
@@ -34,6 +34,14 @@ async function json(response: Response) {
 }
 
 describe("diagnostic API routes", () => {
+  beforeEach(() => {
+    vi.stubEnv("NODE_ENV", "test");
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
   it("creates a preview session without external persistence", async () => {
     const response = await createSession(new Request("http://localhost/api/diagnostic/session", {
       method: "POST",
