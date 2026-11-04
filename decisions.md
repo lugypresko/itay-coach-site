@@ -356,3 +356,12 @@ This file is the project’s single append-only decision record. New decisions a
 - Context: User GO on `2026-11-04` (Asia/Jerusalem); `DEC-20261103-01` public-route entry merged in #11; `DEC-20261103-01` booking entry on `feature/diagnostic-v3`; `src/lib/public-content.ts`; `src/lib/public-content-loader.ts`; `src/lib/reader-facing-publication.ts`; `src/seed/authority-surface-seed.ts`.
 - Rationale: Both decision entries were already appended on different branches and are preserved verbatim, including the shared identifier. The public-route entry is the copy that is live on itayfoyerstein.com. Replacing it with the diagnostic branch's older pillar description, a metadata override of that description, or a single diagnostic call to action on every public content page would regress that visitor copy.
 - Consequences: Opening the pull request does not by itself deploy Production or set Production flags. Problem-page calls to action that already point at the Diagnostic V3 case flow stay as they are on `feature/diagnostic-v3`.
+
+## DEC-20261104-02 — Diagnostic V3 conversion UX
+
+- Date: `2026-11-04`
+- Status: `implementation`
+- Scope: `/diagnostic` Diagnostic V3 visitor flow. `/book-a-fit-call` stays as it is. No Neon schema change, no Production env write, and no Deployment Protection change.
+- Decision: Fast UX defaults on through `DIAGNOSTIC_V3_FAST_UX` (`false` restores the slower path) and is no longer derived from `VERCEL_ENV=preview`. Preview-only QA banners stay gated on `VERCEL_ENV=preview`. The Ziv Baruch quote is one shared constant on the homepage and under the diagnostic hero. Conversation routes show a 75-minute online booking card with three deliverables and no price. The summary email sends once after identify. The free fit call is not added to this card.
+- Context: Owner direction on `2026-11-04`; `docs/contracts/diagnostic-v3-operations.md`; `docs/contracts/diagnostic-v3.md`; `docs/evidence/campaign-claim-ledger.md` C014 and C015; `src/lib/diagnostic-v3/fast-ux.ts`; `src/lib/diagnostic-v3/booking.ts`; `src/lib/social-proof.ts`.
+- Rollback: Set `DIAGNOSTIC_V3_FAST_UX=false` for the slower path. Set `DIAGNOSTIC_V3_BOOKING_DURATION_MIN` empty or `off` to hide the card. No database migration.

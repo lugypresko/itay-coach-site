@@ -5,6 +5,7 @@ import { HOME_TITLE } from "@/lib/public-offer";
 import { buildCoachingServiceJsonLd, buildItayPersonJsonLd } from "@/lib/public-schema";
 import { HomeV3Selector } from "@/components/home-v3-selector";
 import { HomeV3TrackedLink } from "@/components/home-v3-tracked-link";
+import { ZivBaruchQuote } from "@/components/social-proof/ziv-baruch-quote";
 
 export const metadata: Metadata = {
   title: { absolute: HOME_TITLE },
@@ -90,10 +91,7 @@ export default function HomePage() {
               <article className="sc"><h3>The decision that comes back for one last check.</h3><p>The team can do the work. Judgment still lives one level higher.</p></article>
               <article className="sc"><h3>The strategic work that starts after the meetings end.</h3><p>Delivery is moving. Your calendar is full.</p></article>
             </div>
-            <blockquote className="quote">
-              “Itay helped me fine-tune my leadership approach and scale my impact as an R&amp;D Director.”
-              <small>Ziv Baruch, R&amp;D Director</small>
-            </blockquote>
+            <ZivBaruchQuote className="quote" />
           </div>
         </section>
 

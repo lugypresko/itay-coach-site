@@ -268,7 +268,9 @@ describe("revision safe private sessions", () => {
     const dto = publicSession(s);
     expect(dto.full).toBeTruthy();
     expect(dto.booking_url).toBeNull();
-    expect(JSON.stringify(dto)).not.toContain(identity.email);
+    expect(dto.booking_offer).toBeNull();
+    expect(dto.contact_email).toBe(identity.email);
+    expect(JSON.stringify({ full: dto.full, partial: dto.partial })).not.toContain(identity.email);
     expect(dto).not.toHaveProperty("scoring");
     expect(dto).not.toHaveProperty("sales_brief");
   });

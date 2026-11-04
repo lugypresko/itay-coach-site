@@ -38,3 +38,6 @@ Q5 contains duration + recurrence and counts as one independent question. Q6 inc
 No database migration: JSONB session envelope remains unchanged. analysis_version advances to analysis-v2. Older derived reads are invalidated on load; answers, identity, qualification and retained Sales Brief remain. User explicitly reruns analysis; no background provider request. Atomic record-version writes continue to reject stale updates. No Production action or homepage change.
 
 Rollback of this Preview revision: redeploy 14e129a9ae98c60defa503e71e0df4699dcf3ead (analysis-v1); use a fresh disposable Preview session for QA. Production rollback checkpoint remains unchanged. Neither a Production rollback nor persistent DB migration was exercised here.
+
+## Visitor booking card (2026-11-04)
+The diagnostic conversation card states a 75-minute online session and three deliverables. It does not state a price and it does not use the 20-minute fit-call label. Duration comes from `DIAGNOSTIC_V3_BOOKING_DURATION_MIN` (default 75). Fast UX comes from `DIAGNOSTIC_V3_FAST_UX` (default on). See diagnostic-v3-operations.md.

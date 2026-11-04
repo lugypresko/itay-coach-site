@@ -4832,3 +4832,21 @@ Scope: `campaigns/lp-shared.js` `BOOKING_URL`; `.env.example`; diagnostic-v3 ops
 Out of scope: Groq/Resend/Neon wiring, Production flags, setting Vercel env, replacing the `/book-a-fit-call` lead form.
 
 Validation: Constant and docs match `https://cal.com/itayfoyer/leadership-diagnostic-75-minutes`. `bookingUrl()` still reads `process.env.DIAGNOSTIC_V3_BOOKING_URL` and accepts only https.
+
+### Task 104 - Diagnostic V3 conversion UX
+
+State: `completed`
+Owner: Cursor
+Lane: diagnostic-v3-conversion
+Branch: cursor/diagnostic-v3-conversion-ux-4877
+
+Goal: Ship prod-parity fast UX, the shared Ziv Baruch trust line, and a duration-only conversation booking card.
+
+Scope: `DIAGNOSTIC_V3_FAST_UX` default on; Preview QA banners stay on `VERCEL_ENV=preview`; sticky progress; shared quote; 75-minute card with three deliverables and no price; Cal prefill; one summary email after identify.
+
+Out of scope: Phase 2 question redesign, free fit call on the diagnostic card, Neon schema, Production env writes, Deployment Protection, `/book-a-fit-call`.
+
+Data contracts affected: None. New env vars are documented only.
+Agent permissions affected: None.
+
+Verification: Focused Diagnostic V3 and homepage tests passed, including the fast-UX flag on and off, duration-only booking copy, Cal prefill, and one summary after identify. `tsc --noEmit` passed. Local browser flow on a 390px viewport confirmed the server-rendered quote, auto-advance, the three-option cap, the analysis screen, two booking cards with no currency amount, and name/email/notes prefill. No Production env or schema change.

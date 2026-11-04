@@ -11,6 +11,7 @@ import {
 import { analyze } from "./analysis";
 import { score } from "./scoring";
 import { hash, save, Conflict, type Store } from "./store";
+import { bookingOffer, visitorBookingUrl } from "./booking";
 export function brief(s: Session): string {
   return JSON.stringify(
     {
@@ -103,11 +104,14 @@ export function publicSession(s: Session) {
     route: s.identity ? s.scoring.route : null,
     mail: s.mail ?? null,
     restored_from_return: s.events.some((key) => key.includes(":return_link_opened")),
-    booking_url:
+    contact_name: s.identity?.first_name ?? null,
+    contact_email: s.identity?.email ?? null,
+    booking_offer:
       s.identity &&
       ["conversation", "conversation_override"].includes(s.scoring.route)
-        ? bookingUrl()
+        ? bookingOffer()
         : null,
+    booking_url: visitorBookingUrl(bookingUrl(), s),
     storage: process.env.DIAGNOSTIC_V3_DATABASE_URL
       ? "persistent"
       : "disposable_preview",
@@ -230,10 +234,15 @@ export async function act(
     if (
       !s.identity ||
       !["conversation", "conversation_override"].includes(s.scoring.route) ||
-      !bookingUrl()
+      !bookingUrl() ||
+      !bookingOffer()
     )
       throw new Error("Booking is not available for this case.");
-    event(s, "book_call_click");
+    const position =
+      input.booking_card_position === "top" || input.booking_card_position === "bottom"
+        ? input.booking_card_position
+        : undefined;
+    event(s, "book_call_click", position);
   } else if (input.action === "summary") {
     if (!s.identity || !s.full) throw new Error("Open your full read first.");
     if (s.mail === "sent" || s.mail === "simulated" || s.mail === "queued")
@@ -246,6 +255,18 @@ export async function act(
   if (s.identity) s.sales_brief = brief(s);
   return save(store, s, expected);
 }
+export function shouldAutoSendSummary(action: unknown, s: Session): boolean {
+  if (action !== "identify" && action !== "qualification") return false;
+  if (!s.identity || !s.full) return false;
+  if (s.mail === "sent" || s.mail === "simulated" || s.mail === "queued") return false;
+  if (
+    action === "qualification" &&
+    ["conversation", "conversation_override"].includes(s.scoring.route)
+  )
+    return false;
+  return true;
+}
+
 export async function deliverSummary(
   store: Store,
   s: Session,

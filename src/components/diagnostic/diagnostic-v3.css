@@ -145,6 +145,63 @@
   border-radius: 12px;
   margin: 24px 0;
 }
+.diagnostic-v3 .v3-progress {
+  position: sticky;
+  top: 5.5rem;
+  z-index: 15;
+  margin: 0 0 12px;
+  padding: 8px 0 6px;
+  scroll-margin-top: 5.5rem;
+  background: var(--color-bg, #f4efe4);
+}
+.diagnostic-v3 h2,
+.diagnostic-v3 .v3-options button,
+.diagnostic-v3 textarea,
+.diagnostic-v3 input,
+.diagnostic-v3 select {
+  scroll-margin-top: 8.5rem;
+}
+.diagnostic-v3 .v3-progress p {
+  margin: 0 0 8px;
+  font-size: 14px;
+  font-weight: 650;
+}
+.diagnostic-v3 .v3-time-cue {
+  margin: 12px 0 0;
+  font-size: 14px;
+}
+.diagnostic-v3 .v3-booking {
+  margin: 20px 0;
+  padding: 20px;
+  border: 1px solid #859387;
+  border-radius: 12px;
+}
+.diagnostic-v3 .v3-booking h3 {
+  margin-top: 0;
+}
+.diagnostic-v3 .v3-booking__meta {
+  font-weight: 700;
+}
+.diagnostic-v3 .v3-booking__note,
+.diagnostic-v3 .v3-written-read {
+  margin: 12px 0 0;
+  font-size: 15px;
+}
+.diagnostic-v3 button.v3-text-link {
+  display: inline;
+  min-height: 0;
+  margin: 12px 0 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-weight: 650;
+  text-align: left;
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+  white-space: normal;
+}
 .diagnostic-v3 .v3-preview {
   padding: 12px;
   background: #fff4cb;
@@ -245,6 +302,19 @@
   border: 1px solid #a63f27;
   overflow-wrap: anywhere;
 }
+@media (max-width: 639px) {
+  .diagnostic-v3 .v3-progress {
+    top: 12rem;
+    scroll-margin-top: 12rem;
+  }
+  .diagnostic-v3 h2,
+  .diagnostic-v3 .v3-options button,
+  .diagnostic-v3 textarea,
+  .diagnostic-v3 input,
+  .diagnostic-v3 select {
+    scroll-margin-top: 16rem;
+  }
+}
 @media (max-width: 560px) {
   .diagnostic-v3 {
     padding: 12px 0 32px;
@@ -277,14 +347,21 @@
     :is(h2, h3, p, strong, li, blockquote) {
     color: #f1efe6;
   }
+  html:not([data-theme="light"]) .diagnostic-v3 .v3-progress {
+    background: var(--color-bg, #10251d);
+  }
 }
 html[data-theme="dark"] .diagnostic-v3,
 html[data-theme="dark"] .diagnostic-v3 :is(h2, h3, p, strong, li, blockquote) {
   color: #f1efe6;
 }
+html[data-theme="dark"] .diagnostic-v3 .v3-progress {
+  background: var(--color-bg, #10251d);
+}
 @media print {
   .diagnostic-v3 button,
   .diagnostic-v3 form,
+  .diagnostic-v3 .v3-booking,
   .diagnostic-v3 .v3-preview,
   body:has(.diagnostic-v3-shell) .site-header,
   body:has(.diagnostic-v3-shell) .site-footer {
@@ -310,4 +387,17 @@ html[data-theme="dark"] .diagnostic-v3 :is(h2, h3, p, strong, li, blockquote) {
 }
 .diagnostic-v3-shell .content-hero .eyebrow {
   margin-bottom: 10px;
+}
+.diagnostic-v3-shell .diagnostic-trust {
+  margin: 10px 0 0;
+  max-width: 42rem;
+  font-size: 15px;
+  line-height: 1.35;
+}
+@media (max-width: 390px) {
+  .diagnostic-v3-shell .diagnostic-trust {
+    font-size: 12.5px;
+    line-height: 1.25;
+    letter-spacing: -0.011em;
+  }
 }

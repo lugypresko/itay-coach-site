@@ -2,6 +2,17 @@ import type { Answers } from "./contracts";
 
 export const MAX_MULTI_SELECT = 3;
 
+export const DIAGNOSTIC_ENTRY_TIME_CUE =
+  "About 4 minutes. First read before any contact details.";
+
+export function questionProgressLabel(step: number): string {
+  const question = Math.min(9, Math.max(1, step + 1));
+  if (step >= 7) {
+    return `Question ${question} of 9 · Almost there · under a minute left`;
+  }
+  return `Question ${question} of 9 · about 4 min total`;
+}
+
 export function toggleMultiAnswer(
   answers: Answers,
   key: "attempts" | "impact",

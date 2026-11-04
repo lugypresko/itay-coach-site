@@ -41,3 +41,9 @@ V3 Production route/API disabled by default. Retain V2 contracts and storage; ne
 
 ## Six-table trace schema acceptance update
 The user-approved additive trace schema has now been applied to the isolated Preview branch. See diagnostic-v3-preview-acceptance.md for the observed state, 10 passing DB-health checks, 9 passing rollback-only constraints, three E2E prerequisites blocked by HTTP 503, and the new READY redeploy evidence. Existing payload preserved. Normalized application writer is not yet integrated. The full acceptance gate failed; no Production migration package was prepared.
+
+## 2026-11-04 conversion UX
+- `DIAGNOSTIC_V3_FAST_UX` controls auto-advance, non-blocking answer saves, the analysis screen, and the Q6/Q7 cap of 3. Unset means on. `false` restores the slower path. The page reads it per request (`force-dynamic`). QA banners ("QA Preview: disposable session storage…", analysis-source metadata, and "delivery simulated") render only when `VERCEL_ENV=preview`.
+- Conversation routes show a booking card at the top and bottom of the full read when `booking_url` is available. Visitor copy is duration only: `75 min · online` and `Book the 75-min session`, plus the three deliverables. The card must not display a currency amount. `DIAGNOSTIC_V3_BOOKING_DURATION_MIN` defaults to 75; empty or `off` hides the card and keeps the unavailable message. There is no public price variable for this card. Any charge stays on the Cal.com event. Do not offer the 20-minute fit call on this card. `/book-a-fit-call` is unchanged.
+- The booking link keeps existing query params and adds encoded `name`, `email`, and `notes` (human pattern label, not the raw enum). `booking_click` is recorded before navigation.
+- After a successful identify, the summary email is sent once for that read through the existing summary action. A later identify of the same read does not send again. Preview still simulates delivery and must not claim an email was sent.

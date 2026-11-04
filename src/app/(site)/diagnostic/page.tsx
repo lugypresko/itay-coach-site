@@ -2,8 +2,9 @@ import React from "react";
 import type { Metadata } from "next";
 
 import { DiagnosticV3 } from "@/components/diagnostic/diagnostic-v3";
-
 import { DiagnosticFunnel } from "@/components/diagnostic/diagnostic-funnel";
+import { ZivBaruchQuote } from "@/components/social-proof/ziv-baruch-quote";
+import { diagnosticFastUxEnabled, diagnosticPreviewQa } from "@/lib/diagnostic-v3/fast-ux";
 
 const title = "Leadership Diagnostic";
 const description =
@@ -17,6 +18,8 @@ export const metadata: Metadata = {
   // anonymous result and fit-context flow pass Preview acceptance.
   robots: { index: false, follow: false },
 };
+
+export const dynamic = "force-dynamic";
 
 export default function Page() {
   const v3 =
@@ -37,9 +40,14 @@ export default function Page() {
             ? "See what may be keeping it stuck — and one move worth testing next."
             : description}
         </p>
+        {v3 ? <ZivBaruchQuote className="diagnostic-trust" layout="inline" /> : null}
       </header>
       {v3 ? (
-        <DiagnosticV3 previewUx={process.env.VERCEL_ENV === "preview"} />
+        <DiagnosticV3
+          fastUx={diagnosticFastUxEnabled()}
+          previewQa={diagnosticPreviewQa()}
+          trustVariant="ziv_baruch"
+        />
       ) : (
         <DiagnosticFunnel />
       )}

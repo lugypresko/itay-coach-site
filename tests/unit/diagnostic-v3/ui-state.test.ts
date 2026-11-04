@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { shouldAutoAdvance, toggleMultiAnswer } from "@/lib/diagnostic-v3/ui-state";
+import { questionProgressLabel, shouldAutoAdvance, toggleMultiAnswer } from "@/lib/diagnostic-v3/ui-state";
 
 describe("Diagnostic V3 question UI state", () => {
   it("caps multi-select at three and allows deselecting to make room", () => {
@@ -19,6 +19,12 @@ describe("Diagnostic V3 question UI state", () => {
       .toEqual(["nothing"]);
     expect(toggleMultiAnswer({ impact: ["time"] }, "impact", "little").impact)
       .toEqual(["little"]);
+  });
+
+  it("states the question number and the time cue", () => {
+    expect(questionProgressLabel(2)).toBe("Question 3 of 9 · about 4 min total");
+    expect(questionProgressLabel(7)).toBe("Question 8 of 9 · Almost there · under a minute left");
+    expect(questionProgressLabel(8)).toContain("Question 9 of 9");
   });
 
   it("auto-advances single-answer questions after selection", () => {
