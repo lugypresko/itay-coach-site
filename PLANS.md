@@ -4701,3 +4701,16 @@ Queries/entity: technical leadership coaching for engineering managers / Itay Fo
 CTA: bring one case through /diagnostic. Internal links: problem pages and frameworks.
 
 Verification: typecheck passed; lint passed with pre-existing warnings; 14 focused tests passed; full Next build passed. Final regenerated HTML checks and remote preview pending.
+
+## PUBLIC-CONTENT-RELEASE — isolated public copy repair
+State: `in_review`
+Owner: Codex
+Lane: public-content-release
+Scope: user-approved content-only Preview based on live Production 6722fa3; selected f450927 changes plus reader-facing pillars/frameworks indexes. Existing unrelated task ownership is unchanged.
+Queries/entity: tech leadership coaching for engineering managers / Itay Foyerstein and The Push.
+Evidence: approved f450927 visitor copy; no new credentials, client results or metrics.
+CTA/links: preserve current contact/diagnostic paths and canonical framework links.
+Boundaries: no diagnostic/provider/mail/booking/env/DB changes; no main merge or Production deployment.
+Verification: targeted regression tests, typecheck, build, five Preview routes and mobile QA; exact release commit and rollback submitted for human review.
+
+Release validation: 19 focused tests, typecheck and full Next build passed (existing unrelated lint warnings). Deployed browser QA pending authenticated Preview access. No diagnostic/API/migration/dependency changes.

@@ -298,3 +298,10 @@ This file is the project’s single append-only decision record. New decisions a
 - CMS: No record mutation or approval-hash change. Two path-specific descriptions are presentation overrides; deleting the overrides restores previous CMS display.
 - Language: Separate Hebrew root layout preserves server-rendered html lang without changing the English layout language or adding request middleware.
 - Rollback: Checkpoint branch rollback/pre-0.9.2-2026-10-22 at 6c3ac10. Previous Production dpl_8HcXUhpkWFTDKJYjTokouaRM9vB1; restore through Vercel rollback or redeploy checkpoint. No schema/data migration.
+
+## DEC-20261104-01 — Isolated public copy repair Preview
+- Context: User-approved PUBLIC-CONTENT-RELEASE in PLANS.md; live Production 6722fa3; reviewed f450927 content repair.
+- Decision: Prepare a release from the live Production commit using only visitor-facing content/rendering changes and scoped pillars/frameworks index copy. The three reviewed detail routes prefer repo copy before reading stale CMS text, as in f450927. Other section indexes, diagnostic, providers, delivery, booking and persistence are unchanged.
+- Evidence boundary: Reuse reviewed copy; omit the unverified 1000+ coaching-hours claim. No new quantified result, credential or testimonial.
+- Publication: Preview for review only. Production and main require separate explicit approval of the tested commit.
+- Rollback: Restore the recorded Production deployment dpl_EprWpS42468gF1mMXae7GDNfrTDb / 6722fa3. No data or environment changes to reverse.
